@@ -1,6 +1,9 @@
 package co.edu.uan.gestionhardware.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 
 @Entity
@@ -11,9 +14,13 @@ public class Equipo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "El codigo interno es obligatorio")
+    @Size(max = 30, message = "Maximo 30 caracteres")
     @Column(name = "codigo_interno", nullable = false, length = 30, unique = true)
     private String codigoInterno;
 
+    @NotBlank(message = "El serial es obligatorio")
+    @Size(max = 80, message = "Maximo 80 caracteres")
     @Column(nullable = false, length = 80, unique = true)
     private String serial;
 
@@ -21,41 +28,58 @@ public class Equipo {
     @JoinColumn(name = "tipo_equipo_id")
     private TipoEquipo tipoEquipo;
 
+    @NotNull(message = "Debe seleccionar un area")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "area_id", nullable = false)
     private Area area;
 
+    @NotNull(message = "Debe seleccionar un estado")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "estado_equipo_id", nullable = false)
     private EstadoEquipo estadoEquipo;
 
+    @NotBlank(message = "La marca es obligatoria")
+    @Size(max = 60, message = "Maximo 60 caracteres")
     @Column(nullable = false, length = 60)
     private String marca;
 
+    @NotBlank(message = "El modelo es obligatorio")
+    @Size(max = 80, message = "Maximo 80 caracteres")
     @Column(nullable = false, length = 80)
     private String modelo;
 
+    @Size(max = 100, message = "Maximo 100 caracteres")
     @Column(length = 100)
     private String procesador;
 
+    @Min(value = 1, message = "La RAM debe ser mayor a cero")
     @Column(name = "ram_gb")
     private Integer ramGb;
 
     @Column(name = "tipo_almacenamiento", length = 20)
     private String tipoAlmacenamiento;
 
+    @Min(value = 1, message = "La capacidad debe ser mayor a cero")
     @Column(name = "capacidad_gb")
     private Integer capacidadGb;
 
+    @Size(max = 80, message = "Maximo 80 caracteres")
     @Column(name = "sistema_operativo", length = 80)
     private String sistemaOperativo;
 
+    @PastOrPresent(message = "La fecha no puede ser futura")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "fecha_ultima_actualizacion_so")
     private LocalDate fechaUltimaActualizacionSo;
 
+    @NotNull(message = "La fecha de compra es obligatoria")
+    @PastOrPresent(message = "La fecha no puede ser futura")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "fecha_compra", nullable = false)
     private LocalDate fechaCompra;
 
+    @PastOrPresent(message = "La fecha no puede ser futura")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "fecha_puesta_operacion")
     private LocalDate fechaPuestaOperacion;
 

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Registrar equipo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+<div class="container py-4">
+
+    <h1 class="h3 mb-4"
+        th:text="${equipo.id == null} ? 'Registrar equipo' : 'Editar equipo'">
+        Registrar equipo
+    </h1>
+
+    <form th:action="@{/equipos/guardar}" th:object="${equipo}" method="post"
+          class="bg-white p-4 rounded shadow-sm">
+
+        <input type="hidden" th:field="*{id}" />
+        <input type="hidden" th:field="*{activo}" />
+
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <label class="form-label">Codigo interno *</label>
+                <input type="text" class="form-control" th:field="*{codigoInterno}"
+                       th:classappend="${#fields.hasErrors('codigoInterno')} ? 'is-invalid'" />
+                <div class="invalid-feedback" th:errors="*{codigoInterno}"></div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Serial *</label>
+                <input type="text" class="form-control" th:field="*{serial}"
+                       th:classappend="${#fields.hasErrors('serial')} ? 'is-invalid'" />
+                <div class="invalid-feedback" th:errors="*{serial}"></div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Tipo de equipo</label>
+                <select class="form-select" th:field="*{tipoEquipo}">
+                    <option value="">-- Seleccione --</option>
+                    <option th:each="t : ${tipos}"
+                            th:value="${t.id}"
+                            th:text="${t.nombre}"></option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Area *</label>
+                <select class="form-select" th:field="*{area}"
+                        th:classappend="${#fields.hasErrors('area')} ? 'is-invalid'">
+                    <option value="">-- Seleccione --</option>
+                    <option th:each="a : ${areas}"
+                            th:value="${a.id}"
+                            th:text="${a.nombre}"></option>
+                </select>
+                <div class="invalid-feedback" th:errors="*{area}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Estado *</label>
+                <select class="form-select" th:field="*{estadoEquipo}"
+                        th:classappend="${#fields.hasErrors('estadoEquipo')} ? 'is-invalid'">
+                    <option value="">-- Seleccione --</option>
+                    <option th:each="e : ${estados}"
+                            th:value="${e.id}"
+                            th:text="${e.nombre}"></option>
+                </select>
+                <div class="invalid-feedback" th:errors="*{estadoEquipo}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Marca *</label>
+                <input type="text" class="form-control" th:field="*{marca}"
+                       th:classappend="${#fields.hasErrors('marca')} ? 'is-invalid'" />
+                <div class="invalid-feedback" th:errors="*{marca}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Modelo *</label>
+                <input type="text" class="form-control" th:field="*{modelo}"
+                       th:classappend="${#fields.hasErrors('modelo')} ? 'is-invalid'" />
+                <div class="invalid-feedback" th:errors="*{modelo}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Procesador</label>
+                <input type="text" class="form-control" th:field="*{procesador}" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">RAM (GB)</label>
+                <input type="number" class="form-control" th:field="*{ramGb}" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Capacidad (GB)</label>
+                <input type="number" class="form-control" th:field="*{capacidadGb}" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Tipo de almacenamiento</label>
+                <select class="form-select" th:field="*{tipoAlmacenamiento}">
+                    <option value="">-- Seleccione --</option>
+                    <option value="HDD">HDD</option>
+                    <option value="SSD">SSD</option>
+                    <option value="NVMe">NVMe</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Sistema operativo</label>
+                <input type="text" class="form-control" th:field="*{sistemaOperativo}" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Ultima actualizacion del SO</label>
+                <input type="date" class="form-control" th:field="*{fechaUltimaActualizacionSo}" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Fecha de compra *</label>
+                <input type="date" class="form-control" th:field="*{fechaCompra}"
+                       th:classappend="${#fields.hasErrors('fechaCompra')} ? 'is-invalid'" />
+                <div class="invalid-feedback" th:errors="*{fechaCompra}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Fecha de puesta en operacion</label>
+                <input type="date" class="form-control" th:field="*{fechaPuestaOperacion}" />
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Observaciones</label>
+                <textarea class="form-control" rows="3" th:field="*{observaciones}"></textarea>
+            </div>
+
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-dark">Guardar</button>
+            <a th:href="@{/equipos}" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+
+    </form>
+
+</div>
+</body>
+</html>
