@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+<!-- ==========================================================
+     CABECERA
+     ========================================================== -->
+<head th:fragment="cabecera">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HardTrack</title>
+    <link rel="stylesheet" th:href="@{/css/hardtrack.css}" />
+</head>
+
+
+<!-- ==========================================================
+     BARRA LATERAL
+     ========================================================== -->
+<aside class="sidebar" th:fragment="sidebar">
+
+    <!-- Marca -->
+    <div class="sidebar__marca">
+        <div class="sidebar__logo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"
+                 stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>
+        </div>
+        <div>
+            <div class="sidebar__nombre">HardTrack</div>
+            <div class="sidebar__lema">Ciclo de vida TI</div>
+        </div>
+    </div>
+
+    <!-- Perfil activo -->
+    <div class="sidebar__perfil">
+        <div class="sidebar__perfil-titulo">Perfil activo</div>
+        <div class="sidebar__perfil-caja">
+            <span class="sidebar__punto"></span>
+            <span sec:authorize="hasRole('GESTOR')">Gestor Tecnológico</span>
+            <span sec:authorize="hasRole('TECNICO')">Técnico de Soporte</span>
+        </div>
+    </div>
+
+    <!-- Navegación -->
+    <nav class="sidebar__nav">
+
+        <!-- Grupo: Inventario -->
+        <div class="sidebar__grupo">
+            <div class="sidebar__grupo-titulo">Inventario</div>
+
+            <a th:href="@{/equipos}" class="sidebar__item">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round" aria-hidden="true">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                    <line x1="8" y1="21" x2="16" y2="21" />
+                    <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+                Equipos
+            </a>
+
+            <!-- AQUI: agrega "Registrar equipo" e "Importar CSV/Excel"
+                 Recuerda que ambos son solo del GESTOR -->
+
+        </div>
+
+        <!-- Grupo: Administración -->
+        <div class="sidebar__grupo" sec:authorize="hasRole('GESTOR')">
+            <div class="sidebar__grupo-titulo">Administración</div>
+
+            <a th:href="@{/usuarios}" class="sidebar__item">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round" aria-hidden="true">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                Usuarios
+            </a>
+
+            <!-- AQUI: agrega "Sedes y áreas", "Estados y umbrales"
+                 y "Notificaciones" cuando existan esas rutas -->
+
+        </div>
+
+        <!-- AQUI: agrega los grupos "Principal", "Mantenimientos"
+             y "Reportes" siguiendo el mismo patrón -->
+
+    </nav>
+
+    <!-- Usuario -->
+    <div class="sidebar__usuario">
+        <div class="sidebar__avatar">HT</div>
+        <div class="sidebar__datos">
+            <div class="sidebar__usuario-nombre" sec:authentication="name">usuario</div>
+            <div class="sidebar__usuario-rol">
+                <span sec:authorize="hasRole('GESTOR')">Gestor</span>
+                <span sec:authorize="hasRole('TECNICO')">Técnico</span>
+            </div>
+        </div>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="sidebar__salir" title="Cerrar sesión">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+            </button>
+        </form>
+    </div>
+
+</aside>
+
+
+<!-- ==========================================================
+     BARRA SUPERIOR
+     ========================================================== -->
+<div class="barra" th:fragment="barrasuperior(seccion)">
+    <div class="barra__ruta">
+        HardTrack › <strong th:text="${seccion}">Sección</strong>
+    </div>
+    <div class="barra__perfil">
+        <span class="sidebar__punto"></span>
+        <span sec:authorize="hasRole('GESTOR')">Gestor Tecnológico</span>
+        <span sec:authorize="hasRole('TECNICO')">Técnico de Soporte</span>
+    </div>
+</div>
+
+</body>
+</html>

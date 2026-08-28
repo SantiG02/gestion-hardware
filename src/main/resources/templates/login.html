@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Iniciar sesión · HardTrack</title>
+
+    <link rel="stylesheet" th:href="@{/css/hardtrack.css}" />
+
+    <style>
+        /* Estilos exclusivos de la pantalla de acceso */
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 20px;
+            background: radial-gradient(circle at 50% 0%, var(--fondo-alto) 0%, var(--fondo) 60%);
+        }
+
+        .marca { text-align: center; margin-bottom: 52px; }
+
+        .marca__icono {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 20px;
+            border-radius: 14px;
+            background: var(--azul);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .marca__nombre {
+            margin: 0 0 8px;
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .marca__descripcion {
+            margin: 0;
+            font-size: 14px;
+            color: var(--subtitulo);
+        }
+
+        .acceso {
+            width: 100%;
+            max-width: 472px;
+            background: var(--superficie);
+            border-radius: var(--radio-grande);
+            padding: 40px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
+        }
+
+        .acceso__titulo {
+            margin: 0 0 6px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .acceso__intro {
+            margin: 0 0 28px;
+            font-size: 14px;
+            color: var(--texto-suave);
+        }
+
+        .olvido { margin: -6px 0 24px; text-align: right; }
+
+        .olvido a { font-size: 13px; text-decoration: none; }
+
+        .olvido a:hover,
+        .olvido a:focus-visible { text-decoration: underline; }
+
+        .nota {
+            margin: 18px 0 0;
+            text-align: center;
+            font-size: 12.5px;
+            color: var(--tenue);
+        }
+
+        .pie {
+            margin-top: 40px;
+            font-size: 13px;
+            color: var(--pie);
+            text-align: center;
+        }
+
+        @media (max-width: 520px) {
+            .acceso { padding: 28px 22px; }
+            .marca { margin-bottom: 36px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="marca">
+        <div class="marca__icono">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                 stroke="#ffffff" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>
+        </div>
+        <h1 class="marca__nombre">HardTrack</h1>
+        <p class="marca__descripcion">Sistema de seguimiento de ciclo de vida de hardware</p>
+    </header>
+
+    <main class="acceso">
+
+        <h2 class="acceso__titulo">Iniciar sesión</h2>
+        <p class="acceso__intro">Accede con tus credenciales corporativas</p>
+
+        <div th:if="${param.error}" class="aviso aviso--error">
+            El correo o la contraseña no coinciden. Verifica los datos e inténtalo de nuevo.
+        </div>
+
+        <div th:if="${param.logout}" class="aviso aviso--exito">
+            Cerraste sesión correctamente.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+
+            <div class="campo">
+                <label class="campo__etiqueta" for="email">Correo electrónico</label>
+                <input class="campo__entrada"
+                       type="email"
+                       id="email"
+                       name="email"
+                       autocomplete="username"
+                       required
+                       autofocus />
+            </div>
+
+            <div class="campo">
+                <label class="campo__etiqueta" for="password">Contraseña</label>
+                <input class="campo__entrada"
+                       type="password"
+                       id="password"
+                       name="password"
+                       autocomplete="current-password"
+                       required />
+            </div>
+
+            <p class="olvido">
+                <a href="#">¿Olvidó su contraseña?</a>
+            </p>
+
+            <button class="boton boton--bloque" type="submit">Ingresar</button>
+
+        </form>
+
+        <p class="nota">El sistema identificará automáticamente tu perfil</p>
+
+    </main>
+
+    <footer class="pie">
+        © 2026 HardTrack · Proyecto de grado — Ingeniería de Sistemas
+    </footer>
+
+</body>
+</html>

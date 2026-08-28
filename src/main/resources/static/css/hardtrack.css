@@ -1,0 +1,576 @@
+/* ============================================================
+   HardTrack — Hoja de estilos base
+   Sistema de seguimiento del ciclo de vida del hardware
+   ============================================================ */
+
+/* ---------- Variables ---------- */
+:root {
+    /* Marca */
+    --azul:          #2563eb;
+    --azul-oscuro:   #1d4ed8;
+    --azul-suave:    #eff6ff;
+
+    /* Fondos oscuros (login y barra lateral) */
+    --fondo:         #101b2d;
+    --fondo-alto:    #16243b;
+
+    /* Fondos claros */
+    --lienzo:        #f8fafc;
+    --superficie:    #ffffff;
+
+    /* Texto */
+    --texto:         #111827;
+    --texto-suave:   #64748b;
+    --etiqueta:      #334155;
+    --tenue:         #94a3b8;
+    --subtitulo:     #8fa0b8;
+    --pie:           #5b6b83;
+
+    /* Bordes */
+    --borde:         #cbd5e1;
+    --borde-suave:   #e2e8f0;
+
+    /* Estados de equipo */
+    --estable:            #16a34a;
+    --estable-fondo:      #f0fdf4;
+    --estable-borde:      #bbf7d0;
+
+    --seguimiento:        #d97706;
+    --seguimiento-fondo:  #fffbeb;
+    --seguimiento-borde:  #fde68a;
+
+    --renovacion:         #dc2626;
+    --renovacion-fondo:   #fef2f2;
+    --renovacion-borde:   #fecaca;
+
+    /* Radios */
+    --radio:         8px;
+    --radio-grande:  12px;
+
+        /* Barra lateral */
+    --panel:            #1a2332;
+    --panel-borde:      #243045;
+    --panel-activo:     #2e3d58;
+    --panel-texto:      #e8edf5;
+    --panel-suave:      #94a8c2;
+    --panel-tenue:      #64748b;
+    --panel-grupo:      #3b4f6e;
+    --azul-marca:       #1a6bc8;
+}
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--texto);
+    background: var(--lienzo);
+}
+
+h1, h2, h3, h4 {
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+a { color: var(--azul); }
+
+/* ---------- Avisos ---------- */
+.aviso {
+    margin-bottom: 20px;
+    padding: 12px 14px;
+    border-radius: var(--radio);
+    font-size: 13.5px;
+    line-height: 1.45;
+}
+
+.aviso--error {
+    background: var(--renovacion-fondo);
+    border: 1px solid var(--renovacion-borde);
+    color: #b42318;
+}
+
+.aviso--exito {
+    background: var(--estable-fondo);
+    border: 1px solid var(--estable-borde);
+    color: #15803d;
+}
+
+.aviso--info {
+    background: var(--azul-suave);
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+}
+
+/* ---------- Campos de formulario ---------- */
+.campo { margin-bottom: 20px; }
+
+.campo__etiqueta {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--etiqueta);
+}
+
+.campo__entrada,
+.campo__seleccion,
+.campo__area {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--texto);
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.campo__area {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.campo__entrada:focus,
+.campo__seleccion:focus,
+.campo__area:focus {
+    outline: none;
+    border-color: var(--azul);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+
+.campo__entrada--error,
+.campo__seleccion--error {
+    border-color: var(--renovacion);
+}
+
+.campo__error {
+    display: block;
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: var(--renovacion);
+}
+
+.campo__ayuda {
+    display: block;
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: var(--texto-suave);
+}
+
+/* ---------- Botones ---------- */
+.boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 18px;
+    font-size: 14.5px;
+    font-weight: 600;
+    font-family: inherit;
+    color: #ffffff;
+    background: var(--azul);
+    border: 1px solid var(--azul);
+    border-radius: var(--radio);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+.boton:hover {
+    background: var(--azul-oscuro);
+    border-color: var(--azul-oscuro);
+}
+
+.boton:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.4);
+    outline-offset: 2px;
+}
+
+.boton--bloque { width: 100%; padding: 14px; font-size: 15px; font-weight: 700; }
+
+.boton--secundario {
+    color: var(--etiqueta);
+    background: var(--superficie);
+    border-color: var(--borde);
+}
+
+.boton--secundario:hover {
+    background: var(--lienzo);
+    border-color: var(--texto-suave);
+}
+
+.boton--peligro {
+    color: #b42318;
+    background: var(--renovacion-fondo);
+    border-color: var(--renovacion-borde);
+}
+
+.boton--peligro:hover { background: #fee2e2; }
+
+.boton--pequeno { padding: 7px 12px; font-size: 13px; }
+
+/* ---------- Insignias ---------- */
+.insignia {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 12.5px;
+    font-weight: 600;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.insignia--estable {
+    color: var(--estable);
+    background: var(--estable-fondo);
+}
+
+.insignia--seguimiento {
+    color: var(--seguimiento);
+    background: var(--seguimiento-fondo);
+}
+
+.insignia--renovacion {
+    color: var(--renovacion);
+    background: var(--renovacion-fondo);
+}
+
+.insignia--rol {
+    color: var(--azul);
+    background: var(--azul-suave);
+}
+
+.insignia--neutra {
+    color: var(--texto-suave);
+    background: var(--borde-suave);
+}
+
+/* ---------- Tarjetas ---------- */
+.panel {
+    background: var(--superficie);
+    border: 1px solid var(--borde-suave);
+    border-radius: var(--radio-grande);
+    padding: 24px;
+}
+
+/* ---------- Tablas ---------- */
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--superficie);
+}
+
+.tabla th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--texto-suave);
+    border-bottom: 1px solid var(--borde-suave);
+}
+
+.tabla td {
+    padding: 16px;
+    font-size: 14.5px;
+    border-bottom: 1px solid var(--borde-suave);
+    vertical-align: middle;
+}
+
+.tabla tr:last-child td { border-bottom: none; }
+
+.tabla__acciones { text-align: right; white-space: nowrap; }
+
+/* ---------- Avatar de iniciales ---------- */
+.avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--azul);
+    background: var(--azul-suave);
+}
+
+/* ---------- Utilidades ---------- */
+.texto-suave { color: var(--texto-suave); }
+.texto-tenue { color: var(--tenue); }
+
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+}
+
+/* ============================================================
+   Estructura de dos columnas
+   ============================================================ */
+
+.disposicion {
+    display: flex;
+    min-height: 100vh;
+}
+
+.contenido {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.contenido__cuerpo {
+    flex: 1;
+    padding: 28px 32px;
+}
+
+/* ============================================================
+   Barra lateral
+   ============================================================ */
+
+.sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--panel);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+}
+
+/* ---- Marca ---- */
+.sidebar__marca {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 22px 18px 16px;
+    border-bottom: 1px solid var(--panel-borde);
+}
+
+.sidebar__logo {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    background: var(--azul-marca);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.sidebar__nombre {
+    color: var(--panel-texto);
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 1.2;
+}
+
+.sidebar__lema {
+    color: var(--panel-tenue);
+    font-size: 10.5px;
+    font-weight: 500;
+}
+
+/* ---- Perfil activo ---- */
+.sidebar__perfil {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--panel-borde);
+}
+
+.sidebar__perfil-titulo {
+    font-size: 10.5px;
+    color: var(--panel-tenue);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 6px;
+}
+
+.sidebar__perfil-caja {
+    background: var(--panel-borde);
+    border: 1px solid var(--panel-activo);
+    border-radius: 7px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--panel-texto);
+    font-size: 12.5px;
+    font-weight: 500;
+}
+
+.sidebar__punto {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--azul-marca);
+    flex-shrink: 0;
+}
+
+.sidebar__punto--tecnico { background: #22c55e; }
+
+/* ---- Navegación ---- */
+.sidebar__nav {
+    flex: 1;
+    padding: 10px;
+}
+
+.sidebar__grupo { margin-bottom: 4px; }
+
+.sidebar__grupo-titulo {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--panel-grupo);
+    padding: 10px 14px 4px;
+}
+
+.sidebar__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--panel-suave);
+    text-decoration: none;
+    border-radius: 7px;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.sidebar__item:hover {
+    background: var(--panel-borde);
+    color: var(--panel-texto);
+}
+
+.sidebar__item--activo {
+    background: var(--panel-activo);
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.sidebar__item svg { flex-shrink: 0; }
+
+/* ---- Usuario ---- */
+.sidebar__usuario {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 14px;
+    border-top: 1px solid var(--panel-borde);
+}
+
+.sidebar__avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--panel-activo);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--panel-suave);
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.sidebar__datos { flex: 1; min-width: 0; }
+
+.sidebar__usuario-nombre {
+    color: #c5cdd8;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar__usuario-rol {
+    color: var(--panel-grupo);
+    font-size: 11px;
+}
+
+.sidebar__salir {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--panel-grupo);
+    padding: 4px;
+    display: flex;
+}
+
+.sidebar__salir:hover { color: var(--panel-suave); }
+
+/* ============================================================
+   Barra superior
+   ============================================================ */
+
+.barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    background: var(--superficie);
+    border-bottom: 1px solid var(--borde-suave);
+}
+
+.barra__ruta {
+    font-size: 14px;
+    color: var(--texto-suave);
+}
+
+.barra__ruta strong {
+    color: var(--texto);
+    font-weight: 600;
+}
+
+.barra__perfil {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    background: var(--azul-suave);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--azul);
+}
+
+@media (max-width: 900px) {
+    .disposicion { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; position: static; }
+    .contenido__cuerpo { padding: 20px; }
+}
+
+.encabezado {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.encabezado__titulo {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.encabezado__intro {
+    margin: 0;
+    font-size: 14px;
+    color: var(--texto-suave);
+}
+
+.panel--tabla {
+    padding: 0;
+    overflow: hidden;
+}
