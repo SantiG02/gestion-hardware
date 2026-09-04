@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Equipos')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <p style="margin: 0 0 12px;">
+                <a th:href="@{/equipos}" class="texto-suave"
+                   style="font-size: 13.5px; text-decoration: none;">← Volver al inventario</a>
+            </p>
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo"
+                        th:text="'Historial de ' + ${equipo.codigoInterno}">Historial</h1>
+                    <p class="encabezado__intro"
+                       th:text="${equipo.marca} + ' ' + ${equipo.modelo} + ' · Serial ' + ${equipo.serial}">-</p>
+                </div>
+            </div>
+
+            <div class="panel" style="margin-bottom:20px;">
+                <div class="rejilla">
+                    <p style="margin:0 0 10px;">
+                        <span class="campo__etiqueta">Área</span>
+                        <span th:text="${equipo.area?.nombre} ?: 'Sin asignar'">-</span>
+                    </p>
+                    <p style="margin:0 0 10px;">
+                        <span class="campo__etiqueta">Responsable</span>
+                        <span th:text="${equipo.usuarioAsignado?.nombreCompleto} ?: 'Sin asignar'">-</span>
+                    </p>
+                    <p style="margin:0 0 10px;">
+                        <span class="campo__etiqueta">Estado</span>
+                        <span class="insignia" th:text="${equipo.estadoEquipo.nombre}">-</span>
+                    </p>
+                    <p style="margin:0 0 10px;">
+                        <span class="campo__etiqueta">Fecha de compra</span>
+                        <span th:text="${#temporals.format(equipo.fechaCompra, 'dd/MM/yyyy')}">-</span>
+                    </p>
+                </div>
+            </div>
+
+            <h2 style="font-size:15px; font-weight:700; margin:0 0 16px;">Línea de tiempo</h2>
+
+            <div th:if="${eventos.size() == 0}" class="aviso aviso--info">
+                Este equipo no tiene intervenciones registradas todavía.
+            </div>
+
+            <div th:if="${eventos.size() > 0}" class="linea">
+
+                <article th:each="ev : ${eventos}"
+                         th:class="${ev.tipo == 'INCIDENCIA'} ? 'linea__evento linea__evento--incidencia' : 'linea__evento linea__evento--mantenimiento'">
+
+                    <div class="linea__fecha"
+                         th:text="${#temporals.format(ev.fecha, 'dd/MM/yyyy HH:mm')}">-</div>
+
+                    <div class="linea__cuerpo">
+
+                        <div class="linea__cabecera">
+                            <h3 class="linea__titulo" th:text="${ev.titulo}">-</h3>
+                            <span th:class="${ev.estado == 'CERRADA' or ev.estado == 'FINALIZADO'} ? 'insignia insignia--estable' : 'insignia insignia--seguimiento'"
+                                  th:text="${ev.estado}">-</span>
+                        </div>
+
+                        <p class="linea__detalle" th:text="${ev.detalle}">-</p>
+
+                        <p class="linea__pie">
+                            <span th:text="${ev.subtipo}">-</span>
+                            ·
+                            <span th:text="${ev.responsable}">-</span>
+                            ·
+                            <a th:if="${ev.tipo == 'INCIDENCIA'}"
+                               th:href="@{/incidencias/{id}/editar(id=${ev.referenciaId})}">Ver incidencia</a>
+                            <a th:unless="${ev.tipo == 'INCIDENCIA'}"
+                               th:href="@{/mantenimientos/{id}/editar(id=${ev.referenciaId})}">Ver mantenimiento</a>
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -48,6 +48,10 @@ public class UsuarioService {
         return usuarioRepository.findActivosConRol();
     }
 
+    public boolean existeEmail(String email) {
+        return usuarioRepository.existsByEmail(email);
+    }
+
     public List<Rol> listaRols() {
         return rolRepository.findAll();
     }

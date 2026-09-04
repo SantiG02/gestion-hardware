@@ -227,6 +227,97 @@ a { color: var(--azul); }
 
 .boton--pequeno { padding: 7px 12px; font-size: 13px; }
 
+/* ============================================================
+   Linea de tiempo del historial
+   ============================================================ */
+
+.linea {
+    position: relative;
+    padding-left: 26px;
+}
+
+.linea::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--borde-suave);
+}
+
+.linea__evento {
+    position: relative;
+    display: flex;
+    gap: 18px;
+    margin-bottom: 16px;
+}
+
+.linea__evento::before {
+    content: "";
+    position: absolute;
+    left: -24px;
+    top: 22px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--superficie);
+}
+
+.linea__evento--incidencia::before { background: var(--renovacion); }
+.linea__evento--mantenimiento::before { background: var(--estable); }
+
+.linea__fecha {
+    flex-shrink: 0;
+    width: 120px;
+    padding-top: 20px;
+    font-size: 12.5px;
+    color: var(--texto-suave);
+}
+
+.linea__cuerpo {
+    flex: 1;
+    background: var(--superficie);
+    border: 1px solid var(--borde-suave);
+    border-radius: var(--radio-grande);
+    padding: 16px 20px;
+}
+
+.linea__cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.linea__titulo {
+    font-size: 14.5px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.linea__detalle {
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: var(--etiqueta);
+    line-height: 1.5;
+}
+
+.linea__pie {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--texto-suave);
+}
+
+.linea__pie a { text-decoration: none; }
+.linea__pie a:hover { text-decoration: underline; }
+
+@media (max-width: 700px) {
+    .linea__evento { flex-direction: column; gap: 6px; }
+    .linea__fecha { width: auto; padding-top: 0; }
+}
+
 /* ---------- Insignias ---------- */
 .insignia {
     display: inline-block;

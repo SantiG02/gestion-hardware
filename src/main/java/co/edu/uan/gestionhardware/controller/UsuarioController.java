@@ -86,6 +86,20 @@ public class UsuarioController {
             result.reject("password.requerida",
             "La contraseña es obligatoria para un usuario nuevo");
         }
+
+        if (usuario.getEmail() != null && !usuario.getEmail().isBlank()
+            && usuarioService.existeEmail(usuario.getEmail())) {
+
+            boolean esOtroUsuario = usuario.getId() == null
+                || usuarioService.buscarPorId(usuario.getId())
+                .map(original -> !original.getEmail().equalsIgnoreCase(usuario.getEmail()))
+                .orElse(true);
+
+            if (esOtroUsuario) {
+                result.rejectValue("email", "email.duplicado",
+                "Ya existe un usuario registrado con este correo");
+            }
+        }
                     
         if (result.hasErrors()) {
             return "usuario/formulario";

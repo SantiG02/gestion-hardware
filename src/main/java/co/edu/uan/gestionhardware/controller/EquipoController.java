@@ -1,8 +1,12 @@
 package co.edu.uan.gestionhardware.controller;
 
+import co.edu.uan.gestionhardware.model.Area;
 import co.edu.uan.gestionhardware.model.Equipo;
+import co.edu.uan.gestionhardware.model.EstadoEquipo;
+import co.edu.uan.gestionhardware.model.TipoEquipo;
 import co.edu.uan.gestionhardware.model.Usuario;
 import co.edu.uan.gestionhardware.service.EquipoService;
+import co.edu.uan.gestionhardware.service.HistorialService;
 import co.edu.uan.gestionhardware.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -10,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import java.util.List;
 
 @Controller
@@ -18,26 +23,31 @@ public class EquipoController {
 
     private final EquipoService equipoService;
     private final UsuarioService usuarioService;
+    private final HistorialService historialService;
 
-    public EquipoController(EquipoService equipoService, UsuarioService usuarioService) {
+    public EquipoController(EquipoService equipoService,
+                            UsuarioService usuarioService,
+                            HistorialService historialService) {
         this.equipoService = equipoService;
         this.usuarioService = usuarioService;
+        this.historialService = historialService;
     }
 
-    // Se ejecuta antes de CUALQUIER metodo de este controlador.
-    // Deja las listas disponibles en todas las vistas sin repetir codigo.
+    // Se ejecutan antes de cualquier metodo de este controlador.
+    // Dejan las listas disponibles en todas las vistas sin repetir codigo.
+
     @ModelAttribute("areas")
-    public Object cargarAreas() {
+    public List<Area> cargarAreas() {
         return equipoService.listarAreas();
     }
 
     @ModelAttribute("tipos")
-    public Object cargarTipos() {
+    public List<TipoEquipo> cargarTipos() {
         return equipoService.listarTipos();
     }
 
     @ModelAttribute("estados")
-    public Object cargarEstados() {
+    public List<EstadoEquipo> cargarEstados() {
         return equipoService.listarEstados();
     }
 
@@ -66,6 +76,22 @@ public class EquipoController {
                 .map(equipo -> {
                     model.addAttribute("equipo", equipo);
                     return "equipo/formulario";
+                })
+                .orElseGet(() -> {
+                    flash.addFlashAttribute("error", "El equipo no existe");
+                    return "redirect:/equipos";
+                });
+    }
+
+    @GetMapping("/{id}/historial")
+    public String historial(@PathVariable Long id,
+                            Model model,
+                            RedirectAttributes flash) {
+        return equipoService.buscarPorId(id)
+                .map(equipo -> {
+                    model.addAttribute("equipo", equipo);
+                    model.addAttribute("eventos", historialService.obtenerHistorial(id));
+                    return "equipo/historial";
                 })
                 .orElseGet(() -> {
                     flash.addFlashAttribute("error", "El equipo no existe");
