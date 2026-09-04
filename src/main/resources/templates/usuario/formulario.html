@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Usuarios')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo"
+                        th:text="${usuario.id == null} ? 'Nuevo usuario' : 'Editar usuario'">
+                        Nuevo usuario
+                    </h1>
+                    <p class="encabezado__intro">Datos de acceso y perfil dentro del sistema</p>
+                </div>
+            </div>
+
+            <div class="panel">
+
+                <form th:action="@{/usuarios/guardar}" th:object="${usuario}" method="post">
+
+                    <input type="hidden" th:field="*{id}" />
+                    <input type="hidden" th:field="*{activo}" />
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Nombre completo *</label>
+                        <input class="campo__entrada" type="text"
+                               th:field="*{nombreCompleto}"
+                               th:classappend="${#fields.hasErrors('nombreCompleto')} ? 'campo__entrada--error'" />
+                        <span class="campo__error" th:errors="*{nombreCompleto}"></span>
+                    </div>
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Documento</label>
+                        <input class="campo__entrada" type="text"
+                               th:field="*{documento}"
+                               th:classappend="${#fields.hasErrors('documento')} ? 'campo__entrada--error'" />
+                        <span class="campo__error" th:errors="*{documento}"></span>
+                    </div>
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Correo electrónico *</label>
+                        <input class="campo__entrada" type="email"
+                               th:field="*{email}"
+                               th:classappend="${#fields.hasErrors('email')} ? 'campo__entrada--error'" />
+                        <span class="campo__error" th:errors="*{email}"></span>
+                        <span class="campo__ayuda">Este correo será su credencial de acceso.</span>
+                    </div>
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Contraseña</label>
+                        <input class="campo__entrada" type="password"
+                               name="passwordPlano" autocomplete="new-password" />
+                        <span class="campo__ayuda"
+                              th:text="${usuario.id == null}
+                                       ? 'Obligatoria para el nuevo usuario.'
+                                       : 'Déjela vacía para conservar la contraseña actual.'">
+                        </span>
+                    </div>
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Rol *</label>
+                        <select class="campo__seleccion" th:field="*{rol}"
+                                th:classappend="${#fields.hasErrors('rol')} ? 'campo__seleccion--error'">
+                            <option value="">-- Seleccione --</option>
+                            <option th:each="r : ${roles}"
+                                    th:value="${r.id}"
+                                    th:text="${r.nombre}"></option>
+                        </select>
+                        <span class="campo__error" th:errors="*{rol}"></span>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 24px;">
+                        <button type="submit" class="boton">Guardar</button>
+                        <a th:href="@{/usuarios}" class="boton boton--secundario">Cancelar</a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Query("""
@@ -27,11 +28,19 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     List<Usuario> findActivosConRol();
 
     @Query("""
+       select u from Usuario u
+       join fetch u.rol
+       left join fetch u.area
+       """)
+       List<Usuario> findAllConRol();
+
+    @Query("""
            select u from Usuario u
            join fetch u.rol
            left join fetch u.area
            where u.id = :id
            """)
+           
     Optional<Usuario> findConRelaciones(@Param("id") Long id);
 
     boolean existsByEmail(String email);

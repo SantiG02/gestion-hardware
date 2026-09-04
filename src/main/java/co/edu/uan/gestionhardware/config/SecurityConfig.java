@@ -38,6 +38,8 @@ public class SecurityConfig {
                 // Consulta del inventario: ambos roles
                 .requestMatchers("/equipos/**").hasAnyRole("GESTOR", "TECNICO")
 
+                .requestMatchers("/sedes/**").hasRole("GESTOR")
+
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

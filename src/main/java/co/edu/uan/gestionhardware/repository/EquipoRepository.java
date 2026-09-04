@@ -26,4 +26,6 @@ public interface EquipoRepository extends JpaRepository<Equipo, Long> {
     List<Equipo> findByAreaId(Long areaId);
 
     Optional<Equipo> findBySerial(String serial);
+
+    long countByAreaIdAndActivoTrue(Long areaId);
 }

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Sedes y áreas')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo"
+                        th:text="${sede.id == null} ? 'Nueva sede' : 'Editar sede'">
+                        Nueva sede
+                    </h1>
+                    <p class="encabezado__intro">Ubicación física de la organización</p>
+                </div>
+            </div>
+
+            <div class="panel">
+
+                <form th:action="@{/sedes/guardar}" th:object="${sede}" method="post">
+
+                    <input type="hidden" th:field="*{id}" />
+                    <input type="hidden" th:field="*{activo}" />
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Nombre *</label>
+                        <input class="campo__entrada" type="text"
+                               th:field="*{nombre}"
+                               th:classappend="${#fields.hasErrors('nombre')} ? 'campo__entrada--error'" />
+                        <span class="campo__error" th:errors="*{nombre}"></span>
+                    </div>
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Ciudad *</label>
+                        <input class="campo__entrada" type="text"
+                               th:field="*{ciudad}"
+                               th:classappend="${#fields.hasErrors('ciudad')} ? 'campo__entrada--error'" />
+                        <span class="campo__error" th:errors="*{ciudad}"></span>
+                    </div>
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Dirección</label>
+                        <input class="campo__entrada" type="text"
+                               th:field="*{direccion}"
+                               th:classappend="${#fields.hasErrors('direccion')} ? 'campo__entrada--error'" />
+                        <span class="campo__error" th:errors="*{direccion}"></span>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 24px;">
+                        <button type="submit" class="boton">Guardar</button>
+                        <a th:href="@{/sedes}" class="boton boton--secundario">Cancelar</a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

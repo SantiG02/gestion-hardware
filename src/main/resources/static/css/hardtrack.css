@@ -180,6 +180,14 @@ a { color: var(--azul); }
     transition: background-color 0.15s, border-color 0.15s;
 }
 
+.boton--exito {
+    color: var(--estable);
+    background: var(--estable-fondo);
+    border-color: var(--estable-borde);
+}
+
+.boton--exito:hover { background: #dcfce7; }
+
 .boton:hover {
     background: var(--azul-oscuro);
     border-color: var(--azul-oscuro);

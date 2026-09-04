@@ -1,6 +1,7 @@
 package co.edu.uan.gestionhardware.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "sede")
@@ -10,17 +11,23 @@ public class Sede {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+        @NotBlank(message = "El nombre de la sede es obligatorio")
+    @Size(max = 100, message = "Maximo 100 caracteres")
     @Column(nullable = false, length = 100)
     private String nombre;
 
+    @Size(max = 200, message = "Maximo 200 caracteres")
     @Column(length = 200)
     private String direccion;
 
+    @NotBlank(message = "La ciudad es obligatoria")
+    @Size(max = 80, message = "Maximo 80 caracteres")
     @Column(nullable = false, length = 80)
     private String ciudad;
 
     @Column(nullable = false)
     private Boolean activo = true;
+
 
     // Getters y setters
     public Long getId() { return id; }
@@ -37,4 +44,6 @@ public class Sede {
 
     public Boolean getActivo() { return activo; }
     public void setActivo(Boolean activo) { this.activo = activo; }
+
+    
 }
