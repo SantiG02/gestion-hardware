@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Incidencias')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo">Incidencias técnicas</h1>
+                    <p class="encabezado__intro">Fallas reportadas sobre los equipos del inventario</p>
+                </div>
+                <a th:href="@{/incidencias/nueva}" class="boton">Registrar incidencia</a>
+            </div>
+
+            <div th:if="${exito}" class="aviso aviso--exito" th:text="${exito}"></div>
+            <div th:if="${error}" class="aviso aviso--error" th:text="${error}"></div>
+
+            <div th:if="${#lists.isEmpty(incidencias)}" class="aviso aviso--info">
+                No hay incidencias registradas todavía.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(incidencias)}" class="panel panel--tabla">
+                <table class="tabla">
+                    <thead>
+                    <tr>
+                        <th>Equipo</th>
+                        <th>Categoría</th>
+                        <th>Reportó</th>
+                        <th>Fecha reporte</th>
+                        <th>Prioridad</th>
+                        <th>Indisp. (h)</th>
+                        <th>Estado</th>
+                        <th class="tabla__acciones">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="inc : ${incidencias}">
+
+                        <td>
+                            <strong th:text="${inc.equipo.codigoInterno}">-</strong><br />
+                            <span class="texto-suave" style="font-size:12.5px"
+                                  th:text="${inc.equipo.area.nombre}">-</span>
+                        </td>
+
+                        <td th:text="${inc.categoriaFalla.nombre}">-</td>
+
+                        <td th:text="${inc.reportadoPor.nombreCompleto}">-</td>
+
+                        <td th:text="${#temporals.format(inc.fechaReporte, 'dd/MM/yyyy HH:mm')}">-</td>
+
+                        <td>
+                            <span class="insignia"
+                                  th:classappend="${inc.prioridad == 'ALTA'} ? 'insignia--renovacion'
+                                                : (${inc.prioridad == 'MEDIA'} ? 'insignia--seguimiento'
+                                                : 'insignia--neutra')"
+                                  th:text="${inc.prioridad}">-</span>
+                        </td>
+
+                        <td th:text="${inc.horasIndisponibilidad} ?: '—'">-</td>
+
+                        <td>
+                            <span class="insignia"
+                                  th:classappend="${inc.estado == 'CERRADA'} ? 'insignia--estable' : 'insignia--seguimiento'"
+                                  th:text="${inc.estado}">-</span>
+                        </td>
+
+                        <td class="tabla__acciones">
+                            <a th:href="@{/incidencias/{id}/editar(id=${inc.id})}"
+                               class="boton boton--secundario boton--pequeno">Editar</a>
+
+                            <a th:unless="${inc.estado == 'CERRADA'}"
+                               th:href="@{/incidencias/{id}/cerrar(id=${inc.id})}"
+                               class="boton boton--exito boton--pequeno">Cerrar</a>
+                        </td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

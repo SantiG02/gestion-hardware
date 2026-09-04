@@ -1,7 +1,9 @@
 package co.edu.uan.gestionhardware.config;
 
+import co.edu.uan.gestionhardware.model.CategoriaFalla;
 import co.edu.uan.gestionhardware.model.Rol;
 import co.edu.uan.gestionhardware.model.Usuario;
+import co.edu.uan.gestionhardware.repository.CategoriaFallaRepository;
 import co.edu.uan.gestionhardware.repository.RolRepository;
 import co.edu.uan.gestionhardware.repository.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -9,12 +11,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
+
 @Configuration
 public class DatosInicialesConfig {
 
     @Bean
     public CommandLineRunner cargarDatosIniciales(RolRepository rolRepository,
                                                   UsuarioRepository usuarioRepository,
+                                                  CategoriaFallaRepository categoriaFallaRepository,
                                                   PasswordEncoder passwordEncoder) {
         return args -> {
 
@@ -37,6 +42,16 @@ public class DatosInicialesConfig {
 
             crearSiNoExiste(usuarioRepository, passwordEncoder,
                     "tecnico@gestionhardware.co", "Tecnico de Soporte", tecnico, "Tecnico1234");
+
+            List.of("Disco", "Memoria", "Fuente de poder", "Red",
+                    "Software", "Perifericos", "Pantalla", "Otros")
+                .forEach(nombre -> {
+                    if (categoriaFallaRepository.findByNombre(nombre).isEmpty()) {
+                        CategoriaFalla c = new CategoriaFalla();
+                        c.setNombre(nombre);
+                        categoriaFallaRepository.save(c);
+                    }
+                });
         };
     }
 

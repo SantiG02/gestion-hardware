@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Mantenimientos')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <p style="margin: 0 0 12px;">
+                <a th:href="@{/mantenimientos}" class="texto-suave"
+                   style="font-size: 13.5px; text-decoration: none;">← Volver a mantenimientos</a>
+            </p>
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo"
+                        th:text="${mantenimiento.id == null} ? 'Registrar mantenimiento' : 'Editar mantenimiento'">
+                        Registrar mantenimiento
+                    </h1>
+                    <p class="encabezado__intro">Intervención técnica preventiva o correctiva</p>
+                </div>
+            </div>
+
+            <div class="panel">
+
+                <form th:action="@{/mantenimientos/guardar}" th:object="${mantenimiento}" method="post">
+
+                    <input type="hidden" th:field="*{id}" />
+                    <input type="hidden" th:field="*{estado}" />
+
+                    <div class="rejilla">
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Equipo *</label>
+                            <select class="campo__seleccion" th:field="*{equipo}"
+                                    th:classappend="${#fields.hasErrors('equipo')} ? 'campo__seleccion--error'">
+                                <option value="">-- Seleccione --</option>
+                                <option th:each="e : ${equipos}"
+                                        th:value="${e.id}"
+                                        th:text="${e.codigoInterno} + ' · ' + ${e.marca} + ' ' + ${e.modelo}"></option>
+                            </select>
+                            <span class="campo__error" th:errors="*{equipo}"></span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Tipo *</label>
+                            <select class="campo__seleccion" th:field="*{tipo}"
+                                    th:classappend="${#fields.hasErrors('tipo')} ? 'campo__seleccion--error'">
+                                <option value="PREVENTIVO">Preventivo</option>
+                                <option value="CORRECTIVO">Correctivo</option>
+                            </select>
+                            <span class="campo__error" th:errors="*{tipo}"></span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Técnico responsable *</label>
+                            <select class="campo__seleccion" th:field="*{tecnico}"
+                                    th:classappend="${#fields.hasErrors('tecnico')} ? 'campo__seleccion--error'">
+                                <option value="">-- Seleccione --</option>
+                                <option th:each="t : ${tecnicos}"
+                                        th:value="${t.id}"
+                                        th:text="${t.nombreCompleto}"></option>
+                            </select>
+                            <span class="campo__error" th:errors="*{tecnico}"></span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Incidencia asociada</label>
+                            <select class="campo__seleccion" th:field="*{incidencia}"
+                                    th:classappend="${#fields.hasErrors('incidencia')} ? 'campo__seleccion--error'">
+                                <option value="">-- Ninguna --</option>
+                                <option th:each="i : ${incidenciasAbiertas}"
+                                        th:value="${i.id}"
+                                        th:text="${i.equipo.codigoInterno} + ' · ' + ${i.categoriaFalla.nombre}
+                                                 + ' (' + ${#temporals.format(i.fechaReporte, 'dd/MM')} + ')'"></option>
+                            </select>
+                            <span class="campo__error" th:errors="*{incidencia}"></span>
+                            <span class="campo__ayuda">Obligatoria en mantenimientos correctivos.</span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Fecha programada</label>
+                            <input class="campo__entrada" type="date" th:field="*{fechaProgramada}"
+                                   th:classappend="${#fields.hasErrors('fechaProgramada')} ? 'campo__entrada--error'" />
+                            <span class="campo__error" th:errors="*{fechaProgramada}"></span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Fecha de ejecución</label>
+                            <input class="campo__entrada" type="date" th:field="*{fechaEjecucion}"
+                                   th:classappend="${#fields.hasErrors('fechaEjecucion')} ? 'campo__entrada--error'" />
+                            <span class="campo__error" th:errors="*{fechaEjecucion}"></span>
+                            <span class="campo__ayuda">Déjela vacía si aún no se ejecuta.</span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Resultado</label>
+                            <select class="campo__seleccion" th:field="*{resultado}"
+                                    th:classappend="${#fields.hasErrors('resultado')} ? 'campo__seleccion--error'">
+                                <option value="">-- Sin ejecutar --</option>
+                                <option value="EXITOSO">Exitoso</option>
+                                <option value="PARCIAL">Parcial</option>
+                                <option value="REQUIERE_SEGUIMIENTO">Requiere seguimiento</option>
+                            </select>
+                            <span class="campo__error" th:errors="*{resultado}"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="campo" style="margin-top:8px;">
+                        <label class="campo__etiqueta">Actividades realizadas</label>
+                        <textarea class="campo__area" rows="3" th:field="*{actividadesRealizadas}"></textarea>
+                    </div>
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Observaciones</label>
+                        <textarea class="campo__area" rows="2" th:field="*{observaciones}"></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 24px;">
+                        <button type="submit" class="boton">Guardar</button>
+                        <a th:href="@{/mantenimientos}" class="boton boton--secundario">Cancelar</a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

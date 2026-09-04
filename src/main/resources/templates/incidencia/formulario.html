@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Incidencias')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <p style="margin: 0 0 12px;">
+                <a th:href="@{/incidencias}" class="texto-suave"
+                   style="font-size: 13.5px; text-decoration: none;">← Volver a incidencias</a>
+            </p>
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo"
+                        th:text="${incidencia.id == null} ? 'Registrar incidencia' : 'Editar incidencia'">
+                        Registrar incidencia
+                    </h1>
+                    <p class="encabezado__intro">Falla o evento que afecta el funcionamiento de un equipo</p>
+                </div>
+            </div>
+
+            <div class="panel">
+
+                <form th:action="@{/incidencias/guardar}" th:object="${incidencia}" method="post">
+
+                    <input type="hidden" th:field="*{id}" />
+                    <input type="hidden" th:field="*{estado}" />
+                    <input type="hidden" th:field="*{fechaCierre}" />
+                    <input type="hidden" th:field="*{solucion}" />
+                    <input type="hidden" th:field="*{horasIndisponibilidad}" />
+
+                    <div class="rejilla">
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Equipo *</label>
+                            <select class="campo__seleccion" th:field="*{equipo}"
+                                    th:classappend="${#fields.hasErrors('equipo')} ? 'campo__seleccion--error'">
+                                <option value="">-- Seleccione --</option>
+                                <option th:each="e : ${equipos}"
+                                        th:value="${e.id}"
+                                        th:text="${e.codigoInterno} + ' · ' + ${e.marca} + ' ' + ${e.modelo}"></option>
+                            </select>
+                            <span class="campo__error" th:errors="*{equipo}"></span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Categoría de falla *</label>
+                            <select class="campo__seleccion" th:field="*{categoriaFalla}"
+                                    th:classappend="${#fields.hasErrors('categoriaFalla')} ? 'campo__seleccion--error'">
+                                <option value="">-- Seleccione --</option>
+                                <option th:each="c : ${categorias}"
+                                        th:value="${c.id}"
+                                        th:text="${c.nombre}"></option>
+                            </select>
+                            <span class="campo__error" th:errors="*{categoriaFalla}"></span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Reportado por *</label>
+                            <select class="campo__seleccion" th:field="*{reportadoPor}"
+                                    th:classappend="${#fields.hasErrors('reportadoPor')} ? 'campo__seleccion--error'">
+                                <option value="">-- Seleccione --</option>
+                                <option th:each="u : ${usuarios}"
+                                        th:value="${u.id}"
+                                        th:text="${u.nombreCompleto}"></option>
+                            </select>
+                            <span class="campo__error" th:errors="*{reportadoPor}"></span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Fecha y hora del reporte *</label>
+                            <input class="campo__entrada" type="datetime-local"
+                                   th:field="*{fechaReporte}"
+                                   th:classappend="${#fields.hasErrors('fechaReporte')} ? 'campo__entrada--error'" />
+                            <span class="campo__error" th:errors="*{fechaReporte}"></span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Prioridad *</label>
+                            <select class="campo__seleccion" th:field="*{prioridad}"
+                                    th:classappend="${#fields.hasErrors('prioridad')} ? 'campo__seleccion--error'">
+                                <option value="">-- Seleccione --</option>
+                                <option value="ALTA">Alta</option>
+                                <option value="MEDIA">Media</option>
+                                <option value="BAJA">Baja</option>
+                            </select>
+                            <span class="campo__error" th:errors="*{prioridad}"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="campo" style="margin-top:8px;">
+                        <label class="campo__etiqueta">Descripción del problema *</label>
+                        <textarea class="campo__area" rows="3" th:field="*{descripcion}"
+                                  th:classappend="${#fields.hasErrors('descripcion')} ? 'campo__entrada--error'"></textarea>
+                        <span class="campo__error" th:errors="*{descripcion}"></span>
+                    </div>
+
+                    <h2 style="font-size:14px; text-transform:uppercase; letter-spacing:.05em;
+                               color:var(--texto-suave); margin:28px 0 16px;">Indisponibilidad</h2>
+
+                    <div class="campo">
+                        <label style="display:flex; align-items:center; gap:8px; font-size:14px;">
+                            <input type="checkbox" th:field="*{generaIndisponibilidad}" />
+                            El equipo quedó fuera de servicio
+                        </label>
+                        <span class="campo__ayuda">
+                            Marque esta casilla si la falla impidió usar el equipo. Las horas se calcularán al cerrar.
+                        </span>
+                    </div>
+
+                    <div class="rejilla">
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Inicio de la indisponibilidad</label>
+                            <input class="campo__entrada" type="datetime-local"
+                                   th:field="*{fechaInicioIndisponibilidad}"
+                                   th:classappend="${#fields.hasErrors('fechaInicioIndisponibilidad')} ? 'campo__entrada--error'" />
+                            <span class="campo__error" th:errors="*{fechaInicioIndisponibilidad}"></span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Fin de la indisponibilidad</label>
+                            <input class="campo__entrada" type="datetime-local"
+                                   th:field="*{fechaFinIndisponibilidad}"
+                                   th:classappend="${#fields.hasErrors('fechaFinIndisponibilidad')} ? 'campo__entrada--error'" />
+                            <span class="campo__error" th:errors="*{fechaFinIndisponibilidad}"></span>
+                            <span class="campo__ayuda">Opcional. Se completa automáticamente al cerrar.</span>
+                        </div>
+
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 24px;">
+                        <button type="submit" class="boton">Guardar</button>
+                        <a th:href="@{/incidencias}" class="boton boton--secundario">Cancelar</a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

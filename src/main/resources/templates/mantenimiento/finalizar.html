@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Mantenimientos')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <p style="margin: 0 0 12px;">
+                <a th:href="@{/mantenimientos}" class="texto-suave"
+                   style="font-size: 13.5px; text-decoration: none;">← Volver a mantenimientos</a>
+            </p>
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo">Finalizar mantenimiento</h1>
+                    <p class="encabezado__intro">Registre lo ejecutado para cerrar la intervención</p>
+                </div>
+            </div>
+
+            <div th:if="${error}" class="aviso aviso--error" th:text="${error}"></div>
+
+            <div class="panel" style="margin-bottom:20px;">
+                <h2 style="font-size:14px; text-transform:uppercase; letter-spacing:.05em;
+                           color:var(--texto-suave); margin-bottom:16px;">Datos del mantenimiento</h2>
+
+                <div class="rejilla">
+                    <p style="margin:0 0 10px;">
+                        <span class="campo__etiqueta">Equipo</span>
+                        <span th:text="${mantenimiento.equipo.codigoInterno} + ' · '
+                                       + ${mantenimiento.equipo.marca}">-</span>
+                    </p>
+                    <p style="margin:0 0 10px;">
+                        <span class="campo__etiqueta">Tipo</span>
+                        <span th:text="${mantenimiento.tipo}">-</span>
+                    </p>
+                    <p style="margin:0 0 10px;">
+                        <span class="campo__etiqueta">Técnico</span>
+                        <span th:text="${mantenimiento.tecnico.nombreCompleto}">-</span>
+                    </p>
+                    <p style="margin:0 0 10px;">
+                        <span class="campo__etiqueta">Programado para</span>
+                        <span th:text="${mantenimiento.fechaProgramada != null}
+                                       ? ${#temporals.format(mantenimiento.fechaProgramada, 'dd/MM/yyyy')}
+                                       : 'Sin programar'">-</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="panel">
+
+                <form th:action="@{/mantenimientos/{id}/finalizar(id=${mantenimiento.id})}" method="post">
+
+                    <div class="rejilla">
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Fecha de ejecución</label>
+                            <input class="campo__entrada" type="date" name="fechaEjecucion" />
+                            <span class="campo__ayuda">Si la deja vacía se tomará la fecha de hoy.</span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Resultado *</label>
+                            <select class="campo__seleccion" name="resultado" required>
+                                <option value="">-- Seleccione --</option>
+                                <option value="EXITOSO">Exitoso</option>
+                                <option value="PARCIAL">Parcial</option>
+                                <option value="REQUIERE_SEGUIMIENTO">Requiere seguimiento</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Actividades realizadas *</label>
+                        <textarea class="campo__area" name="actividades" rows="4" required></textarea>
+                        <span class="campo__ayuda">Detalle qué se hizo durante la intervención.</span>
+                    </div>
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Observaciones</label>
+                        <textarea class="campo__area" name="observaciones" rows="2"></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 24px;">
+                        <button type="submit" class="boton">Finalizar mantenimiento</button>
+                        <a th:href="@{/mantenimientos}" class="boton boton--secundario">Cancelar</a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

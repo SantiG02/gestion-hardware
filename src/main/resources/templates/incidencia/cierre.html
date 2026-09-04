@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Incidencias')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <p style="margin: 0 0 12px;">
+                <a th:href="@{/incidencias}" class="texto-suave"
+                   style="font-size: 13.5px; text-decoration: none;">← Volver a incidencias</a>
+            </p>
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo">Cerrar incidencia</h1>
+                    <p class="encabezado__intro">Registre la solución aplicada para cerrar el caso</p>
+                </div>
+            </div>
+
+            <div th:if="${error}" class="aviso aviso--error" th:text="${error}"></div>
+
+            <div class="panel" style="margin-bottom:20px;">
+                <h2 style="font-size:14px; text-transform:uppercase; letter-spacing:.05em;
+                           color:var(--texto-suave); margin-bottom:16px;">Datos de la incidencia</h2>
+
+                <div class="rejilla">
+                    <p style="margin:0 0 10px;">
+                        <span class="campo__etiqueta">Equipo</span>
+                        <span th:text="${incidencia.equipo.codigoInterno} + ' · ' + ${incidencia.equipo.marca}">-</span>
+                    </p>
+                    <p style="margin:0 0 10px;">
+                        <span class="campo__etiqueta">Categoría</span>
+                        <span th:text="${incidencia.categoriaFalla.nombre}">-</span>
+                    </p>
+                    <p style="margin:0 0 10px;">
+                        <span class="campo__etiqueta">Reportada</span>
+                        <span th:text="${#temporals.format(incidencia.fechaReporte, 'dd/MM/yyyy HH:mm')}">-</span>
+                    </p>
+                    <p style="margin:0 0 10px;">
+                        <span class="campo__etiqueta">Inicio indisponibilidad</span>
+                        <span th:text="${incidencia.fechaInicioIndisponibilidad != null}
+                                       ? ${#temporals.format(incidencia.fechaInicioIndisponibilidad, 'dd/MM/yyyy HH:mm')}
+                                       : 'No aplica'">-</span>
+                    </p>
+                </div>
+
+                <p style="margin:10px 0 0;">
+                    <span class="campo__etiqueta">Descripción</span>
+                    <span th:text="${incidencia.descripcion}">-</span>
+                </p>
+            </div>
+
+            <div class="panel">
+
+                <form th:action="@{/incidencias/{id}/cerrar(id=${incidencia.id})}" method="post">
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Solución aplicada *</label>
+                        <textarea class="campo__area" name="solucion" rows="4" required></textarea>
+                        <span class="campo__ayuda">Describa qué se hizo para resolver la falla.</span>
+                    </div>
+
+                    <div class="campo" th:if="${incidencia.generaIndisponibilidad}">
+                        <label class="campo__etiqueta">Fecha y hora de restablecimiento</label>
+                        <input class="campo__entrada" type="datetime-local" name="fechaFin" />
+                        <span class="campo__ayuda">
+                            Si la deja vacía se tomará la fecha y hora actual.
+                            Con este dato se calculan las horas de indisponibilidad.
+                        </span>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 24px;">
+                        <button type="submit" class="boton">Cerrar incidencia</button>
+                        <a th:href="@{/incidencias}" class="boton boton--secundario">Cancelar</a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Mantenimientos')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo">Mantenimientos</h1>
+                    <p class="encabezado__intro">Intervenciones preventivas y correctivas sobre los equipos</p>
+                </div>
+                <a th:href="@{/mantenimientos/nuevo}" class="boton">Registrar mantenimiento</a>
+            </div>
+
+            <div th:if="${exito}" class="aviso aviso--exito" th:text="${exito}"></div>
+            <div th:if="${error}" class="aviso aviso--error" th:text="${error}"></div>
+
+            <div th:if="${aviso}" class="aviso aviso--info">
+                <span th:text="${aviso}"></span>
+                <a th:if="${incidenciaPendienteId}"
+                   th:href="@{/incidencias/{id}/cerrar(id=${incidenciaPendienteId})}"
+                   style="font-weight:600;">Cerrar incidencia ahora</a>
+            </div>
+
+            <div th:if="${#lists.isEmpty(mantenimientos)}" class="aviso aviso--info">
+                No hay mantenimientos registrados todavía.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(mantenimientos)}" class="panel panel--tabla">
+                <table class="tabla">
+                    <thead>
+                    <tr>
+                        <th>Equipo</th>
+                        <th>Tipo</th>
+                        <th>Técnico</th>
+                        <th>Programado</th>
+                        <th>Ejecutado</th>
+                        <th>Resultado</th>
+                        <th>Estado</th>
+                        <th class="tabla__acciones">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="man : ${mantenimientos}">
+
+                        <td>
+                            <strong th:text="${man.equipo.codigoInterno}">-</strong><br />
+                            <span class="texto-suave" style="font-size:12.5px"
+                                  th:text="${man.equipo.area.nombre}">-</span>
+                        </td>
+
+                        <td>
+                            <span class="insignia"
+                                  th:classappend="${man.tipo == 'PREVENTIVO'} ? 'insignia--estable' : 'insignia--seguimiento'"
+                                  th:text="${man.tipo}">-</span>
+                            <br th:if="${man.incidencia != null}" />
+                            <span th:if="${man.incidencia != null}" class="texto-suave"
+                                  style="font-size:12px"
+                                  th:text="'Incidencia #' + ${man.incidencia.id}">-</span>
+                        </td>
+
+                        <td th:text="${man.tecnico.nombreCompleto}">-</td>
+
+                        <td th:text="${man.fechaProgramada != null}
+                                     ? ${#temporals.format(man.fechaProgramada, 'dd/MM/yyyy')}
+                                     : '—'">-</td>
+
+                        <td th:text="${man.fechaEjecucion != null}
+                                     ? ${#temporals.format(man.fechaEjecucion, 'dd/MM/yyyy')}
+                                     : '—'">-</td>
+
+                        <td th:text="${man.resultado} ?: '—'">-</td>
+
+                        <td>
+                            <span class="insignia"
+                                  th:classappend="${man.estado == 'FINALIZADO'} ? 'insignia--estable' : 'insignia--seguimiento'"
+                                  th:text="${man.estado}">-</span>
+                        </td>
+
+                        <td class="tabla__acciones">
+                            <a th:href="@{/mantenimientos/{id}/editar(id=${man.id})}"
+                               class="boton boton--secundario boton--pequeno">Editar</a>
+
+                            <a th:unless="${man.estado == 'FINALIZADO'}"
+                               th:href="@{/mantenimientos/{id}/finalizar(id=${man.id})}"
+                               class="boton boton--exito boton--pequeno">Finalizar</a>
+                        </td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>
