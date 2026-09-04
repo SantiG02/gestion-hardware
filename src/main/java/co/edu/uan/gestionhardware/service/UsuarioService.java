@@ -44,6 +44,10 @@ public class UsuarioService {
         return usuarioRepository.findAllConRol();
     }
 
+    public List<Usuario> listarActivos() {
+        return usuarioRepository.findActivosConRol();
+    }
+
     public List<Rol> listaRols() {
         return rolRepository.findAll();
     }

@@ -198,6 +198,12 @@ a { color: var(--azul); }
     outline-offset: 2px;
 }
 
+.rejilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0 20px;
+}
+
 .boton--bloque { width: 100%; padding: 14px; font-size: 15px; font-weight: 700; }
 
 .boton--secundario {

@@ -1,22 +1,27 @@
 package co.edu.uan.gestionhardware.controller;
 
 import co.edu.uan.gestionhardware.model.Equipo;
+import co.edu.uan.gestionhardware.model.Usuario;
 import co.edu.uan.gestionhardware.service.EquipoService;
+import co.edu.uan.gestionhardware.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.List;
 
 @Controller
 @RequestMapping("/equipos")
 public class EquipoController {
 
     private final EquipoService equipoService;
+    private final UsuarioService usuarioService;
 
-    public EquipoController(EquipoService equipoService) {
+    public EquipoController(EquipoService equipoService, UsuarioService usuarioService) {
         this.equipoService = equipoService;
+        this.usuarioService = usuarioService;
     }
 
     // Se ejecuta antes de CUALQUIER metodo de este controlador.
@@ -34,6 +39,11 @@ public class EquipoController {
     @ModelAttribute("estados")
     public Object cargarEstados() {
         return equipoService.listarEstados();
+    }
+
+    @ModelAttribute("usuarios")
+    public List<Usuario> cargarUsuarios() {
+        return usuarioService.listarActivos();
     }
 
     @GetMapping

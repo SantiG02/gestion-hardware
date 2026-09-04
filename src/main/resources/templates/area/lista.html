@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Sedes y áreas')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <p style="margin: 0 0 12px;">
+                <a th:href="@{/sedes}" class="texto-suave"
+                   style="font-size: 13.5px; text-decoration: none;">← Volver a sedes</a>
+            </p>
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo"
+                        th:text="'Áreas de ' + ${sede.nombre}">Áreas</h1>
+                    <p class="encabezado__intro"
+                       th:text="${sede.ciudad} + ' · Dependencias registradas en esta sede'">-</p>
+                </div>
+                <a th:href="@{/sedes/{id}/areas/nueva(id=${sede.id})}" class="boton">Nueva área</a>
+            </div>
+
+            <div th:if="${exito}" class="aviso aviso--exito" th:text="${exito}"></div>
+            <div th:if="${error}" class="aviso aviso--error" th:text="${error}"></div>
+
+            <div th:if="${#lists.isEmpty(areas)}" class="aviso aviso--info">
+                Esta sede no tiene áreas registradas todavía.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(areas)}" class="panel panel--tabla">
+                <table class="tabla">
+                    <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Estado</th>
+                        <th class="tabla__acciones">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="area : ${areas}">
+
+                        <td th:text="${area.nombre}">-</td>
+
+                        <td>
+                            <span class="insignia"
+                                  th:classappend="${area.activo} ? 'insignia--estable' : 'insignia--neutra'"
+                                  th:text="${area.activo} ? 'Activa' : 'Inactiva'">-</span>
+                        </td>
+
+                        <td class="tabla__acciones">
+                            <a th:href="@{/sedes/{s}/areas/{a}/editar(s=${sede.id}, a=${area.id})}"
+                               class="boton boton--secundario boton--pequeno">Editar</a>
+
+                            <form th:if="${area.activo}"
+                                  th:action="@{/sedes/{s}/areas/{a}/desactivar(s=${sede.id}, a=${area.id})}"
+                                  method="post" style="display:inline"
+                                  onsubmit="return confirm('¿Inactivar esta área?');">
+                                <button type="submit"
+                                        class="boton boton--peligro boton--pequeno">Inactivar</button>
+                            </form>
+
+                            <form th:unless="${area.activo}"
+                                  th:action="@{/sedes/{s}/areas/{a}/activar(s=${sede.id}, a=${area.id})}"
+                                  method="post" style="display:inline"
+                                  onsubmit="return confirm('¿Activar esta área?');">
+                                <button type="submit"
+                                        class="boton boton--exito boton--pequeno">Activar</button>
+                            </form>
+                        </td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

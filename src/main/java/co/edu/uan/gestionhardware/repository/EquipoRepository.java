@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface EquipoRepository extends JpaRepository<Equipo, Long> {
 
-    @EntityGraph(attributePaths = {"area", "estadoEquipo", "tipoEquipo"})
+    @EntityGraph(attributePaths = {"area", "estadoEquipo", "tipoEquipo", "usuarioAsignado"})
     List<Equipo> findByActivoTrue();
 
     @Query("""
@@ -19,6 +19,7 @@ public interface EquipoRepository extends JpaRepository<Equipo, Long> {
            left join fetch e.area
            left join fetch e.estadoEquipo
            left join fetch e.tipoEquipo
+           left join fetch e.usuarioAsignado
            where e.id = :id
            """)
     Optional<Equipo> findConRelaciones(@Param("id") Long id);

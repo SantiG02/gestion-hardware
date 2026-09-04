@@ -42,6 +42,7 @@ public class Usuario {
 
     @Column(nullable = false)
     private Boolean activo = true;
+    
 
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion = LocalDateTime.now();

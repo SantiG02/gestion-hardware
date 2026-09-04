@@ -13,6 +13,11 @@
 
         <main class="contenido__cuerpo">
 
+            <p style="margin: 0 0 12px;">
+                <a th:href="@{/usuarios}" class="texto-suave"
+                   style="font-size: 13.5px; text-decoration: none;">← Volver a usuarios</a>
+            </p>
+
             <div class="encabezado">
                 <div>
                     <h1 class="encabezado__titulo"
@@ -29,6 +34,10 @@
 
                     <input type="hidden" th:field="*{id}" />
                     <input type="hidden" th:field="*{activo}" />
+
+                    <div th:if="${#fields.hasGlobalErrors()}" class="aviso aviso--error">
+                        <p th:each="err : ${#fields.globalErrors()}" th:text="${err}" style="margin:0"></p>
+                    </div>
 
                     <div class="campo">
                         <label class="campo__etiqueta">Nombre completo *</label>
@@ -76,6 +85,17 @@
                                     th:text="${r.nombre}"></option>
                         </select>
                         <span class="campo__error" th:errors="*{rol}"></span>
+                    </div>
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Área</label>
+                        <select class="campo__seleccion" th:field="*{area}">
+                            <option value="">-- Sin asignar --</option>
+                            <option th:each="a : ${areas}"
+                                    th:value="${a.id}"
+                                    th:text="${a.sede.nombre} + ' · ' + ${a.nombre}"></option>
+                        </select>
+                        <span class="campo__ayuda">Opcional. Área a la que pertenece el usuario.</span>
                     </div>
 
                     <div style="display: flex; gap: 10px; margin-top: 24px;">

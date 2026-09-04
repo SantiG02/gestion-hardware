@@ -38,6 +38,10 @@ public class Equipo {
     @JoinColumn(name = "estado_equipo_id", nullable = false)
     private EstadoEquipo estadoEquipo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_asignado_id")
+    private Usuario usuarioAsignado;
+
     @NotBlank(message = "La marca es obligatoria")
     @Size(max = 60, message = "Maximo 60 caracteres")
     @Column(nullable = false, length = 60)
@@ -108,6 +112,9 @@ public class Equipo {
     public EstadoEquipo getEstadoEquipo() { return estadoEquipo; }
     public void setEstadoEquipo(EstadoEquipo estadoEquipo) { this.estadoEquipo = estadoEquipo; }
 
+    public Usuario getUsuarioAsignado() { return usuarioAsignado; }
+    public void setUsuarioAsignado(Usuario usuarioAsignado) { this.usuarioAsignado = usuarioAsignado; }
+
     public String getMarca() { return marca; }
     public void setMarca(String marca) { this.marca = marca; }
 
@@ -143,4 +150,15 @@ public class Equipo {
 
     public Boolean getActivo() { return activo; }
     public void setActivo(Boolean activo) { this.activo = activo; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Equipo)) return false;
+        Equipo other = (Equipo) o;
+        return id != null && id.equals(other.getId());
+    }
+
+    @Override
+    public int hashCode() { return getClass().hashCode(); }
 }

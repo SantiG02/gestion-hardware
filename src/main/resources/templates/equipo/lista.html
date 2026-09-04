@@ -39,20 +39,31 @@
                         <th>Marca</th>
                         <th>Modelo</th>
                         <th>Área</th>
+                        <th>Responsable</th>
                         <th>Estado</th>
                         <th class="tabla__acciones" sec:authorize="hasRole('GESTOR')">Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="equipo : ${equipos}">
+
                         <td th:text="${equipo.codigoInterno}">-</td>
+
                         <td th:text="${equipo.serial}">-</td>
+
                         <td th:text="${equipo.marca}">-</td>
+
                         <td th:text="${equipo.modelo}">-</td>
+
                         <td th:text="${equipo.area?.nombre} ?: 'Sin asignar'">-</td>
+
+                        <td th:text="${equipo.usuarioAsignado?.nombreCompleto} ?: 'Sin asignar'"
+                            class="texto-suave">-</td>
+
                         <td>
                             <span class="insignia" th:text="${equipo.estadoEquipo.nombre}">-</span>
                         </td>
+
                         <td class="tabla__acciones" sec:authorize="hasRole('GESTOR')">
                             <a th:href="@{/equipos/{id}/editar(id=${equipo.id})}"
                                class="boton boton--secundario boton--pequeno">Editar</a>
@@ -64,6 +75,7 @@
                                         class="boton boton--peligro boton--pequeno">Dar de baja</button>
                             </form>
                         </td>
+
                     </tr>
                     </tbody>
                 </table>

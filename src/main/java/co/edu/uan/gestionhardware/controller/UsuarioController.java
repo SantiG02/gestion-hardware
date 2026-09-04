@@ -1,7 +1,9 @@
 package co.edu.uan.gestionhardware.controller;
 
+import co.edu.uan.gestionhardware.model.Area;
 import co.edu.uan.gestionhardware.model.Rol;
 import co.edu.uan.gestionhardware.model.Usuario;
+import co.edu.uan.gestionhardware.service.AreaService;
 import co.edu.uan.gestionhardware.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -11,20 +13,28 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
+
 @Controller
 @RequestMapping("/usuarios")
 
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final AreaService areaService;
 
-    public UsuarioController(UsuarioService usuarioService){
+    public UsuarioController(UsuarioService usuarioService, AreaService areaService){
         this.usuarioService = usuarioService;
+        this.areaService = areaService;
     }
 
     @ModelAttribute("roles")
     public List<Rol> cargarRoles() {
         return usuarioService.listaRols();
+    }
+
+    @ModelAttribute("areas")
+    public List<Area> cargarAreas() {
+        return areaService.listarTodas();
     }
 
     @GetMapping

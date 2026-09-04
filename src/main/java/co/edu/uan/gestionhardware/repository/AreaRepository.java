@@ -28,4 +28,14 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
            where a.id = :id
            """)
     Optional<Area> findConSede(@Param("id") Long id);
+
+    @Query("""
+           select a from Area a
+           join fetch a.sede s
+           where a.activo = true and s.activo = true
+           order by s.nombre, a.nombre
+           """)
+    List<Area> findActivasConSede();
+
+    boolean existsBySedeIdAndNombreIgnoreCase(Long sedeId, String nombre);
 }

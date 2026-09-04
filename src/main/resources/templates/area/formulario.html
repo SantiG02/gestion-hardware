@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Sedes y áreas')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <p style="margin: 0 0 12px;">
+                <a th:href="@{/sedes/{id}/areas(id=${sede.id})}" class="texto-suave"
+                   style="font-size: 13.5px; text-decoration: none;">← Volver a áreas</a>
+            </p>
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo"
+                        th:text="${area.id == null} ? 'Nueva área' : 'Editar área'">
+                        Nueva área
+                    </h1>
+                    <p class="encabezado__intro" th:text="'Sede: ' + ${sede.nombre}">-</p>
+                </div>
+            </div>
+
+            <div class="panel">
+
+                <form th:action="@{/sedes/{id}/areas/guardar(id=${sede.id})}"
+                      th:object="${area}" method="post">
+
+                    <input type="hidden" th:field="*{id}" />
+                    <input type="hidden" th:field="*{activo}" />
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Nombre del área *</label>
+                        <input class="campo__entrada" type="text"
+                               th:field="*{nombre}"
+                               th:classappend="${#fields.hasErrors('nombre')} ? 'campo__entrada--error'" />
+                        <span class="campo__error" th:errors="*{nombre}"></span>
+                        <span class="campo__ayuda">El nombre debe ser único dentro de esta sede.</span>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 24px;">
+                        <button type="submit" class="boton">Guardar</button>
+                        <a th:href="@{/sedes/{id}/areas(id=${sede.id})}"
+                           class="boton boton--secundario">Cancelar</a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>
