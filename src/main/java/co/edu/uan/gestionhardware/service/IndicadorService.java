@@ -1,5 +1,6 @@
 package co.edu.uan.gestionhardware.service;
 
+import co.edu.uan.gestionhardware.dto.Alerta;
 import co.edu.uan.gestionhardware.dto.IndicadorEquipo;
 import co.edu.uan.gestionhardware.dto.ResumenDashboard;
 import co.edu.uan.gestionhardware.model.ConfiguracionSistema;
@@ -32,6 +33,10 @@ import java.util.Map;
 @Service
 @Transactional(readOnly = true)
 public class IndicadorService {
+
+    // No forma parte de RF-03 (esos umbrales son solo fallas, indisponibilidad,
+    // antiguedad y actualizaciones), asi que queda fijo aqui.
+    private static final int DIAS_MANTENIMIENTO_PROXIMO = 7;
 
     private static final String ESTADO_ESTABLE = "Estable";
     private static final String ESTADO_SEGUIMIENTO = "En seguimiento";
@@ -73,6 +78,7 @@ public class IndicadorService {
 
         Map<String, Long> equiposPorEstado = new LinkedHashMap<>();
         Map<String, Long> equiposPorArea = new LinkedHashMap<>();
+        List<Alerta> alertas = new ArrayList<>();
 
         for (Equipo equipo : equipos) {
 
@@ -85,10 +91,18 @@ public class IndicadorService {
 
             indicadores.add(indicador);
             horasIndisponibilidadTotal = horasIndisponibilidadTotal.add(indicador.getHorasIndisponibilidad());
+            alertas.addAll(generarAlertasEquipo(indicador, configuracion));
 
             equiposPorEstado.merge(equipo.getEstadoEquipo().getNombre(), 1L, Long::sum);
             equiposPorArea.merge(equipo.getArea().getNombre(), 1L, Long::sum);
         }
+
+        mantenimientoRepository.findProximosAVencer(LocalDate.now().plusDays(DIAS_MANTENIMIENTO_PROXIMO))
+                .forEach(m -> alertas.add(new Alerta(
+                        "Mantenimiento próximo a vencer",
+                        "MEDIA",
+                        m.getEquipo().getCodigoInterno(),
+                        "Mantenimiento preventivo programado para el " + m.getFechaProgramada())));
 
         return new ResumenDashboard(
                 equipos.size(),
@@ -98,7 +112,8 @@ public class IndicadorService {
                 horasIndisponibilidadTotal,
                 equiposPorEstado,
                 equiposPorArea,
-                indicadores);
+                indicadores,
+                alertas);
     }
 
     private IndicadorEquipo calcularIndicadores(Equipo equipo, ConfiguracionSistema configuracion) {
@@ -154,6 +169,35 @@ public class IndicadorService {
         }
 
         return ESTADO_ESTABLE;
+    }
+
+    /**
+     * Genera las alertas de RF-17 que aplican a un equipo: fallas recurrentes,
+     * indisponibilidad prolongada y antiguedad critica. La de mantenimiento
+     * proximo a vencer se arma aparte en construirResumen, porque no depende
+     * de un equipo puntual sino de la tabla de mantenimientos programados.
+     */
+    private List<Alerta> generarAlertasEquipo(IndicadorEquipo indicador, ConfiguracionSistema configuracion) {
+
+        List<Alerta> alertas = new ArrayList<>();
+        String codigo = indicador.getEquipo().getCodigoInterno();
+
+        if (indicador.getFallasMes() >= configuracion.getUmbralFallasMes()) {
+            alertas.add(new Alerta("Fallas recurrentes", "MEDIA", codigo,
+                    indicador.getFallasMes() + " fallas reportadas en los últimos 30 días"));
+        }
+
+        if (indicador.getHorasIndisponibilidad().compareTo(configuracion.getUmbralHorasIndisponibilidad()) >= 0) {
+            alertas.add(new Alerta("Indisponibilidad prolongada", "ALTA", codigo,
+                    indicador.getHorasIndisponibilidad() + " horas acumuladas fuera de servicio"));
+        }
+
+        if (indicador.getAntiguedadAnios() >= configuracion.getUmbralAntiguedadAnios()) {
+            alertas.add(new Alerta("Antigüedad crítica", "ALTA", codigo,
+                    indicador.getAntiguedadAnios() + " años de antigüedad"));
+        }
+
+        return alertas;
     }
 
     private void reclasificar(Equipo equipo, String nombreEstado) {

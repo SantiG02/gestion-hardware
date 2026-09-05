@@ -23,10 +23,37 @@
                 </div>
             </div>
 
+            <div th:if="${exito}" class="aviso aviso--exito" th:text="${exito}"></div>
+            <div th:if="${error}" class="aviso aviso--error" th:text="${error}"></div>
+            <div th:if="${aviso}" class="aviso aviso--info" th:text="${aviso}"></div>
+
             <div th:if="${resumen.equiposReclasificados > 0}" class="aviso aviso--info">
                 Se reclasificaron automáticamente
                 <strong th:text="${resumen.equiposReclasificados}">0</strong>
                 equipo(s) según los umbrales configurados.
+            </div>
+
+
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                <h2 style="font-size:15px; font-weight:700; margin:0;">Alertas activas</h2>
+                <form th:if="${!#lists.isEmpty(resumen.alertas)}"
+                      th:action="@{/dashboard/notificar}" method="post">
+                    <button type="submit" class="boton boton--pequeno">Enviar por correo</button>
+                </form>
+            </div>
+
+            <div th:if="${#lists.isEmpty(resumen.alertas)}" class="aviso aviso--exito" style="margin-bottom:24px;">
+                No hay alertas activas en este momento.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(resumen.alertas)}" class="panel" style="margin-bottom:24px;">
+                <div class="alerta-item" th:each="alerta : ${resumen.alertas}"
+                     th:classappend="${alerta.severidad == 'ALTA'} ? 'alerta-item--alta' : 'alerta-item--media'">
+                    <span class="alerta-item__tipo" th:text="${alerta.tipo}">-</span>
+                    <span th:if="${alerta.equipoCodigo != null}" class="texto-suave"
+                          th:text="' · ' + ${alerta.equipoCodigo}">-</span>
+                    <p class="alerta-item__mensaje" th:text="${alerta.mensaje}">-</p>
+                </div>
             </div>
 
             <!-- Tarjetas de resumen -->

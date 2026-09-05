@@ -19,13 +19,15 @@ public class ResumenDashboard {
     private final Map<String, Long> equiposPorEstado;
     private final Map<String, Long> equiposPorArea;
     private final List<IndicadorEquipo> indicadoresPorEquipo;
+    private final List<Alerta> alertas;
 
     public ResumenDashboard(long totalEquipos, long incidenciasAbiertas,
                             long mantenimientosPendientes, long equiposReclasificados,
                             BigDecimal horasIndisponibilidadTotal,
                             Map<String, Long> equiposPorEstado,
                             Map<String, Long> equiposPorArea,
-                            List<IndicadorEquipo> indicadoresPorEquipo) {
+                            List<IndicadorEquipo> indicadoresPorEquipo,
+                            List<Alerta> alertas) {
         this.totalEquipos = totalEquipos;
         this.incidenciasAbiertas = incidenciasAbiertas;
         this.mantenimientosPendientes = mantenimientosPendientes;
@@ -34,6 +36,7 @@ public class ResumenDashboard {
         this.equiposPorEstado = equiposPorEstado;
         this.equiposPorArea = equiposPorArea;
         this.indicadoresPorEquipo = indicadoresPorEquipo;
+        this.alertas = alertas;
     }
 
     public long getTotalEquipos() { return totalEquipos; }
@@ -44,4 +47,5 @@ public class ResumenDashboard {
     public Map<String, Long> getEquiposPorEstado() { return equiposPorEstado; }
     public Map<String, Long> getEquiposPorArea() { return equiposPorArea; }
     public List<IndicadorEquipo> getIndicadoresPorEquipo() { return indicadoresPorEquipo; }
+    public List<Alerta> getAlertas() { return alertas; }
 }
