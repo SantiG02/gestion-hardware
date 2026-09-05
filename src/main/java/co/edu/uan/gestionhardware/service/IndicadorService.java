@@ -2,6 +2,7 @@ package co.edu.uan.gestionhardware.service;
 
 import co.edu.uan.gestionhardware.dto.IndicadorEquipo;
 import co.edu.uan.gestionhardware.dto.ResumenDashboard;
+import co.edu.uan.gestionhardware.model.ConfiguracionSistema;
 import co.edu.uan.gestionhardware.model.Equipo;
 import co.edu.uan.gestionhardware.repository.EquipoRepository;
 import co.edu.uan.gestionhardware.repository.EstadoEquipoRepository;
@@ -24,19 +25,13 @@ import java.util.Map;
  * automaticamente cada equipo segun los umbrales definidos (RF-16). Tambien
  * arma el resumen agregado que consume el panel principal (RF-18).
  *
- * Los umbrales quedan como constantes porque el modulo de parametrizacion
- * (RF-03) todavia no esta implementado en el sistema. Cuando exista esa
- * pantalla de configuracion, estos valores deben salir de ahi en vez de
- * estar fijos en el codigo.
+ * Los umbrales y el estado calculado (RF-03) ya no son constantes: se leen
+ * en cada calculo desde ConfiguracionSistema, la fila unica de configuracion
+ * administrada desde /configuracion.
  */
 @Service
 @Transactional(readOnly = true)
 public class IndicadorService {
-
-    private static final long UMBRAL_FALLAS_MES = 3;
-    private static final BigDecimal UMBRAL_HORAS_INDISPONIBILIDAD = BigDecimal.valueOf(120);
-    private static final int UMBRAL_ANTIGUEDAD_ANIOS = 5;
-    private static final int UMBRAL_MESES_ACTUALIZACION = 12;
 
     private static final String ESTADO_ESTABLE = "Estable";
     private static final String ESTADO_SEGUIMIENTO = "En seguimiento";
@@ -46,15 +41,18 @@ public class IndicadorService {
     private final EstadoEquipoRepository estadoEquipoRepository;
     private final IncidenciaRepository incidenciaRepository;
     private final MantenimientoRepository mantenimientoRepository;
+    private final ConfiguracionService configuracionService;
 
     public IndicadorService(EquipoRepository equipoRepository,
                             EstadoEquipoRepository estadoEquipoRepository,
                             IncidenciaRepository incidenciaRepository,
-                            MantenimientoRepository mantenimientoRepository) {
+                            MantenimientoRepository mantenimientoRepository,
+                            ConfiguracionService configuracionService) {
         this.equipoRepository = equipoRepository;
         this.estadoEquipoRepository = estadoEquipoRepository;
         this.incidenciaRepository = incidenciaRepository;
         this.mantenimientoRepository = mantenimientoRepository;
+        this.configuracionService = configuracionService;
     }
 
     /**
@@ -64,6 +62,8 @@ public class IndicadorService {
      */
     @Transactional
     public ResumenDashboard construirResumen() {
+
+        ConfiguracionSistema configuracion = configuracionService.obtener();
 
         List<Equipo> equipos = equipoRepository.findByActivoTrue();
         List<IndicadorEquipo> indicadores = new ArrayList<>();
@@ -76,7 +76,7 @@ public class IndicadorService {
 
         for (Equipo equipo : equipos) {
 
-            IndicadorEquipo indicador = calcularIndicadores(equipo);
+            IndicadorEquipo indicador = calcularIndicadores(equipo, configuracion);
 
             if (indicador.isRequiereReclasificacion()) {
                 equiposReclasificados++;
@@ -101,7 +101,7 @@ public class IndicadorService {
                 indicadores);
     }
 
-    private IndicadorEquipo calcularIndicadores(Equipo equipo) {
+    private IndicadorEquipo calcularIndicadores(Equipo equipo, ConfiguracionSistema configuracion) {
 
         LocalDateTime ahora = LocalDateTime.now();
 
@@ -122,10 +122,10 @@ public class IndicadorService {
 
         boolean actualizacionAlDia = equipo.getFechaUltimaActualizacionSo() != null
                 && Period.between(equipo.getFechaUltimaActualizacionSo(), LocalDate.now())
-                        .toTotalMonths() < UMBRAL_MESES_ACTUALIZACION;
+                        .toTotalMonths() < configuracion.getUmbralMesesActualizacion();
 
         // RF-16: clasificacion automatica segun umbrales
-        String estadoSugerido = clasificar(fallasMes, horasIndisponibilidad, antiguedadAnios);
+        String estadoSugerido = clasificar(fallasMes, horasIndisponibilidad, antiguedadAnios, configuracion);
         boolean requiereReclasificacion = !estadoSugerido.equalsIgnoreCase(equipo.getEstadoEquipo().getNombre());
 
         return new IndicadorEquipo(equipo, fallasSemana, fallasMes, reportesAcumulados,
@@ -138,16 +138,18 @@ public class IndicadorService {
      * condiciones mas graves (candidato a renovacion), luego seguimiento, y
      * si ninguna aplica el equipo se considera estable.
      */
-    private String clasificar(long fallasMes, BigDecimal horasIndisponibilidad, int antiguedadAnios) {
+    private String clasificar(long fallasMes, BigDecimal horasIndisponibilidad,
+                              int antiguedadAnios, ConfiguracionSistema configuracion) {
 
-        boolean superaIndisponibilidad = horasIndisponibilidad.compareTo(UMBRAL_HORAS_INDISPONIBILIDAD) >= 0;
-        boolean superaAntiguedad = antiguedadAnios >= UMBRAL_ANTIGUEDAD_ANIOS;
+        boolean superaIndisponibilidad = horasIndisponibilidad
+                .compareTo(configuracion.getUmbralHorasIndisponibilidad()) >= 0;
+        boolean superaAntiguedad = antiguedadAnios >= configuracion.getUmbralAntiguedadAnios();
 
         if (superaIndisponibilidad || superaAntiguedad) {
             return ESTADO_RENOVACION;
         }
 
-        if (fallasMes >= UMBRAL_FALLAS_MES) {
+        if (fallasMes >= configuracion.getUmbralFallasMes()) {
             return ESTADO_SEGUIMIENTO;
         }
 

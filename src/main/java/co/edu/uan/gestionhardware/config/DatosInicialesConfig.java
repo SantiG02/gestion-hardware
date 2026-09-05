@@ -1,9 +1,11 @@
 package co.edu.uan.gestionhardware.config;
 
 import co.edu.uan.gestionhardware.model.CategoriaFalla;
+import co.edu.uan.gestionhardware.model.ConfiguracionSistema;
 import co.edu.uan.gestionhardware.model.Rol;
 import co.edu.uan.gestionhardware.model.Usuario;
 import co.edu.uan.gestionhardware.repository.CategoriaFallaRepository;
+import co.edu.uan.gestionhardware.repository.ConfiguracionRepository;
 import co.edu.uan.gestionhardware.repository.RolRepository;
 import co.edu.uan.gestionhardware.repository.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -11,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Configuration
@@ -20,6 +23,7 @@ public class DatosInicialesConfig {
     public CommandLineRunner cargarDatosIniciales(RolRepository rolRepository,
                                                   UsuarioRepository usuarioRepository,
                                                   CategoriaFallaRepository categoriaFallaRepository,
+                                                  ConfiguracionRepository configuracionRepository,
                                                   PasswordEncoder passwordEncoder) {
         return args -> {
 
@@ -52,6 +56,18 @@ public class DatosInicialesConfig {
                         categoriaFallaRepository.save(c);
                     }
                 });
+
+            if (configuracionRepository.findById(1L).isEmpty()) {
+                ConfiguracionSistema configuracion = new ConfiguracionSistema();
+                configuracion.setId(1L);
+                configuracion.setUmbralFallasMes(3);
+                configuracion.setUmbralHorasIndisponibilidad(BigDecimal.valueOf(120));
+                configuracion.setUmbralAntiguedadAnios(5);
+                configuracion.setUmbralMesesActualizacion(12);
+                configuracion.setDestinatariosNotificacion("admin@gestionhardware.co");
+                configuracion.setFrecuenciaNotificacion("DIARIA");
+                configuracionRepository.save(configuracion);
+            }
         };
     }
 

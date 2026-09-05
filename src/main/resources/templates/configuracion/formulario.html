@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Estados y umbrales')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo">Estados y umbrales</h1>
+                    <p class="encabezado__intro">
+                        Umbrales usados para reclasificar automáticamente los equipos (RF-16)
+                        y datos de las notificaciones enviadas por correo.
+                    </p>
+                </div>
+            </div>
+
+            <div th:if="${exito}" class="aviso aviso--exito" th:text="${exito}"></div>
+
+            <div class="panel">
+
+                <form th:action="@{/configuracion/guardar}" th:object="${configuracion}" method="post">
+
+                    <input type="hidden" th:field="*{id}" />
+
+                    <h2 class="panel__titulo">Umbrales de clasificación (RF-03)</h2>
+
+                    <div class="rejilla">
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Fallas en 30 días para pasar a "En seguimiento" *</label>
+                            <input class="campo__entrada" type="number" min="1"
+                                   th:field="*{umbralFallasMes}"
+                                   th:classappend="${#fields.hasErrors('umbralFallasMes')} ? 'campo__entrada--error'" />
+                            <span class="campo__error" th:errors="*{umbralFallasMes}"></span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Horas de indisponibilidad para "Candidato a renovación" *</label>
+                            <input class="campo__entrada" type="number" step="0.1" min="0"
+                                   th:field="*{umbralHorasIndisponibilidad}"
+                                   th:classappend="${#fields.hasErrors('umbralHorasIndisponibilidad')} ? 'campo__entrada--error'" />
+                            <span class="campo__error" th:errors="*{umbralHorasIndisponibilidad}"></span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Años de antigüedad para "Candidato a renovación" *</label>
+                            <input class="campo__entrada" type="number" min="1"
+                                   th:field="*{umbralAntiguedadAnios}"
+                                   th:classappend="${#fields.hasErrors('umbralAntiguedadAnios')} ? 'campo__entrada--error'" />
+                            <span class="campo__error" th:errors="*{umbralAntiguedadAnios}"></span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Meses sin actualización de SO para marcarla vencida *</label>
+                            <input class="campo__entrada" type="number" min="1"
+                                   th:field="*{umbralMesesActualizacion}"
+                                   th:classappend="${#fields.hasErrors('umbralMesesActualizacion')} ? 'campo__entrada--error'" />
+                            <span class="campo__error" th:errors="*{umbralMesesActualizacion}"></span>
+                        </div>
+
+                    </div>
+
+                    <h2 class="panel__titulo" style="margin-top:28px;">Notificaciones por correo (RF-04)</h2>
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Destinatarios (separados por coma) *</label>
+                        <input class="campo__entrada" type="text"
+                               th:field="*{destinatariosNotificacion}"
+                               placeholder="gestor@empresa.com, soporte@empresa.com"
+                               th:classappend="${#fields.hasErrors('destinatariosNotificacion')} ? 'campo__entrada--error'" />
+                        <span class="campo__error" th:errors="*{destinatariosNotificacion}"></span>
+                    </div>
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Frecuencia de envío *</label>
+                        <select class="campo__entrada" th:field="*{frecuenciaNotificacion}"
+                                th:classappend="${#fields.hasErrors('frecuenciaNotificacion')} ? 'campo__entrada--error'">
+                            <option value="DIARIA">Diaria</option>
+                            <option value="SEMANAL">Semanal</option>
+                            <option value="MENSUAL">Mensual</option>
+                        </select>
+                        <span class="campo__error" th:errors="*{frecuenciaNotificacion}"></span>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 24px;">
+                        <button type="submit" class="boton">Guardar</button>
+                        <a th:href="@{/dashboard}" class="boton boton--secundario">Cancelar</a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>
