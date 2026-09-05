@@ -61,7 +61,7 @@
                                th:field="*{email}"
                                th:classappend="${#fields.hasErrors('email')} ? 'campo__entrada--error'" />
                         <span class="campo__error" th:errors="*{email}"></span>
-                        <span class="campo__ayuda">Este correo será su credencial de acceso.</span>
+                        <span class="campo__ayuda">Este correo será su credencial de acceso. Debe ser una cuenta de Gmail (@gmail.com); al guardar, recibirá un correo de confirmación.</span>
                     </div>
 
                     <div class="campo">

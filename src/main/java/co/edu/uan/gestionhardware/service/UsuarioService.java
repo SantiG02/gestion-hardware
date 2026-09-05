@@ -52,6 +52,10 @@ public class UsuarioService {
         return usuarioRepository.existsByEmail(email);
     }
 
+        public boolean existeDocumento(String documento) {
+        return usuarioRepository.existsByDocumento(documento);
+    }
+    
     public List<Rol> listaRols() {
         return rolRepository.findAll();
     }

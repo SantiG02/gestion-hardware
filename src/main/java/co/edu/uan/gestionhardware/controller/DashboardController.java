@@ -1,7 +1,6 @@
 package co.edu.uan.gestionhardware.controller;
 
 import co.edu.uan.gestionhardware.dto.ResumenDashboard;
-import co.edu.uan.gestionhardware.service.ConfiguracionService;
 import co.edu.uan.gestionhardware.service.IndicadorService;
 import co.edu.uan.gestionhardware.service.NotificacionService;
 import org.springframework.stereotype.Controller;
@@ -16,14 +15,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class DashboardController {
 
     private final IndicadorService indicadorService;
-    private final ConfiguracionService configuracionService;
     private final NotificacionService notificacionService;
 
     public DashboardController(IndicadorService indicadorService,
-                               ConfiguracionService configuracionService,
                                NotificacionService notificacionService) {
         this.indicadorService = indicadorService;
-        this.configuracionService = configuracionService;
         this.notificacionService = notificacionService;
     }
 
@@ -44,9 +40,9 @@ public class DashboardController {
         }
 
         try {
-            notificacionService.enviarAlertas(resumen.getAlertas(), configuracionService.obtener());
+            notificacionService.enviarAlertas(resumen.getAlertas());
             flash.addFlashAttribute("exito", "Se enviaron " + resumen.getAlertas().size()
-                    + " alerta(s) a los destinatarios configurados");
+                    + " alerta(s) a los Gestores y Técnicos activos");
         } catch (Exception e) {
             flash.addFlashAttribute("error", "No se pudo enviar el correo: " + e.getMessage());
         }

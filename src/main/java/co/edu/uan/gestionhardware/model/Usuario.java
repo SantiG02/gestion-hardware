@@ -24,6 +24,8 @@ public class Usuario {
 
     @NotBlank(message = "El correo es obligatorio")
     @Email(message = "El formato del correo no es valido")
+    @Pattern(regexp = "(?i)^[a-z0-9._%+-]+@gmail\\.com$",
+             message = "Por ahora solo se aceptan correos de Gmail (@gmail.com)")
     @Size(max = 120)
     @Column(nullable = false, length = 120, unique = true)
     private String email;

@@ -44,4 +44,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findConRelaciones(@Param("id") Long id);
 
     boolean existsByEmail(String email);
+    boolean existsByDocumento(String documento);
 }

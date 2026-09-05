@@ -64,7 +64,6 @@ public class DatosInicialesConfig {
                 configuracion.setUmbralHorasIndisponibilidad(BigDecimal.valueOf(120));
                 configuracion.setUmbralAntiguedadAnios(5);
                 configuracion.setUmbralMesesActualizacion(12);
-                configuracion.setDestinatariosNotificacion("admin@gestionhardware.co");
                 configuracion.setFrecuenciaNotificacion("DIARIA");
                 configuracionRepository.save(configuracion);
             }

@@ -70,6 +70,9 @@
                     </div>
 
                     <h2 class="panel__titulo" style="margin-top:28px;">Notificaciones por correo (RF-04)</h2>
+<p class="texto-suave" style="font-size:13px; margin:-8px 0 16px;">
+    Las alertas se envían automáticamente a todos los Gestores Tecnológicos y Técnicos de Soporte activos registrados en Usuarios.
+</p>
 
                     <div class="campo">
                         <label class="campo__etiqueta">Destinatarios (separados por coma) *</label>
@@ -80,16 +83,7 @@
                         <span class="campo__error" th:errors="*{destinatariosNotificacion}"></span>
                     </div>
 
-                    <div class="campo">
-                        <label class="campo__etiqueta">Frecuencia de envío *</label>
-                        <select class="campo__entrada" th:field="*{frecuenciaNotificacion}"
-                                th:classappend="${#fields.hasErrors('frecuenciaNotificacion')} ? 'campo__entrada--error'">
-                            <option value="DIARIA">Diaria</option>
-                            <option value="SEMANAL">Semanal</option>
-                            <option value="MENSUAL">Mensual</option>
-                        </select>
-                        <span class="campo__error" th:errors="*{frecuenciaNotificacion}"></span>
-                    </div>
+                    
 
                     <div style="display: flex; gap: 10px; margin-top: 24px;">
                         <button type="submit" class="boton">Guardar</button>

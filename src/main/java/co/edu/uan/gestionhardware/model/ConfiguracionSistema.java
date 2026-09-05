@@ -11,6 +11,10 @@ import java.math.BigDecimal;
 /**
  * Configuracion parametrizable del sistema (RF-03, RF-04). Es una tabla de
  * una sola fila: siempre se trabaja sobre el registro con id = 1.
+ *
+ * Los destinatarios de las notificaciones ya no se configuran aqui como
+ * texto libre: se calculan dinamicamente a partir de los usuarios activos
+ * con rol GESTOR o TECNICO (ver NotificacionService).
  */
 @Entity
 @Table(name = "configuracion_sistema")
@@ -39,10 +43,6 @@ public class ConfiguracionSistema {
     @Column(name = "umbral_meses_actualizacion", nullable = false)
     private Integer umbralMesesActualizacion;
 
-    @NotBlank(message = "Debe indicar al menos un destinatario")
-    @Column(name = "destinatarios_notificacion", nullable = false, length = 500)
-    private String destinatariosNotificacion;
-
     @NotBlank(message = "Debe seleccionar la frecuencia de notificacion")
     @Column(name = "frecuencia_notificacion", nullable = false, length = 20)
     private String frecuenciaNotificacion;
@@ -62,9 +62,6 @@ public class ConfiguracionSistema {
 
     public Integer getUmbralMesesActualizacion() { return umbralMesesActualizacion; }
     public void setUmbralMesesActualizacion(Integer v) { this.umbralMesesActualizacion = v; }
-
-    public String getDestinatariosNotificacion() { return destinatariosNotificacion; }
-    public void setDestinatariosNotificacion(String v) { this.destinatariosNotificacion = v; }
 
     public String getFrecuenciaNotificacion() { return frecuenciaNotificacion; }
     public void setFrecuenciaNotificacion(String frecuenciaNotificacion) { this.frecuenciaNotificacion = frecuenciaNotificacion; }

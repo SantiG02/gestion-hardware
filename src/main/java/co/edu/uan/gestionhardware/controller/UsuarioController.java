@@ -4,6 +4,7 @@ import co.edu.uan.gestionhardware.model.Area;
 import co.edu.uan.gestionhardware.model.Rol;
 import co.edu.uan.gestionhardware.model.Usuario;
 import co.edu.uan.gestionhardware.service.AreaService;
+import co.edu.uan.gestionhardware.service.NotificacionService;
 import co.edu.uan.gestionhardware.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -21,10 +22,13 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
     private final AreaService areaService;
+    private final NotificacionService notificacionService;
 
-    public UsuarioController(UsuarioService usuarioService, AreaService areaService){
+    public UsuarioController(UsuarioService usuarioService, AreaService areaService,
+                             NotificacionService notificacionService){
         this.usuarioService = usuarioService;
         this.areaService = areaService;
+        this.notificacionService = notificacionService;
     }
 
     @ModelAttribute("roles")
@@ -100,20 +104,41 @@ public class UsuarioController {
                 "Ya existe un usuario registrado con este correo");
             }
         }
+
+                if (usuario.getDocumento() != null && !usuario.getDocumento().isBlank()
+            && usuarioService.existeDocumento(usuario.getDocumento())) {
+
+            boolean esOtroUsuario = usuario.getId() == null
+                || usuarioService.buscarPorId(usuario.getId())
+                .map(original -> !usuario.getDocumento().equalsIgnoreCase(original.getDocumento()))
+                .orElse(true);
+
+            if (esOtroUsuario) {
+                result.rejectValue("documento", "documento.duplicado",
+                "Ya existe un usuario registrado con este documento");
+            }
+        }
                     
         if (result.hasErrors()) {
             return "usuario/formulario";
         }
+
         boolean esNuevo = (usuario.getId() == null);
-        usuarioService.guardar(usuario,passwordPlano);
-        flash.addFlashAttribute("exito",
-            esNuevo ? "Usuario registrado correctamente"
-                    : "Usuario actualizado correctamente");
+        Usuario guardado = usuarioService.guardar(usuario, passwordPlano);
+
+        if (esNuevo) {
+            flash.addFlashAttribute("exito", "Usuario registrado correctamente");
+            try {
+                notificacionService.enviarConfirmacionCuenta(guardado);
+            } catch (Exception e) {
+                flash.addFlashAttribute("aviso",
+                        "El usuario se creó, pero no se pudo enviar el correo de confirmación: " + e.getMessage());
+            }
+        } else {
+            flash.addFlashAttribute("exito", "Usuario actualizado correctamente");
+        }
+
         return "redirect:/usuarios";
-}
+    }
 
-
-
-
-    
 }
