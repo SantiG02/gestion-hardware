@@ -42,10 +42,10 @@ public class DatosInicialesConfig {
             });
 
             crearSiNoExiste(usuarioRepository, passwordEncoder,
-                    "admin@gestionhardware.co", "Gestor Tecnologico", gestor, "Admin1234");
+                    "hardtrack.gestor@gmail.com", "Gestor Tecnologico", gestor, "Admin1234");
 
             crearSiNoExiste(usuarioRepository, passwordEncoder,
-                    "tecnico@gestionhardware.co", "Tecnico de Soporte", tecnico, "Tecnico1234");
+                    "hardtrack.tecnico@gmail.com", "Tecnico de Soporte", tecnico, "Tecnico1234");
 
             List.of("Disco", "Memoria", "Fuente de poder", "Red",
                     "Software", "Perifericos", "Pantalla", "Otros")
