@@ -264,8 +264,8 @@ a { color: var(--azul); }
     border: 2px solid var(--superficie);
 }
 
-.linea__evento--incidencia::before { background: var(--renovacion); }
-.linea__evento--mantenimiento::before { background: var(--estable); }
+.evento-incidencia::before { background: var(--renovacion); }
+.evento-mantenimiento::before { background: var(--estable); }
 
 .linea__fecha {
     flex-shrink: 0;
@@ -678,4 +678,56 @@ a { color: var(--azul); }
 .panel--tabla {
     padding: 0;
     overflow: hidden;
+}
+
+/* ============================================================
+   Dashboard de indicadores
+   ============================================================ */
+
+.tarjetas-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.tarjeta-resumen {
+    background: var(--superficie);
+    border: 1px solid var(--borde-suave);
+    border-radius: var(--radio-grande);
+    padding: 20px;
+}
+
+.tarjeta-resumen__valor {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--texto);
+    margin-bottom: 6px;
+}
+
+.tarjeta-resumen__etiqueta {
+    font-size: 13px;
+    color: var(--texto-suave);
+}
+
+.panel__titulo {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 14px;
+}
+
+.distribucion__fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--borde-suave);
+    font-size: 14px;
+}
+
+.distribucion__fila:last-child { border-bottom: none; }
+
+.distribucion__valor {
+    font-weight: 700;
+    color: var(--etiqueta);
 }

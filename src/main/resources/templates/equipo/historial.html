@@ -56,9 +56,11 @@
 
             <div th:if="${eventos.size() > 0}" class="linea">
 
+               
                 <article th:each="ev : ${eventos}"
-                         th:class="${ev.tipo == 'INCIDENCIA'} ? 'linea__evento linea__evento--incidencia' : 'linea__evento linea__evento--mantenimiento'">
-
+                        class="linea__evento"
+                        th:classappend="${ev.tipo == 'INCIDENCIA'} ? 'evento-incidencia' : 'evento-mantenimiento'">
+                        
                     <div class="linea__fecha"
                          th:text="${#temporals.format(ev.fecha, 'dd/MM/yyyy HH:mm')}">-</div>
 

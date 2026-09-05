@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Dashboard')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo">Panel de indicadores</h1>
+                    <p class="encabezado__intro">
+                        Resumen operativo del inventario, calculado en cada visita a partir
+                        del historial de incidencias y mantenimientos.
+                    </p>
+                </div>
+            </div>
+
+            <div th:if="${resumen.equiposReclasificados > 0}" class="aviso aviso--info">
+                Se reclasificaron automáticamente
+                <strong th:text="${resumen.equiposReclasificados}">0</strong>
+                equipo(s) según los umbrales configurados.
+            </div>
+
+            <!-- Tarjetas de resumen -->
+            <div class="tarjetas-resumen">
+
+                <div class="tarjeta-resumen">
+                    <div class="tarjeta-resumen__valor" th:text="${resumen.totalEquipos}">0</div>
+                    <div class="tarjeta-resumen__etiqueta">Equipos activos</div>
+                </div>
+
+                <div class="tarjeta-resumen">
+                    <div class="tarjeta-resumen__valor" th:text="${resumen.incidenciasAbiertas}">0</div>
+                    <div class="tarjeta-resumen__etiqueta">Incidencias abiertas</div>
+                </div>
+
+                <div class="tarjeta-resumen">
+                    <div class="tarjeta-resumen__valor" th:text="${resumen.mantenimientosPendientes}">0</div>
+                    <div class="tarjeta-resumen__etiqueta">Mantenimientos pendientes</div>
+                </div>
+
+                <div class="tarjeta-resumen">
+                    <div class="tarjeta-resumen__valor"
+                         th:text="${#numbers.formatDecimal(resumen.horasIndisponibilidadTotal, 1, 1)}">0</div>
+                    <div class="tarjeta-resumen__etiqueta">Horas de indisponibilidad acumuladas</div>
+                </div>
+
+            </div>
+
+            <!-- Distribucion por estado y por area -->
+            <div class="rejilla" style="margin-bottom:24px;">
+
+                <div class="panel">
+                    <h2 class="panel__titulo">Equipos por estado</h2>
+                    <div class="distribucion">
+                        <div class="distribucion__fila" th:each="entrada : ${resumen.equiposPorEstado}">
+                            <span class="insignia"
+                                  th:classappend="${entrada.key == 'Estable'} ? 'insignia--estable' : (${entrada.key == 'En seguimiento'} ? 'insignia--seguimiento' : 'insignia--renovacion')"
+                                  th:text="${entrada.key}">-</span>
+                            <span class="distribucion__valor" th:text="${entrada.value}">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2 class="panel__titulo">Equipos por área</h2>
+                    <div class="distribucion">
+                        <div class="distribucion__fila" th:each="entrada : ${resumen.equiposPorArea}">
+                            <span th:text="${entrada.key}">-</span>
+                            <span class="distribucion__valor" th:text="${entrada.value}">0</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Detalle de indicadores por equipo -->
+            <h2 style="font-size:15px; font-weight:700; margin:0 0 16px;">Indicadores por equipo</h2>
+
+            <div th:if="${#lists.isEmpty(resumen.indicadoresPorEquipo)}" class="aviso aviso--info">
+                No hay equipos activos para calcular indicadores.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(resumen.indicadoresPorEquipo)}" class="panel panel--tabla">
+                <table class="tabla">
+                    <thead>
+                    <tr>
+                        <th>Equipo</th>
+                        <th>Área</th>
+                        <th>Fallas 7 días</th>
+                        <th>Fallas 30 días</th>
+                        <th>Reportes acumulados</th>
+                        <th>Horas indisponibilidad</th>
+                        <th>Antigüedad</th>
+                        <th>Actualización SO</th>
+                        <th>Estado</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="ind : ${resumen.indicadoresPorEquipo}">
+
+                        <td>
+                            <strong th:text="${ind.equipo.codigoInterno}">-</strong><br />
+                            <span class="texto-suave" style="font-size:12.5px"
+                                  th:text="${ind.equipo.marca} + ' ' + ${ind.equipo.modelo}">-</span>
+                        </td>
+
+                        <td th:text="${ind.equipo.area.nombre}">-</td>
+
+                        <td th:text="${ind.fallasSemana}">0</td>
+                        <td th:text="${ind.fallasMes}">0</td>
+                        <td th:text="${ind.reportesAcumulados}">0</td>
+
+                        <td th:text="${#numbers.formatDecimal(ind.horasIndisponibilidad, 1, 1)}">0</td>
+
+                        <td th:text="${ind.antiguedadAnios} + ' años'">-</td>
+
+                        <td>
+                            <span class="insignia"
+                                  th:classappend="${ind.actualizacionAlDia} ? 'insignia--estable' : 'insignia--seguimiento'"
+                                  th:text="${ind.actualizacionAlDia} ? 'Al día' : 'Desactualizado'">-</span>
+                        </td>
+
+                        <td th:switch="${ind.equipo.estadoEquipo.nombre}">
+                            <span th:case="'Estable'" class="insignia insignia--estable" th:text="${ind.equipo.estadoEquipo.nombre}">-</span>
+                            <span th:case="'En seguimiento'" class="insignia insignia--seguimiento" th:text="${ind.equipo.estadoEquipo.nombre}">-</span>
+                            <span th:case="*" class="insignia insignia--renovacion" th:text="${ind.equipo.estadoEquipo.nombre}">-</span>
+                        </td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

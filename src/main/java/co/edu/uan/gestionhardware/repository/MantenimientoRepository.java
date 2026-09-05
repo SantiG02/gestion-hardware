@@ -65,4 +65,7 @@ public interface MantenimientoRepository extends JpaRepository<Mantenimiento, Lo
            order by m.fechaProgramada
            """)
     List<Mantenimiento> findProximosAVencer(@Param("limite") LocalDate limite);
+
+   long countByEstadoNot(String estado);
+
 }

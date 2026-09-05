@@ -57,4 +57,14 @@ public interface IncidenciaRepository extends JpaRepository<Incidencia, Long> {
                                                LocalDateTime hasta);
 
     boolean existsByEquipoIdAndEstadoNot(Long equipoId, String estado);
+
+  
+  
+    long countByEquipoId(Long equipoId);
+
+    long countByEstadoNot(String estado);
+
+    @Query("select coalesce(sum(i.horasIndisponibilidad), 0) from Incidencia i where i.equipo.id = :equipoId")
+    java.math.BigDecimal sumHorasIndisponibilidadPorEquipo(@Param("equipoId") Long equipoId);
+
 }

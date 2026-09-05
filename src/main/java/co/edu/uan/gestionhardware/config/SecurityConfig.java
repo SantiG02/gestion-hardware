@@ -43,6 +43,8 @@ public class SecurityConfig {
                 .requestMatchers("/incidencias/**").hasAnyRole("GESTOR", "TECNICO")
                 .requestMatchers("/mantenimientos/**").hasAnyRole("GESTOR", "TECNICO")
 
+                .requestMatchers("/dashboard/**").hasRole("GESTOR")
+
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
