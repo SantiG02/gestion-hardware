@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Reportes')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo">Reportes</h1>
+                    <p class="encabezado__intro">
+                        Reportes mensuales o anuales de fallas, indisponibilidad, mantenimientos
+                        y clasificación final de activos, exportables en PDF o Excel.
+                    </p>
+                </div>
+            </div>
+
+            <div class="panel">
+
+                <form method="get" id="formReporte">
+
+                    <div class="rejilla">
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Tipo de reporte</label>
+                            <select class="campo__entrada" name="tipo" id="tipo" onchange="alternarMes()">
+                                <option value="MENSUAL">Mensual</option>
+                                <option value="ANUAL">Anual</option>
+                            </select>
+                        </div>
+
+                        <div class="campo" id="campoMes">
+                            <label class="campo__etiqueta">Mes</label>
+                            <select class="campo__entrada" name="mes" id="mes">
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Año</label>
+                            <input class="campo__entrada" type="number" name="anio" id="anio"
+                                   th:value="${anioActual}" min="2000" max="2100" />
+                        </div>
+
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-top:8px;">
+                        <button type="submit" formaction="/reportes/pdf" class="boton">Descargar PDF</button>
+                        <button type="submit" formaction="/reportes/excel" class="boton boton--secundario">Descargar Excel</button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+    document.getElementById('mes').value = /*[[${mesActual}]]*/ 1;
+
+    function alternarMes() {
+        var esMensual = document.getElementById('tipo').value === 'MENSUAL';
+        document.getElementById('campoMes').style.display = esMensual ? 'block' : 'none';
+    }
+    alternarMes();
+</script>
+
+</body>
+</html>

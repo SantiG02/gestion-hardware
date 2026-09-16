@@ -67,4 +67,14 @@ public interface IncidenciaRepository extends JpaRepository<Incidencia, Long> {
     @Query("select coalesce(sum(i.horasIndisponibilidad), 0) from Incidencia i where i.equipo.id = :equipoId")
     java.math.BigDecimal sumHorasIndisponibilidadPorEquipo(@Param("equipoId") Long equipoId);
 
+        @Query("""
+           select i from Incidencia i
+           join fetch i.equipo e
+           join fetch e.area
+           where i.fechaReporte between :desde and :hasta
+           order by i.fechaReporte
+           """)
+    java.util.List<Incidencia> findPorPeriodo(@Param("desde") java.time.LocalDateTime desde,
+                                              @Param("hasta") java.time.LocalDateTime hasta);
+
 }

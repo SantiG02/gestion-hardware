@@ -68,4 +68,14 @@ public interface MantenimientoRepository extends JpaRepository<Mantenimiento, Lo
 
    long countByEstadoNot(String estado);
 
+       @Query("""
+           select m from Mantenimiento m
+           join fetch m.equipo e
+           join fetch e.area
+           where m.fechaEjecucion between :desde and :hasta
+           order by m.fechaEjecucion
+           """)
+    List<Mantenimiento> findEjecutadosPorPeriodo(@Param("desde") java.time.LocalDate desde,
+                                                 @Param("hasta") java.time.LocalDate hasta);
+
 }
