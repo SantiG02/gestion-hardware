@@ -29,4 +29,8 @@ public interface EquipoRepository extends JpaRepository<Equipo, Long> {
     Optional<Equipo> findBySerial(String serial);
 
     long countByAreaIdAndActivoTrue(Long areaId);
+
+    boolean existsByCodigoInterno(String codigoInterno);
+
+    boolean existsBySerial(String serial);
 }

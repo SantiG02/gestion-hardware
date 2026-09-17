@@ -731,3 +731,20 @@ a { color: var(--azul); }
     font-weight: 700;
     color: var(--etiqueta);
 }
+
+/* ============================================================
+   Zona de carga (importacion masiva)
+   ============================================================ */
+
+.zona-carga {
+    border: 2px dashed var(--borde-suave);
+    border-radius: var(--radio-grande);
+    padding: 28px;
+    text-align: center;
+    transition: border-color .15s ease, background .15s ease;
+}
+
+.zona-carga--activa {
+    border-color: var(--azul);
+    background: var(--azul-suave);
+}

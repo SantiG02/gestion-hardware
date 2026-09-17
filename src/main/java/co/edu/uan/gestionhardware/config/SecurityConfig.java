@@ -34,6 +34,7 @@ public class SecurityConfig {
                 // Escritura sobre el inventario: solo Gestor
                 .requestMatchers("/equipos/nuevo", "/equipos/guardar").hasRole("GESTOR")
                 .requestMatchers("/equipos/*/editar", "/equipos/*/desactivar").hasRole("GESTOR")
+                .requestMatchers("/equipos/importar/**").hasRole("GESTOR")
 
                 // Consulta del inventario: ambos roles
                 .requestMatchers("/equipos/**").hasAnyRole("GESTOR", "TECNICO")

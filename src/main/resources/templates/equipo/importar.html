@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Equipos')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <p style="margin: 0 0 12px;">
+                <a th:href="@{/equipos}" class="texto-suave"
+                   style="font-size: 13.5px; text-decoration: none;">← Volver al inventario</a>
+            </p>
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo">Importación masiva</h1>
+                    <p class="encabezado__intro">
+                        Descarga la plantilla, complétala y súbela para registrar varios equipos a la vez.
+                    </p>
+                </div>
+            </div>
+
+            <div th:if="${error}" class="aviso aviso--error" th:text="${error}"></div>
+
+            <div class="panel" style="margin-bottom:24px;">
+
+                <h2 class="panel__titulo">1. Descarga la plantilla</h2>
+                <div style="display:flex; gap:10px; margin-bottom:16px;">
+                    <a th:href="@{/equipos/importar/plantilla.csv}" class="boton boton--secundario">Plantilla CSV</a>
+                    <a th:href="@{/equipos/importar/plantilla.xlsx}" class="boton boton--secundario">Plantilla Excel</a>
+                </div>
+
+                <p class="campo__ayuda" style="margin-bottom:6px;">Columnas del archivo (en este orden):</p>
+                <ol style="margin:0 0 16px 18px; padding:0; font-size:13px; color:var(--texto-suave); line-height:1.7;">
+                    <li>Código interno <strong>(obligatorio, único)</strong></li>
+                    <li>Serial <strong>(obligatorio, único)</strong></li>
+                    <li>Marca <strong>(obligatorio)</strong></li>
+                    <li>Modelo <strong>(obligatorio)</strong></li>
+                    <li>Tipo de equipo (opcional — debe existir ya en el sistema)</li>
+                    <li>Área <strong>(obligatorio — debe existir ya en el sistema)</strong></li>
+                    <li>Procesador (opcional)</li>
+                    <li>RAM en GB (opcional, número entero)</li>
+                    <li>Tipo de almacenamiento (opcional, texto libre: SSD, HDD, etc.)</li>
+                    <li>Capacidad en GB (opcional, número entero)</li>
+                    <li>Sistema operativo (opcional)</li>
+                    <li>Fecha de compra <strong>(obligatorio, dd/MM/aaaa)</strong></li>
+                    <li>Fecha de puesta en operación (opcional, dd/MM/aaaa)</li>
+                    <li>Observaciones (opcional)</li>
+                </ol>
+                <p class="campo__ayuda">
+                    Todos los equipos importados quedan con el estado inicial "Estable"; el responsable se asigna
+                    después editando cada equipo.
+                </p>
+
+                <h2 class="panel__titulo" style="margin-top:24px;">2. Sube el archivo diligenciado</h2>
+
+                <form th:action="@{/equipos/importar}" method="post" enctype="multipart/form-data">
+                    <div class="zona-carga" id="zonaCarga">
+                        <p style="margin:0 0 10px; font-size:13.5px; color:var(--texto-suave);">
+                            Arrastra aquí el archivo CSV o Excel, o selecciónalo manualmente
+                        </p>
+                        <input type="file" name="archivo" id="archivo" accept=".csv,.xlsx,.xls" required />
+                    </div>
+                    <button type="submit" class="boton" style="margin-top:16px;">Importar equipos</button>
+                </form>
+
+            </div>
+
+            <div th:if="${resultado != null}" class="panel">
+
+                <h2 class="panel__titulo">Resultado de la importación</h2>
+
+                <div class="rejilla" style="margin-bottom:20px;">
+                    <p style="margin:0;">
+                        <span class="campo__etiqueta">Archivo</span><br />
+                        <span th:text="${resultado.nombreArchivo}">-</span>
+                    </p>
+                    <p style="margin:0;">
+                        <span class="campo__etiqueta">Filas leídas</span><br />
+                        <span th:text="${resultado.totalFilas}">0</span>
+                    </p>
+                    <p style="margin:0;">
+                        <span class="campo__etiqueta">Cargados</span><br />
+                        <span th:text="${resultado.cargados}">0</span>
+                    </p>
+                    <p style="margin:0;">
+                        <span class="campo__etiqueta">Rechazados</span><br />
+                        <span th:text="${resultado.rechazados}">0</span>
+                    </p>
+                </div>
+
+                <div th:if="${resultado.rechazados == 0 and resultado.cargados > 0}" class="aviso aviso--exito">
+                    Todos los registros se cargaron correctamente.
+                </div>
+
+                <div th:if="${resultado.rechazados > 0}" class="panel panel--tabla">
+                    <table class="tabla">
+                        <thead>
+                        <tr>
+                            <th>Fila</th>
+                            <th>Código interno</th>
+                            <th>Motivo</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="inc : ${resultado.inconsistencias}">
+                            <td th:text="${inc.numeroFila}">-</td>
+                            <td th:text="${inc.codigoInterno}">-</td>
+                            <td th:text="${inc.motivo}">-</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+<script>
+    var zona = document.getElementById('zonaCarga');
+    var entrada = document.getElementById('archivo');
+
+    ['dragover', 'dragenter'].forEach(function (evento) {
+        zona.addEventListener(evento, function (e) {
+            e.preventDefault();
+            zona.classList.add('zona-carga--activa');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(function (evento) {
+        zona.addEventListener(evento, function (e) {
+            e.preventDefault();
+            zona.classList.remove('zona-carga--activa');
+        });
+    });
+
+    zona.addEventListener('drop', function (e) {
+        if (e.dataTransfer.files.length > 0) {
+            entrada.files = e.dataTransfer.files;
+        }
+    });
+</script>
+
+</body>
+</html>
