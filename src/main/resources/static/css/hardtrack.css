@@ -748,3 +748,185 @@ a { color: var(--azul); }
     border-color: var(--azul);
     background: var(--azul-suave);
 }
+
+
+/* ============================================================
+   Dashboard — tarjetas KPI, donut, barras por area
+   ============================================================ */
+
+.kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 8px;
+}
+
+.kpi {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--superficie);
+    border: 1px solid var(--borde-suave);
+    border-left: 4px solid var(--azul);
+    border-radius: var(--radio-grande);
+    padding: 16px;
+}
+
+.kpi--azul { border-left-color: var(--azul); }
+.kpi--seguimiento { border-left-color: var(--seguimiento); }
+.kpi--renovacion { border-left-color: var(--renovacion); }
+
+.kpi__icono {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--azul-suave);
+    color: var(--azul);
+}
+
+.kpi--seguimiento .kpi__icono { background: var(--seguimiento-fondo); color: var(--seguimiento); }
+.kpi--renovacion .kpi__icono { background: var(--renovacion-fondo); color: var(--renovacion); }
+
+.kpi__valor {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--texto);
+    line-height: 1.1;
+}
+
+.kpi__etiqueta {
+    font-size: 12.5px;
+    color: var(--texto-suave);
+    margin-top: 2px;
+}
+
+.tablero-dos-columnas {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 900px) {
+    .tablero-dos-columnas { grid-template-columns: 1fr; }
+}
+
+/* Barras apiladas por area */
+.barra-area { margin-bottom: 18px; }
+.barra-area:last-child { margin-bottom: 0; }
+
+.barra-area__cabecera {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13.5px;
+    margin-bottom: 6px;
+}
+
+.barra-area__pista {
+    display: flex;
+    width: 100%;
+    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--borde-suave);
+}
+
+.barra-area__segmento { height: 100%; }
+.barra-area__segmento--estable { background: var(--estable); }
+.barra-area__segmento--seguimiento { background: var(--seguimiento); }
+.barra-area__segmento--renovacion { background: var(--renovacion); }
+
+.barra-area__leyenda {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+    font-size: 11.5px;
+    color: var(--texto-suave);
+}
+
+/* Donut */
+.donut-envoltura {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.donut__numero { font-size: 20px; font-weight: 700; fill: var(--texto); }
+.donut__etiqueta { font-size: 9px; fill: var(--texto-suave); }
+
+.donut-leyenda { flex: 1; min-width: 140px; }
+
+.donut-leyenda__fila {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    padding: 6px 0;
+}
+
+.donut-leyenda__punto {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    display: inline-block;
+}
+
+/* Equipos con mas fallas */
+.fila-top-falla {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--borde-suave);
+    font-size: 13.5px;
+}
+
+.fila-top-falla:last-child { border-bottom: none; }
+
+.fila-top-falla__cifras {
+    display: flex;
+    gap: 10px;
+    font-size: 13px;
+}
+
+
+/* ============================================================
+   Alertas del dashboard (RF-17)
+   ============================================================ */
+
+.alerta-item {
+    padding: 14px 16px;
+    border-left: 4px solid var(--borde-suave);
+    margin-bottom: 12px;
+    border-radius: var(--radio);
+    background: var(--lienzo);
+}
+
+.alerta-item:last-child { margin-bottom: 0; }
+
+.alerta-item--alta {
+    border-left-color: var(--renovacion);
+    background: var(--renovacion-fondo);
+}
+
+.alerta-item--media {
+    border-left-color: var(--seguimiento);
+    background: var(--seguimiento-fondo);
+}
+
+.alerta-item__tipo {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--etiqueta);
+}
+
+.alerta-item__mensaje {
+    margin: 4px 0 0;
+    font-size: 13.5px;
+    color: var(--texto-suave);
+}

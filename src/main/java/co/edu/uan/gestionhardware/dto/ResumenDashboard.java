@@ -2,12 +2,12 @@ package co.edu.uan.gestionhardware.dto;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Datos agregados que alimentan el panel principal: totales generales,
- * distribucion de equipos por estado y por area, y el detalle de
- * indicadores por equipo (RF-14, RF-15, RF-16) para la tabla del dashboard.
+ * la distribucion de equipos por estado (para el donut) y por area (para
+ * las barras apiladas), el top de equipos con mas fallas, las alertas
+ * activas y el detalle de indicadores por equipo (RF-14, RF-15, RF-16).
  */
 public class ResumenDashboard {
 
@@ -16,16 +16,18 @@ public class ResumenDashboard {
     private final long mantenimientosPendientes;
     private final long equiposReclasificados;
     private final BigDecimal horasIndisponibilidadTotal;
-    private final Map<String, Long> equiposPorEstado;
-    private final Map<String, Long> equiposPorArea;
+    private final List<SegmentoDonut> segmentosEstado;
+    private final List<AreaResumen> areasResumen;
+    private final List<IndicadorEquipo> topFallas;
     private final List<IndicadorEquipo> indicadoresPorEquipo;
     private final List<Alerta> alertas;
 
     public ResumenDashboard(long totalEquipos, long incidenciasAbiertas,
                             long mantenimientosPendientes, long equiposReclasificados,
                             BigDecimal horasIndisponibilidadTotal,
-                            Map<String, Long> equiposPorEstado,
-                            Map<String, Long> equiposPorArea,
+                            List<SegmentoDonut> segmentosEstado,
+                            List<AreaResumen> areasResumen,
+                            List<IndicadorEquipo> topFallas,
                             List<IndicadorEquipo> indicadoresPorEquipo,
                             List<Alerta> alertas) {
         this.totalEquipos = totalEquipos;
@@ -33,8 +35,9 @@ public class ResumenDashboard {
         this.mantenimientosPendientes = mantenimientosPendientes;
         this.equiposReclasificados = equiposReclasificados;
         this.horasIndisponibilidadTotal = horasIndisponibilidadTotal;
-        this.equiposPorEstado = equiposPorEstado;
-        this.equiposPorArea = equiposPorArea;
+        this.segmentosEstado = segmentosEstado;
+        this.areasResumen = areasResumen;
+        this.topFallas = topFallas;
         this.indicadoresPorEquipo = indicadoresPorEquipo;
         this.alertas = alertas;
     }
@@ -44,8 +47,16 @@ public class ResumenDashboard {
     public long getMantenimientosPendientes() { return mantenimientosPendientes; }
     public long getEquiposReclasificados() { return equiposReclasificados; }
     public BigDecimal getHorasIndisponibilidadTotal() { return horasIndisponibilidadTotal; }
-    public Map<String, Long> getEquiposPorEstado() { return equiposPorEstado; }
-    public Map<String, Long> getEquiposPorArea() { return equiposPorArea; }
+    public List<SegmentoDonut> getSegmentosEstado() { return segmentosEstado; }
+    public List<AreaResumen> getAreasResumen() { return areasResumen; }
+    public List<IndicadorEquipo> getTopFallas() { return topFallas; }
     public List<IndicadorEquipo> getIndicadoresPorEquipo() { return indicadoresPorEquipo; }
     public List<Alerta> getAlertas() { return alertas; }
+
+    public long getCandidatosARenovacion() {
+        return segmentosEstado.stream()
+                .filter(s -> s.getNombre().equalsIgnoreCase("Candidato a renovacion"))
+                .mapToLong(SegmentoDonut::getCantidad)
+                .findFirst().orElse(0);
+    }
 }

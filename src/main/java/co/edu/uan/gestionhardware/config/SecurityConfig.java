@@ -48,14 +48,16 @@ public class SecurityConfig {
 
                 .anyRequest().authenticated()
             )
+
             .formLogin(form -> form
                 .loginPage("/login")
                 .usernameParameter("email")
                 .passwordParameter("password")
-                .defaultSuccessUrl("/equipos", true)
+                .successHandler(new RedireccionPorRolSuccessHandler())
                 .failureUrl("/login?error")
                 .permitAll()
             )
+            
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")

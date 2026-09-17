@@ -15,12 +15,14 @@
 
             <div class="encabezado">
                 <div>
-                    <h1 class="encabezado__titulo">Panel de indicadores</h1>
+                    <h1 class="encabezado__titulo">Dashboard operativo</h1>
                     <p class="encabezado__intro">
-                        Resumen operativo del inventario, calculado en cada visita a partir
-                        del historial de incidencias y mantenimientos.
+                        Resumen en tiempo real del parque tecnológico, calculado en cada visita.
                     </p>
                 </div>
+                <form th:action="@{/dashboard/notificar}" method="post">
+                    <button type="submit" class="boton boton--secundario">Enviar alertas por correo</button>
+                </form>
             </div>
 
             <div th:if="${exito}" class="aviso aviso--exito" th:text="${exito}"></div>
@@ -33,13 +35,87 @@
                 equipo(s) según los umbrales configurados.
             </div>
 
+            <!-- Tarjetas KPI -->
+            <div class="kpis">
 
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                <div class="kpi kpi--azul">
+                    <div class="kpi__icono">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" />
+                            <line x1="8" y1="21" x2="16" y2="21" />
+                            <line x1="12" y1="17" x2="12" y2="21" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="kpi__valor" th:text="${resumen.totalEquipos}">0</div>
+                        <div class="kpi__etiqueta">Equipos activos</div>
+                    </div>
+                </div>
+
+                <div class="kpi kpi--seguimiento">
+                    <div class="kpi__icono">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="kpi__valor" th:text="${resumen.incidenciasAbiertas}">0</div>
+                        <div class="kpi__etiqueta">Incidencias abiertas</div>
+                    </div>
+                </div>
+
+                <div class="kpi kpi--seguimiento">
+                    <div class="kpi__icono">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="kpi__valor" th:text="${resumen.mantenimientosPendientes}">0</div>
+                        <div class="kpi__etiqueta">Mantenimientos pendientes</div>
+                    </div>
+                </div>
+
+                <div class="kpi kpi--renovacion">
+                    <div class="kpi__icono">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="kpi__valor"
+                             th:text="${#numbers.formatDecimal(resumen.horasIndisponibilidadTotal, 1, 1)}">0</div>
+                        <div class="kpi__etiqueta">Horas de indisponibilidad</div>
+                    </div>
+                </div>
+
+                <div class="kpi kpi--renovacion">
+                    <div class="kpi__icono">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 9v4" />
+                            <path d="M12 17h.01" />
+                            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="kpi__valor" th:text="${resumen.candidatosARenovacion}">0</div>
+                        <div class="kpi__etiqueta">Candidatos a renovación</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Alertas activas -->
+            <div style="display:flex; align-items:center; justify-content:space-between; margin:24px 0 16px;">
                 <h2 style="font-size:15px; font-weight:700; margin:0;">Alertas activas</h2>
-                <form th:if="${!#lists.isEmpty(resumen.alertas)}"
-                      th:action="@{/dashboard/notificar}" method="post">
-                    <button type="submit" class="boton boton--pequeno">Enviar por correo</button>
-                </form>
             </div>
 
             <div th:if="${#lists.isEmpty(resumen.alertas)}" class="aviso aviso--exito" style="margin-bottom:24px;">
@@ -56,57 +132,86 @@
                 </div>
             </div>
 
-            <!-- Tarjetas de resumen -->
-            <div class="tarjetas-resumen">
+            <!-- Equipos por area y estado + Donut -->
+            <div class="tablero-dos-columnas">
 
-                <div class="tarjeta-resumen">
-                    <div class="tarjeta-resumen__valor" th:text="${resumen.totalEquipos}">0</div>
-                    <div class="tarjeta-resumen__etiqueta">Equipos activos</div>
+                <div class="panel">
+                    <h2 class="panel__titulo">Equipos por área y estado</h2>
+
+                    <div th:if="${#lists.isEmpty(resumen.areasResumen)}" class="aviso aviso--info">
+                        Todavía no hay equipos activos.
+                    </div>
+
+                    <div class="barra-area" th:each="a : ${resumen.areasResumen}">
+                        <div class="barra-area__cabecera">
+                            <span th:text="${a.nombre}">-</span>
+                            <span class="texto-suave" th:text="${a.totalEquipos} + ' equipos'">-</span>
+                        </div>
+                        <div class="barra-area__pista">
+                            <div class="barra-area__segmento barra-area__segmento--estable"
+                                 th:style="'width:' + ${a.pctEstable} + '%'"></div>
+                            <div class="barra-area__segmento barra-area__segmento--seguimiento"
+                                 th:style="'width:' + ${a.pctSeguimiento} + '%'"></div>
+                            <div class="barra-area__segmento barra-area__segmento--renovacion"
+                                 th:style="'width:' + ${a.pctRenovacion} + '%'"></div>
+                        </div>
+                        <div class="barra-area__leyenda">
+                            <span th:text="${a.estable} + ' Est.'">-</span>
+                            <span th:text="${a.seguimiento} + ' Seg.'">-</span>
+                            <span th:text="${a.renovacion} + ' Crít.'">-</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="tarjeta-resumen">
-                    <div class="tarjeta-resumen__valor" th:text="${resumen.incidenciasAbiertas}">0</div>
-                    <div class="tarjeta-resumen__etiqueta">Incidencias abiertas</div>
-                </div>
+                <div class="panel">
+                    <h2 class="panel__titulo">Distribución global de estados</h2>
 
-                <div class="tarjeta-resumen">
-                    <div class="tarjeta-resumen__valor" th:text="${resumen.mantenimientosPendientes}">0</div>
-                    <div class="tarjeta-resumen__etiqueta">Mantenimientos pendientes</div>
-                </div>
+                    <div class="donut-envoltura">
+                        <svg viewBox="0 0 120 120" width="140" height="140" class="donut">
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="var(--borde-suave)" stroke-width="14" />
+                            <path th:each="s : ${resumen.segmentosEstado}"
+                                  th:if="${s.cantidad > 0}"
+                                  th:d="${s.pathArco}"
+                                  fill="none"
+                                  th:stroke="${s.colorVar}"
+                                  stroke-width="14" />
+                            <text x="60" y="56" text-anchor="middle" class="donut__numero"
+                                  th:text="${resumen.totalEquipos}">0</text>
+                            <text x="60" y="72" text-anchor="middle" class="donut__etiqueta">equipos</text>
+                        </svg>
 
-                <div class="tarjeta-resumen">
-                    <div class="tarjeta-resumen__valor"
-                         th:text="${#numbers.formatDecimal(resumen.horasIndisponibilidadTotal, 1, 1)}">0</div>
-                    <div class="tarjeta-resumen__etiqueta">Horas de indisponibilidad acumuladas</div>
+                        <div class="donut-leyenda">
+                            <div class="donut-leyenda__fila" th:each="s : ${resumen.segmentosEstado}">
+                                <span class="donut-leyenda__punto" th:style="'background:' + ${s.colorVar}"></span>
+                                <span th:text="${s.nombre}">-</span>
+                                <span class="texto-suave"
+                                      th:text="${s.cantidad} + ' · ' + ${#numbers.formatDecimal(s.porcentaje, 1, 0)} + '%'">-</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
 
-            <!-- Distribucion por estado y por area -->
-            <div class="rejilla" style="margin-bottom:24px;">
+            <!-- Equipos con mas fallas -->
+            <div class="panel" style="margin: 24px 0;">
+                <h2 class="panel__titulo">Equipos con más fallas (últimos 30 días)</h2>
 
-                <div class="panel">
-                    <h2 class="panel__titulo">Equipos por estado</h2>
-                    <div class="distribucion">
-                        <div class="distribucion__fila" th:each="entrada : ${resumen.equiposPorEstado}">
-                            <span class="insignia"
-                                  th:classappend="${entrada.key == 'Estable'} ? 'insignia--estable' : (${entrada.key == 'En seguimiento'} ? 'insignia--seguimiento' : 'insignia--renovacion')"
-                                  th:text="${entrada.key}">-</span>
-                            <span class="distribucion__valor" th:text="${entrada.value}">0</span>
-                        </div>
-                    </div>
+                <div th:if="${#lists.isEmpty(resumen.topFallas)}" class="aviso aviso--exito">
+                    Ningún equipo registra fallas en los últimos 30 días.
                 </div>
 
-                <div class="panel">
-                    <h2 class="panel__titulo">Equipos por área</h2>
-                    <div class="distribucion">
-                        <div class="distribucion__fila" th:each="entrada : ${resumen.equiposPorArea}">
-                            <span th:text="${entrada.key}">-</span>
-                            <span class="distribucion__valor" th:text="${entrada.value}">0</span>
-                        </div>
+                <div class="fila-top-falla" th:each="ind : ${resumen.topFallas}">
+                    <div>
+                        <strong th:text="${ind.equipo.codigoInterno}">-</strong>
+                        <span class="texto-suave" th:text="' · ' + ${ind.equipo.area.nombre}">-</span>
+                    </div>
+                    <div class="fila-top-falla__cifras">
+                        <span th:text="${ind.fallasMes} + ' fallas'">-</span>
+                        <span class="texto-suave"
+                              th:text="${#numbers.formatDecimal(ind.horasIndisponibilidad, 1, 1)} + ' h inop.'">-</span>
                     </div>
                 </div>
-
             </div>
 
             <!-- Detalle de indicadores por equipo -->

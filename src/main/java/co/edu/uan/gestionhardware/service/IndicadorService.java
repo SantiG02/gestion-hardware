@@ -1,8 +1,10 @@
 package co.edu.uan.gestionhardware.service;
 
 import co.edu.uan.gestionhardware.dto.Alerta;
+import co.edu.uan.gestionhardware.dto.AreaResumen;
 import co.edu.uan.gestionhardware.dto.IndicadorEquipo;
 import co.edu.uan.gestionhardware.dto.ResumenDashboard;
+import co.edu.uan.gestionhardware.dto.SegmentoDonut;
 import co.edu.uan.gestionhardware.model.ConfiguracionSistema;
 import co.edu.uan.gestionhardware.model.Equipo;
 import co.edu.uan.gestionhardware.repository.EquipoRepository;
@@ -17,14 +19,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
  * Calcula los indicadores operativos por equipo (RF-14, RF-15) y clasifica
  * automaticamente cada equipo segun los umbrales definidos (RF-16). Tambien
- * arma el resumen agregado que consume el panel principal (RF-18).
+ * arma el resumen agregado que consume el panel principal (RF-18): la
+ * distribucion de estados para el donut, el desglose por area para las
+ * barras apiladas, y el top de equipos con mas fallas.
  *
  * Los umbrales y el estado calculado (RF-03) ya no son constantes: se leen
  * en cada calculo desde ConfiguracionSistema, la fila unica de configuracion
@@ -34,9 +40,11 @@ import java.util.Map;
 @Transactional(readOnly = true)
 public class IndicadorService {
 
-    // No forma parte de RF-03 (esos umbrales son solo fallas, indisponibilidad,
-    // antiguedad y actualizaciones), asi que queda fijo aqui.
     private static final int DIAS_MANTENIMIENTO_PROXIMO = 7;
+    private static final int TOP_FALLAS_LIMITE = 5;
+    private static final double CX_DONUT = 60;
+    private static final double CY_DONUT = 60;
+    private static final double RADIO_DONUT = 54.0;
 
     private static final String ESTADO_ESTABLE = "Estable";
     private static final String ESTADO_SEGUIMIENTO = "En seguimiento";
@@ -76,8 +84,13 @@ public class IndicadorService {
         long equiposReclasificados = 0;
         BigDecimal horasIndisponibilidadTotal = BigDecimal.ZERO;
 
-        Map<String, Long> equiposPorEstado = new LinkedHashMap<>();
-        Map<String, Long> equiposPorArea = new LinkedHashMap<>();
+        // area -> [estable, seguimiento, renovacion]
+        Map<String, long[]> conteoPorArea = new LinkedHashMap<>();
+        Map<String, Long> conteoPorEstado = new LinkedHashMap<>();
+        conteoPorEstado.put(ESTADO_ESTABLE, 0L);
+        conteoPorEstado.put(ESTADO_SEGUIMIENTO, 0L);
+        conteoPorEstado.put(ESTADO_RENOVACION, 0L);
+
         List<Alerta> alertas = new ArrayList<>();
 
         for (Equipo equipo : equipos) {
@@ -93,8 +106,14 @@ public class IndicadorService {
             horasIndisponibilidadTotal = horasIndisponibilidadTotal.add(indicador.getHorasIndisponibilidad());
             alertas.addAll(generarAlertasEquipo(indicador, configuracion));
 
-            equiposPorEstado.merge(equipo.getEstadoEquipo().getNombre(), 1L, Long::sum);
-            equiposPorArea.merge(equipo.getArea().getNombre(), 1L, Long::sum);
+            String estado = equipo.getEstadoEquipo().getNombre();
+            conteoPorEstado.merge(estado, 1L, Long::sum);
+
+            String area = equipo.getArea().getNombre();
+            long[] conteo = conteoPorArea.computeIfAbsent(area, k -> new long[3]);
+            if (ESTADO_ESTABLE.equalsIgnoreCase(estado)) conteo[0]++;
+            else if (ESTADO_SEGUIMIENTO.equalsIgnoreCase(estado)) conteo[1]++;
+            else conteo[2]++;
         }
 
         mantenimientoRepository.findProximosAVencer(LocalDate.now().plusDays(DIAS_MANTENIMIENTO_PROXIMO))
@@ -104,16 +123,103 @@ public class IndicadorService {
                         m.getEquipo().getCodigoInterno(),
                         "Mantenimiento preventivo programado para el " + m.getFechaProgramada())));
 
+        List<SegmentoDonut> segmentosEstado = construirSegmentosDonut(conteoPorEstado);
+        List<AreaResumen> areasResumen = construirResumenPorArea(conteoPorArea);
+
+        List<IndicadorEquipo> topFallas = indicadores.stream()
+                .filter(i -> i.getFallasMes() > 0)
+                .sorted(Comparator.comparingLong(IndicadorEquipo::getFallasMes).reversed())
+                .limit(TOP_FALLAS_LIMITE)
+                .toList();
+
         return new ResumenDashboard(
                 equipos.size(),
                 incidenciaRepository.countByEstadoNot("CERRADA"),
                 mantenimientoRepository.countByEstadoNot("FINALIZADO"),
                 equiposReclasificados,
                 horasIndisponibilidadTotal,
-                equiposPorEstado,
-                equiposPorArea,
+                segmentosEstado,
+                areasResumen,
+                topFallas,
                 indicadores,
                 alertas);
+    }
+
+    private List<SegmentoDonut> construirSegmentosDonut(Map<String, Long> conteoPorEstado) {
+
+        long total = conteoPorEstado.values().stream().mapToLong(Long::longValue).sum();
+
+        String[] nombres = {ESTADO_ESTABLE, ESTADO_SEGUIMIENTO, ESTADO_RENOVACION};
+        String[] colores = {"var(--estable)", "var(--seguimiento)", "var(--renovacion)"};
+
+        List<SegmentoDonut> segmentos = new ArrayList<>();
+        double anguloInicio = -90; // arranca arriba (12 en punto)
+
+        for (int i = 0; i < nombres.length; i++) {
+            long cantidad = conteoPorEstado.getOrDefault(nombres[i], 0L);
+            double porcentaje = total == 0 ? 0 : (cantidad * 100.0) / total;
+            double anguloBarrido = total == 0 ? 0 : (cantidad * 360.0) / total;
+
+            String pathArco = construirArco(anguloInicio, anguloInicio + anguloBarrido, cantidad == total && total > 0);
+            segmentos.add(new SegmentoDonut(nombres[i], cantidad, colores[i], porcentaje, pathArco));
+
+            anguloInicio += anguloBarrido;
+        }
+
+        return segmentos;
+    }
+
+    /**
+     * Arma el atributo "d" de un <path> SVG que dibuja un arco real entre dos
+     * angulos (en grados, 0 = derecha, sentido horario). Si el segmento ocupa
+     * el circulo completo (un solo estado con el 100%), un unico arco de 360
+     * grados no se puede representar con el comando A, asi que se dibuja como
+     * dos semicirculos.
+     */
+    private String construirArco(double anguloInicioGrados, double anguloFinGrados, boolean circuloCompleto) {
+
+        if (circuloCompleto) {
+            double xDerecha = CX_DONUT + RADIO_DONUT;
+            double xIzquierda = CX_DONUT - RADIO_DONUT;
+            return String.format(Locale.US,
+                    "M %.3f %.3f A %.3f %.3f 0 1 1 %.3f %.3f A %.3f %.3f 0 1 1 %.3f %.3f",
+                    xDerecha, CY_DONUT, RADIO_DONUT, RADIO_DONUT, xIzquierda, CY_DONUT,
+                    RADIO_DONUT, RADIO_DONUT, xDerecha, CY_DONUT);
+        }
+
+        double inicioRad = Math.toRadians(anguloInicioGrados);
+        double finRad = Math.toRadians(anguloFinGrados);
+
+        double xInicio = CX_DONUT + RADIO_DONUT * Math.cos(inicioRad);
+        double yInicio = CY_DONUT + RADIO_DONUT * Math.sin(inicioRad);
+        double xFin = CX_DONUT + RADIO_DONUT * Math.cos(finRad);
+        double yFin = CY_DONUT + RADIO_DONUT * Math.sin(finRad);
+
+        int arcoLargo = (anguloFinGrados - anguloInicioGrados) > 180 ? 1 : 0;
+
+        return String.format(Locale.US, "M %.3f %.3f A %.3f %.3f 0 %d 1 %.3f %.3f",
+                xInicio, yInicio, RADIO_DONUT, RADIO_DONUT, arcoLargo, xFin, yFin);
+    }
+
+    private List<AreaResumen> construirResumenPorArea(Map<String, long[]> conteoPorArea) {
+
+        List<AreaResumen> resumen = new ArrayList<>();
+
+        for (Map.Entry<String, long[]> entrada : conteoPorArea.entrySet()) {
+
+            long[] conteo = entrada.getValue();
+            long total = conteo[0] + conteo[1] + conteo[2];
+
+            double pctEstable = total == 0 ? 0 : (conteo[0] * 100.0) / total;
+            double pctSeguimiento = total == 0 ? 0 : (conteo[1] * 100.0) / total;
+            double pctRenovacion = total == 0 ? 0 : (conteo[2] * 100.0) / total;
+
+            resumen.add(new AreaResumen(entrada.getKey(), total, conteo[0], conteo[1], conteo[2],
+                    pctEstable, pctSeguimiento, pctRenovacion));
+        }
+
+        resumen.sort(Comparator.comparingLong(AreaResumen::getTotalEquipos).reversed());
+        return resumen;
     }
 
     private IndicadorEquipo calcularIndicadores(Equipo equipo, ConfiguracionSistema configuracion) {
