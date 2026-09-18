@@ -3,6 +3,7 @@ package co.edu.uan.gestionhardware.service;
 import co.edu.uan.gestionhardware.dto.Alerta;
 import co.edu.uan.gestionhardware.model.Usuario;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,9 @@ public class NotificacionService {
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final UsuarioService usuarioService;
 
+    @Value("${hardtrack.mail.remitente}")
+    private String remitente;
+
     public NotificacionService(ObjectProvider<JavaMailSender> mailSenderProvider,
                                UsuarioService usuarioService) {
         this.mailSenderProvider = mailSenderProvider;
@@ -48,6 +52,7 @@ public class NotificacionService {
         JavaMailSender mailSender = obtenerMailSenderObligatorio();
 
         SimpleMailMessage mensaje = new SimpleMailMessage();
+        mensaje.setFrom(remitente);
         mensaje.setTo(usuario.getEmail());
         mensaje.setSubject("HardTrack - Tu cuenta fue creada");
         mensaje.setText(
@@ -94,6 +99,7 @@ public class NotificacionService {
         }
 
         SimpleMailMessage mensaje = new SimpleMailMessage();
+        mensaje.setFrom(remitente);
         mensaje.setTo(destinatarios.toArray(String[]::new));
         mensaje.setSubject("HardTrack - " + alertas.size() + " alerta(s) activa(s)");
         mensaje.setText(cuerpo.toString());
