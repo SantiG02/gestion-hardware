@@ -5,6 +5,8 @@ import co.edu.uan.gestionhardware.repository.ConfiguracionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 /**
  * Administra la configuracion parametrizable del sistema (RF-03, RF-04).
  * Es una tabla de una sola fila (id = 1), sembrada con valores por defecto
@@ -32,5 +34,21 @@ public class ConfiguracionService {
     public ConfiguracionSistema guardar(ConfiguracionSistema configuracion) {
         configuracion.setId(ID_UNICO);
         return configuracionRepository.save(configuracion);
+    }
+
+    /**
+     * Guarda la firma de las alertas activas de la revision actual, y si se
+     * mando correo en esta revision, tambien la marca de tiempo del envio.
+     * Se usa desde EnvioAutomaticoAlertas en cada revision, haya o no correo
+     * de por medio.
+     */
+    @Transactional
+    public void actualizarEstadoAlertas(String firmaAlertas, LocalDateTime momentoEnvio) {
+        ConfiguracionSistema configuracion = obtener();
+        configuracion.setFirmaUltimasAlertas(firmaAlertas);
+        if (momentoEnvio != null) {
+            configuracion.setUltimoEnvioAutomatico(momentoEnvio);
+        }
+        configuracionRepository.save(configuracion);
     }
 }

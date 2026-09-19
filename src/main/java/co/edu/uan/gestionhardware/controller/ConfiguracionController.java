@@ -37,6 +37,14 @@ public class ConfiguracionController {
             return "configuracion/formulario";
         }
 
+        // El formulario no incluye los campos internos del envio automatico
+        // (ultimoEnvioAutomatico, firmaUltimasAlertas), asi que se preservan
+        // los que ya estaban guardados para no perderlos cada vez que
+        // alguien edita los umbrales.
+        ConfiguracionSistema actual = configuracionService.obtener();
+        configuracion.setUltimoEnvioAutomatico(actual.getUltimoEnvioAutomatico());
+        configuracion.setFirmaUltimasAlertas(actual.getFirmaUltimasAlertas());
+
         configuracionService.guardar(configuracion);
         flash.addFlashAttribute("exito", "Configuracion actualizada correctamente");
         return "redirect:/configuracion";

@@ -6,13 +6,14 @@
 /* ---------- Variables ---------- */
 :root {
     /* Marca */
-    --azul:          #2563eb;
-    --azul-oscuro:   #1d4ed8;
-    --azul-suave:    #eff6ff;
+    --azul:          #1F2937;
+    --azul-oscuro:   #111827;
+    --azul-suave:    #F1F5F9;
+    --acento:        #3B82F6;
 
     /* Fondos oscuros (login y barra lateral) */
-    --fondo:         #101b2d;
-    --fondo-alto:    #16243b;
+    --fondo:         #0F172A;
+    --fondo-alto:    #1E293B;
 
     /* Fondos claros */
     --lienzo:        #f8fafc;
@@ -48,14 +49,14 @@
     --radio-grande:  12px;
 
         /* Barra lateral */
-    --panel:            #1a2332;
-    --panel-borde:      #243045;
-    --panel-activo:     #2e3d58;
-    --panel-texto:      #e8edf5;
-    --panel-suave:      #94a8c2;
-    --panel-tenue:      #64748b;
-    --panel-grupo:      #3b4f6e;
-    --azul-marca:       #1a6bc8;
+    --panel:            #111827;
+    --panel-borde:      #1F2937;
+    --panel-activo:     #1F2937;
+    --panel-texto:      #F1F5F9;
+    --panel-suave:      #94A3B8;
+    --panel-tenue:      #64748B;
+    --panel-grupo:      #475569;
+    --azul-marca:       #3B82F6;
 }
 
 /* ---------- Base ---------- */
@@ -75,7 +76,7 @@ h1, h2, h3, h4 {
     letter-spacing: -0.01em;
 }
 
-a { color: var(--azul); }
+a { color: var(--acento); }
 
 /* ---------- Avisos ---------- */
 .aviso {
@@ -99,7 +100,7 @@ a { color: var(--azul); }
 }
 
 .aviso--info {
-    background: var(--azul-suave);
+    background: #eff6ff;
     border: 1px solid #bfdbfe;
     color: #1e40af;
 }
@@ -138,8 +139,8 @@ a { color: var(--azul); }
 .campo__seleccion:focus,
 .campo__area:focus {
     outline: none;
-    border-color: var(--azul);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+    border-color: var(--acento);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
 }
 
 .campo__entrada--error,
@@ -194,7 +195,7 @@ a { color: var(--azul); }
 }
 
 .boton:focus-visible {
-    outline: 3px solid rgba(37, 99, 235, 0.4);
+    outline: 3px solid rgba(59, 130, 246, 0.4);
     outline-offset: 2px;
 }
 
@@ -344,7 +345,7 @@ a { color: var(--azul); }
 }
 
 .insignia--rol {
-    color: var(--azul);
+    color: var(--acento);
     background: var(--azul-suave);
 }
 
@@ -359,6 +360,7 @@ a { color: var(--azul); }
     border: 1px solid var(--borde-suave);
     border-radius: var(--radio-grande);
     padding: 24px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.05);
 }
 
 /* ---------- Tablas ---------- */
@@ -400,7 +402,7 @@ a { color: var(--azul); }
     border-radius: 50%;
     font-size: 12.5px;
     font-weight: 700;
-    color: var(--azul);
+    color: var(--acento);
     background: var(--azul-suave);
 }
 
@@ -646,7 +648,7 @@ a { color: var(--azul); }
     border-radius: 999px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--azul);
+    color: var(--acento);
 }
 
 @media (max-width: 900px) {
@@ -770,6 +772,7 @@ a { color: var(--azul); }
     border-left: 4px solid var(--azul);
     border-radius: var(--radio-grande);
     padding: 16px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.05);
 }
 
 .kpi--azul { border-left-color: var(--azul); }
