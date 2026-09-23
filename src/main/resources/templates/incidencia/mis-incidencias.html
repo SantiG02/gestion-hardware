@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Mis incidencias')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo">Mis incidencias</h1>
+                    <p class="encabezado__intro">Fallas que has reportado y su estado actual</p>
+                </div>
+                <a th:href="@{/mis-incidencias/nueva}" class="boton">Reportar incidencia</a>
+            </div>
+
+            <div th:if="${exito}" class="aviso aviso--exito" th:text="${exito}"></div>
+            <div th:if="${error}" class="aviso aviso--error" th:text="${error}"></div>
+
+            <div th:if="${#lists.isEmpty(incidencias)}" class="aviso aviso--info">
+                Todavía no has reportado ninguna incidencia.
+            </div>
+
+            <div th:each="inc : ${incidencias}" class="panel" style="margin-bottom:14px;">
+
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+                    <div>
+                        <strong th:text="${inc.equipo.codigoInterno}">-</strong>
+                        <span class="texto-suave" th:text="' · ' + ${inc.equipo.marca} + ' ' + ${inc.equipo.modelo}">-</span>
+                        <br />
+                        <span class="texto-suave" style="font-size:12.5px"
+                              th:text="${inc.categoriaFalla.nombre} + ' · ' + ${#temporals.format(inc.fechaReporte, 'dd/MM/yyyy HH:mm')}">-</span>
+                    </div>
+
+                    <div style="display:flex; gap:8px;">
+                        <span class="insignia"
+                              th:classappend="${inc.prioridad == 'ALTA'} ? 'insignia--renovacion'
+                                            : (${inc.prioridad == 'MEDIA'} ? 'insignia--seguimiento'
+                                            : 'insignia--neutra')"
+                              th:text="${inc.prioridad}">-</span>
+
+                        <span class="insignia"
+                              th:classappend="${inc.estado == 'CERRADA'} ? 'insignia--estable' : 'insignia--seguimiento'"
+                              th:text="${inc.estado == 'CERRADA'} ? 'Cerrada' : 'Abierta'">-</span>
+                    </div>
+                </div>
+
+                <p style="margin:12px 0 0; font-size:13.5px; color:var(--etiqueta);" th:text="${inc.descripcion}">-</p>
+
+                <div th:if="${inc.estado == 'CERRADA'}" class="aviso aviso--exito" style="margin-top:12px; margin-bottom:0;">
+                    <strong>Solución del técnico:</strong> <span th:text="${inc.solucion}">-</span>
+                </div>
+
+                <div th:if="${inc.confirmacionUsuario == 'RECHAZADA' and inc.comentarioUsuario != null}"
+                     class="aviso aviso--info" style="margin-top:8px; margin-bottom:0;">
+                    <strong>Le dijiste al técnico:</strong> <span th:text="${inc.comentarioUsuario}">-</span>
+                </div>
+
+                <div th:if="${inc.confirmacionUsuario == 'APROBADA'}" class="texto-suave"
+                     style="margin-top:10px; font-size:12.5px;">
+                    ✓ Confirmaste que quedó resuelto
+                </div>
+
+                <!-- Botones: reporte propio mientras sigue abierto -->
+                <div th:if="${inc.estado == 'ABIERTA'}" style="display:flex; gap:8px; margin-top:14px;">
+                    <a th:href="@{/mis-incidencias/{id}/editar(id=${inc.id})}"
+                       class="boton boton--secundario boton--pequeno">Editar</a>
+                    <form th:action="@{/mis-incidencias/{id}/eliminar(id=${inc.id})}" method="post"
+                          onsubmit="return confirm('¿Eliminar este reporte? Esta acción no se puede deshacer.');">
+                        <button type="submit" class="boton boton--peligro boton--pequeno">Eliminar</button>
+                    </form>
+                </div>
+
+                <!-- Botones: cerrada, esperando que el usuario confirme -->
+                <div th:if="${inc.estado == 'CERRADA' and inc.confirmacionUsuario == 'PENDIENTE'}"
+                     style="display:flex; gap:8px; margin-top:14px;">
+                    <form th:action="@{/mis-incidencias/{id}/confirmar(id=${inc.id})}" method="post">
+                        <button type="submit" class="boton boton--exito boton--pequeno">✓ Quedó resuelto</button>
+                    </form>
+                    <a th:href="@{/mis-incidencias/{id}/rechazar(id=${inc.id})}"
+                       class="boton boton--peligro boton--pequeno">✗ Sigue fallando</a>
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

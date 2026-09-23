@@ -45,6 +45,7 @@ public class SecurityConfig {
                 .requestMatchers("/mantenimientos/**").hasAnyRole("GESTOR", "TECNICO")
 
                 .requestMatchers("/dashboard/**").hasRole("GESTOR")
+                .requestMatchers("/mis-incidencias/**").hasRole("USUARIO")
 
                 .anyRequest().authenticated()
             )

@@ -3,6 +3,7 @@ package co.edu.uan.gestionhardware.service;
 import co.edu.uan.gestionhardware.dto.Alerta;
 import co.edu.uan.gestionhardware.dto.AreaResumen;
 import co.edu.uan.gestionhardware.dto.IndicadorEquipo;
+import co.edu.uan.gestionhardware.dto.IndicadoresUsuarioFinal;
 import co.edu.uan.gestionhardware.dto.ResumenDashboard;
 import co.edu.uan.gestionhardware.dto.SegmentoDonut;
 import co.edu.uan.gestionhardware.model.ConfiguracionSistema;
@@ -30,7 +31,8 @@ import java.util.Map;
  * automaticamente cada equipo segun los umbrales definidos (RF-16). Tambien
  * arma el resumen agregado que consume el panel principal (RF-18): la
  * distribucion de estados para el donut, el desglose por area para las
- * barras apiladas, y el top de equipos con mas fallas.
+ * barras apiladas, el top de equipos con mas fallas, y el resumen de
+ * incidencias reportadas por Usuarios Finales.
  *
  * Los umbrales y el estado calculado (RF-03) ya no son constantes: se leen
  * en cada calculo desde ConfiguracionSistema, la fila unica de configuracion
@@ -132,6 +134,13 @@ public class IndicadorService {
                 .limit(TOP_FALLAS_LIMITE)
                 .toList();
 
+        IndicadoresUsuarioFinal indicadoresUsuarioFinal = new IndicadoresUsuarioFinal(
+                incidenciaRepository.countReportadasPorUsuarioFinal(),
+                incidenciaRepository.countAbiertasPorUsuarioFinal(),
+                incidenciaRepository.countPendientesConfirmacionUsuarioFinal(),
+                incidenciaRepository.countConfirmadasUsuarioFinal(),
+                incidenciaRepository.sumVecesRechazadaUsuarioFinal());
+
         return new ResumenDashboard(
                 equipos.size(),
                 incidenciaRepository.countByEstadoNot("CERRADA"),
@@ -142,7 +151,8 @@ public class IndicadorService {
                 areasResumen,
                 topFallas,
                 indicadores,
-                alertas);
+                alertas,
+                indicadoresUsuarioFinal);
     }
 
     private List<SegmentoDonut> construirSegmentosDonut(Map<String, Long> conteoPorEstado) {

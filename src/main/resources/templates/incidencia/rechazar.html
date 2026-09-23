@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Mis incidencias')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <p style="margin: 0 0 12px;">
+                <a th:href="@{/mis-incidencias}" class="texto-suave"
+                   style="font-size: 13.5px; text-decoration: none;">← Volver a mis incidencias</a>
+            </p>
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo">¿Qué sigue fallando?</h1>
+                    <p class="encabezado__intro">
+                        Equipo <strong th:text="${incidencia.equipo.codigoInterno}">-</strong> ·
+                        el técnico marcó como solucionado:
+                        <em th:text="${incidencia.solucion}">-</em>
+                    </p>
+                </div>
+            </div>
+
+            <div class="panel">
+
+                <form th:action="@{/mis-incidencias/{id}/rechazar(id=${incidencia.id})}" method="post">
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Cuéntanos qué sigue mal *</label>
+                        <textarea class="campo__area" name="comentario" required
+                                  placeholder="Ej: El equipo volvió a apagarse esta mañana, el problema no se arregló del todo."></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 24px;">
+                        <button type="submit" class="boton">Reportar que sigue fallando</button>
+                        <a th:href="@{/mis-incidencias}" class="boton boton--secundario">Cancelar</a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

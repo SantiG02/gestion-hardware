@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Reportar incidencia')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <p style="margin: 0 0 12px;">
+                <a th:href="@{/mis-incidencias}" class="texto-suave"
+                   style="font-size: 13.5px; text-decoration: none;">← Volver a mis incidencias</a>
+            </p>
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo"
+                        th:text="${incidencia.id == null} ? 'Reportar incidencia' : 'Editar incidencia'">Reportar incidencia</h1>
+                    <p class="encabezado__intro">
+                        Cuéntanos qué problema presenta el equipo. El equipo técnico la va a revisar.
+                    </p>
+                </div>
+            </div>
+
+            <div class="panel">
+
+                <form th:action="@{/mis-incidencias/guardar}" th:object="${incidencia}" method="post">
+
+                    <input type="hidden" th:field="*{id}" />
+
+                    <div class="rejilla">
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Equipo *</label>
+                            <select class="campo__seleccion" th:field="*{equipo}"
+                                    th:classappend="${#fields.hasErrors('equipo')} ? 'campo__seleccion--error'">
+                                <option value="">-- Seleccione --</option>
+                                <option th:each="e : ${equipos}" th:value="${e.id}"
+                                        th:text="${e.codigoInterno} + ' · ' + ${e.marca} + ' ' + ${e.modelo}">-</option>
+                            </select>
+                            <span class="campo__error" th:errors="*{equipo}"></span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Tipo de falla *</label>
+                            <select class="campo__seleccion" th:field="*{categoriaFalla}"
+                                    th:classappend="${#fields.hasErrors('categoriaFalla')} ? 'campo__seleccion--error'">
+                                <option value="">-- Seleccione --</option>
+                                <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}">-</option>
+                            </select>
+                            <span class="campo__error" th:errors="*{categoriaFalla}"></span>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta">Prioridad *</label>
+                            <select class="campo__seleccion" th:field="*{prioridad}"
+                                    th:classappend="${#fields.hasErrors('prioridad')} ? 'campo__seleccion--error'">
+                                <option value="">-- Seleccione --</option>
+                                <option value="ALTA">Alta — el equipo no funciona</option>
+                                <option value="MEDIA">Media — funciona con problemas</option>
+                                <option value="BAJA">Baja — molesta pero no impide trabajar</option>
+                            </select>
+                            <span class="campo__error" th:errors="*{prioridad}"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="campo" style="margin-top:8px;">
+                        <label class="campo__etiqueta">Describe el problema *</label>
+                        <textarea class="campo__area" th:field="*{descripcion}"
+                                  th:classappend="${#fields.hasErrors('descripcion')} ? 'campo__entrada--error'"
+                                  placeholder="Ej: El computador no enciende desde esta mañana, la luz del cargador parpadea."></textarea>
+                        <span class="campo__error" th:errors="*{descripcion}"></span>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 24px;">
+                        <button type="submit" class="boton">Reportar incidencia</button>
+                        <a th:href="@{/mis-incidencias}" class="boton boton--secundario">Cancelar</a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -68,8 +68,7 @@ public class ConfiguracionSistema {
      * nuevas en la siguiente revision. Se actualiza en cada revision, haya
      * o no correo de por medio. No la edita el usuario.
      */
-    @Lob
-    @Column(name = "firma_ultimas_alertas")
+    @Column(name = "firma_ultimas_alertas", columnDefinition = "TEXT")
     private String firmaUltimasAlertas;
 
     // Getters y setters

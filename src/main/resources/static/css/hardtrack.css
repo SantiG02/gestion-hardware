@@ -776,6 +776,7 @@ a { color: var(--acento); }
 }
 
 .kpi--azul { border-left-color: var(--azul); }
+.kpi--estable { border-left-color: var(--estable); }
 .kpi--seguimiento { border-left-color: var(--seguimiento); }
 .kpi--renovacion { border-left-color: var(--renovacion); }
 
@@ -791,6 +792,7 @@ a { color: var(--acento); }
     color: var(--azul);
 }
 
+.kpi--estable .kpi__icono { background: var(--estable-fondo); color: var(--estable); }
 .kpi--seguimiento .kpi__icono { background: var(--seguimiento-fondo); color: var(--seguimiento); }
 .kpi--renovacion .kpi__icono { background: var(--renovacion-fondo); color: var(--renovacion); }
 

@@ -64,6 +64,10 @@ public class UsuarioService {
         return usuarioRepository.findConRelaciones(id);
     }
 
+    public Optional<Usuario> obtenerPorEmail(String email) {
+        return usuarioRepository.findByEmailConRol(email);
+    }
+
     @Transactional
     public Usuario guardar(Usuario usuario, String passwordPlano) {
 

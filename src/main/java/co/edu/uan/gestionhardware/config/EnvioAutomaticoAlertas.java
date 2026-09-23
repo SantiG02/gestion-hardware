@@ -83,7 +83,13 @@ public class EnvioAutomaticoAlertas {
 
         // La firma se actualiza siempre, haya o no correo, para que la
         // proxima revision compare contra el estado real mas reciente.
-        configuracionService.actualizarEstadoAlertas(construirFirma(firmaActual), momentoEnvio);
+                // La firma se actualiza siempre, haya o no correo, para que la
+        // proxima revision compare contra el estado real mas reciente.
+        try {
+            configuracionService.actualizarEstadoAlertas(construirFirma(firmaActual), momentoEnvio);
+        } catch (Exception e) {
+            log.warn("No se pudo guardar la firma de alertas de esta revision: {}", e.getMessage());
+        }
     }
 
     private String clave(Alerta alerta) {

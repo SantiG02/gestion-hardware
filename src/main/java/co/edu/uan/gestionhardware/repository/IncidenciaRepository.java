@@ -77,4 +77,34 @@ public interface IncidenciaRepository extends JpaRepository<Incidencia, Long> {
     java.util.List<Incidencia> findPorPeriodo(@Param("desde") java.time.LocalDateTime desde,
                                               @Param("hasta") java.time.LocalDateTime hasta);
 
+           @Query("""
+           select i from Incidencia i
+           join fetch i.equipo e
+           join fetch e.area
+           join fetch i.categoriaFalla
+           join fetch i.reportadoPor
+           where i.reportadoPor.id = :usuarioId
+           order by i.fechaReporte desc
+           """)
+    List<Incidencia> findPorUsuarioReportador(@Param("usuarioId") Long usuarioId);
+
+    @Query("select count(i) from Incidencia i where i.reportadoPor.rol.nombre = 'USUARIO'")
+    long countReportadasPorUsuarioFinal();
+
+    @Query("select count(i) from Incidencia i where i.reportadoPor.rol.nombre = 'USUARIO' and i.estado = 'ABIERTA'")
+    long countAbiertasPorUsuarioFinal();
+
+    @Query("""
+           select count(i) from Incidencia i
+           where i.reportadoPor.rol.nombre = 'USUARIO'
+           and i.estado = 'CERRADA' and i.confirmacionUsuario = 'PENDIENTE'
+           """)
+    long countPendientesConfirmacionUsuarioFinal();
+
+    @Query("select count(i) from Incidencia i where i.reportadoPor.rol.nombre = 'USUARIO' and i.confirmacionUsuario = 'APROBADA'")
+    long countConfirmadasUsuarioFinal();
+
+    @Query("select coalesce(sum(i.vecesRechazada), 0) from Incidencia i where i.reportadoPor.rol.nombre = 'USUARIO'")
+    long sumVecesRechazadaUsuarioFinal();
+
 }

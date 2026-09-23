@@ -73,6 +73,25 @@ public class Incidencia {
     @Column(columnDefinition = "TEXT")
     private String solucion;
 
+    /**
+     * Confirmacion del Usuario Final sobre la solucion (PENDIENTE, APROBADA,
+     * RECHAZADA). Se pone en PENDIENTE cada vez que se cierra la incidencia,
+     * y queda en null mientras la incidencia nunca se ha cerrado.
+     */
+    @Column(name = "confirmacion_usuario", length = 20)
+    private String confirmacionUsuario;
+
+    @Column(name = "comentario_usuario", columnDefinition = "TEXT")
+    private String comentarioUsuario;
+
+    /**
+     * Contador acumulado de cuantas veces se rechazo una solucion sobre esta
+     * incidencia. A diferencia de confirmacionUsuario (que se resetea cada
+     * vez que el tecnico la vuelve a cerrar), este numero nunca baja.
+     */
+    @Column(name = "veces_rechazada", nullable = false)
+    private Integer vecesRechazada = 0;
+
     // Getters y setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -115,6 +134,15 @@ public class Incidencia {
 
     public String getSolucion() { return solucion; }
     public void setSolucion(String solucion) { this.solucion = solucion; }
+
+    public String getConfirmacionUsuario() { return confirmacionUsuario; }
+    public void setConfirmacionUsuario(String confirmacionUsuario) { this.confirmacionUsuario = confirmacionUsuario; }
+
+    public String getComentarioUsuario() { return comentarioUsuario; }
+    public void setComentarioUsuario(String comentarioUsuario) { this.comentarioUsuario = comentarioUsuario; }
+
+    public Integer getVecesRechazada() { return vecesRechazada; }
+    public void setVecesRechazada(Integer vecesRechazada) { this.vecesRechazada = vecesRechazada; }
 
     @Override
     public boolean equals(Object o) {

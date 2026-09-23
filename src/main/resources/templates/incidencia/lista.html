@@ -71,6 +71,11 @@
                             <span class="insignia"
                                   th:classappend="${inc.estado == 'CERRADA'} ? 'insignia--estable' : 'insignia--seguimiento'"
                                   th:text="${inc.estado}">-</span>
+                            <br th:if="${inc.estado == 'CERRADA'}" />
+                            <span th:if="${inc.confirmacionUsuario == 'PENDIENTE'}"
+                                  class="texto-suave" style="font-size:11px;">esperando confirmación</span>
+                            <span th:if="${inc.confirmacionUsuario == 'APROBADA'}"
+                                  class="texto-suave" style="font-size:11px;">✓ confirmada por el usuario</span>
                         </td>
 
                         <td class="tabla__acciones">

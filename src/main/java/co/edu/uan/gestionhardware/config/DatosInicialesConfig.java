@@ -41,11 +41,21 @@ public class DatosInicialesConfig {
                 return rolRepository.save(r);
             });
 
+            Rol usuarioFinal = rolRepository.findByNombre("USUARIO").orElseGet(() -> {
+                Rol r = new Rol();
+                r.setNombre("USUARIO");
+                r.setDescripcion("Usuario Final. Reporta incidencias y consulta las suyas.");
+                return rolRepository.save(r);
+            });
+
             crearSiNoExiste(usuarioRepository, passwordEncoder,
                     "hardtrack.gestor@gmail.com", "Gestor Tecnologico", gestor, "Admin1234");
 
             crearSiNoExiste(usuarioRepository, passwordEncoder,
                     "hardtrack.tecnico@gmail.com", "Tecnico de Soporte", tecnico, "Tecnico1234");
+
+            crearSiNoExiste(usuarioRepository, passwordEncoder,
+                    "hardtrack.usuario@gmail.com", "Usuario Final", usuarioFinal, "Usuario1234");
 
             List.of("Disco", "Memoria", "Fuente de poder", "Red",
                     "Software", "Perifericos", "Pantalla", "Otros")

@@ -7,7 +7,8 @@ import java.util.List;
  * Datos agregados que alimentan el panel principal: totales generales,
  * la distribucion de equipos por estado (para el donut) y por area (para
  * las barras apiladas), el top de equipos con mas fallas, las alertas
- * activas y el detalle de indicadores por equipo (RF-14, RF-15, RF-16).
+ * activas, el detalle de indicadores por equipo (RF-14, RF-15, RF-16), y
+ * el resumen de incidencias reportadas por Usuarios Finales.
  */
 public class ResumenDashboard {
 
@@ -21,6 +22,7 @@ public class ResumenDashboard {
     private final List<IndicadorEquipo> topFallas;
     private final List<IndicadorEquipo> indicadoresPorEquipo;
     private final List<Alerta> alertas;
+    private final IndicadoresUsuarioFinal indicadoresUsuarioFinal;
 
     public ResumenDashboard(long totalEquipos, long incidenciasAbiertas,
                             long mantenimientosPendientes, long equiposReclasificados,
@@ -29,7 +31,8 @@ public class ResumenDashboard {
                             List<AreaResumen> areasResumen,
                             List<IndicadorEquipo> topFallas,
                             List<IndicadorEquipo> indicadoresPorEquipo,
-                            List<Alerta> alertas) {
+                            List<Alerta> alertas,
+                            IndicadoresUsuarioFinal indicadoresUsuarioFinal) {
         this.totalEquipos = totalEquipos;
         this.incidenciasAbiertas = incidenciasAbiertas;
         this.mantenimientosPendientes = mantenimientosPendientes;
@@ -40,6 +43,7 @@ public class ResumenDashboard {
         this.topFallas = topFallas;
         this.indicadoresPorEquipo = indicadoresPorEquipo;
         this.alertas = alertas;
+        this.indicadoresUsuarioFinal = indicadoresUsuarioFinal;
     }
 
     public long getTotalEquipos() { return totalEquipos; }
@@ -52,6 +56,7 @@ public class ResumenDashboard {
     public List<IndicadorEquipo> getTopFallas() { return topFallas; }
     public List<IndicadorEquipo> getIndicadoresPorEquipo() { return indicadoresPorEquipo; }
     public List<Alerta> getAlertas() { return alertas; }
+    public IndicadoresUsuarioFinal getIndicadoresUsuarioFinal() { return indicadoresUsuarioFinal; }
 
     public long getCandidatosARenovacion() {
         return segmentosEstado.stream()
