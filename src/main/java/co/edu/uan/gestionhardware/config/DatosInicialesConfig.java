@@ -2,10 +2,14 @@ package co.edu.uan.gestionhardware.config;
 
 import co.edu.uan.gestionhardware.model.CategoriaFalla;
 import co.edu.uan.gestionhardware.model.ConfiguracionSistema;
+import co.edu.uan.gestionhardware.model.EstadoEquipo;
+import co.edu.uan.gestionhardware.model.TipoEquipo;
 import co.edu.uan.gestionhardware.model.Rol;
 import co.edu.uan.gestionhardware.model.Usuario;
 import co.edu.uan.gestionhardware.repository.CategoriaFallaRepository;
 import co.edu.uan.gestionhardware.repository.ConfiguracionRepository;
+import co.edu.uan.gestionhardware.repository.EstadoEquipoRepository;
+import co.edu.uan.gestionhardware.repository.TipoEquipoRepository;
 import co.edu.uan.gestionhardware.repository.RolRepository;
 import co.edu.uan.gestionhardware.repository.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -24,6 +28,8 @@ public class DatosInicialesConfig {
                                                   UsuarioRepository usuarioRepository,
                                                   CategoriaFallaRepository categoriaFallaRepository,
                                                   ConfiguracionRepository configuracionRepository,
+                                                  EstadoEquipoRepository estadoEquipoRepository,
+                                                  TipoEquipoRepository tipoEquipoRepository,
                                                   PasswordEncoder passwordEncoder) {
         return args -> {
 
@@ -66,6 +72,21 @@ public class DatosInicialesConfig {
                         categoriaFallaRepository.save(c);
                     }
                 });
+            crearEstadoSiNoExiste(estadoEquipoRepository, "Estable",
+                    "Sin fallas recurrentes", "#1D9E75", 1);
+            crearEstadoSiNoExiste(estadoEquipoRepository, "En seguimiento",
+                    "Presenta fallas frecuentes", "#C88A12", 2);
+            crearEstadoSiNoExiste(estadoEquipoRepository, "Candidato a renovacion",
+                    "Supera umbrales criticos", "#C0392B", 3);
+
+            if (tipoEquipoRepository.count() == 0) {
+                List.of("Escritorio", "Portatil", "Servidor", "Impresora")
+                    .forEach(nombre -> {
+                        TipoEquipo t = new TipoEquipo();
+                        t.setNombre(nombre);
+                        tipoEquipoRepository.save(t);
+                    });
+            }   
 
             if (configuracionRepository.findById(1L).isEmpty()) {
                 ConfiguracionSistema configuracion = new ConfiguracionSistema();
@@ -90,6 +111,18 @@ public class DatosInicialesConfig {
             u.setRol(rol);
             u.setActivo(true);
             repo.save(u);
+        }
+    }
+
+    private void crearEstadoSiNoExiste(EstadoEquipoRepository repo, String nombre,
+                                       String descripcion, String colorHex, int orden) {
+        if (repo.findByNombre(nombre).isEmpty()) {
+            EstadoEquipo e = new EstadoEquipo();
+            e.setNombre(nombre);
+            e.setDescripcion(descripcion);
+            e.setColorHex(colorHex);
+            e.setOrden(orden);
+            repo.save(e);
         }
     }
 }

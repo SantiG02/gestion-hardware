@@ -50,7 +50,7 @@ public class EnvioAutomaticoAlertas {
         this.notificacionService = notificacionService;
     }
 
-    @Scheduled(cron = "0 */2 * * * *") // cada 15 minutos
+    @Scheduled(cron = "0 0 * * * *") // cada hora, en el minuto 0
     public void revisarYEnviar() {
 
         ConfiguracionSistema configuracion = configuracionService.obtener();

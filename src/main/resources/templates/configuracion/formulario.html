@@ -30,7 +30,8 @@
                 <form th:action="@{/configuracion/guardar}" th:object="${configuracion}" method="post">
 
                     <input type="hidden" th:field="*{id}" />
-
+                    <input type="hidden" th:field="*{frecuenciaNotificacion}" />
+                    
                     <h2 class="panel__titulo">Umbrales de clasificación (RF-03)</h2>
 
                     <div class="rejilla">
@@ -74,17 +75,7 @@
     Las alertas se envían automáticamente a todos los Gestores Tecnológicos y Técnicos de Soporte activos registrados en Usuarios.
 </p>
 
-                    <div class="campo">
-                        <label class="campo__etiqueta">Destinatarios (separados por coma) *</label>
-                        <input class="campo__entrada" type="text"
-                               th:field="*{destinatariosNotificacion}"
-                               placeholder="gestor@empresa.com, soporte@empresa.com"
-                               th:classappend="${#fields.hasErrors('destinatariosNotificacion')} ? 'campo__entrada--error'" />
-                        <span class="campo__error" th:errors="*{destinatariosNotificacion}"></span>
-                    </div>
-
-                    
-
+                  
                     <div style="display: flex; gap: 10px; margin-top: 24px;">
                         <button type="submit" class="boton">Guardar</button>
                         <a th:href="@{/dashboard}" class="boton boton--secundario">Cancelar</a>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Acceso denegado')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo">Acceso denegado</h1>
+                    <p class="encabezado__intro">
+                        Su rol no tiene permisos para ingresar a esta sección.
+                    </p>
+                </div>
+            </div>
+
+            <div class="panel">
+                <p>Si considera que necesita este acceso, comuníquese con el Gestor Tecnológico.</p>
+
+                <div style="display: flex; gap: 10px; margin-top: 24px;">
+                    <a sec:authorize="hasRole('GESTOR')"  th:href="@{/dashboard}"       class="boton">Volver al inicio</a>
+                    <a sec:authorize="hasRole('TECNICO')" th:href="@{/equipos}"         class="boton">Volver al inicio</a>
+                    <a sec:authorize="hasRole('USUARIO')" th:href="@{/mis-incidencias}" class="boton">Volver al inicio</a>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>
