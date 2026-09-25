@@ -107,4 +107,24 @@ public interface IncidenciaRepository extends JpaRepository<Incidencia, Long> {
     @Query("select coalesce(sum(i.vecesRechazada), 0) from Incidencia i where i.reportadoPor.rol.nombre = 'USUARIO'")
     long sumVecesRechazadaUsuarioFinal();
 
+        @Query("""
+           select i from Incidencia i
+           join fetch i.equipo e
+           join fetch e.area
+           join fetch i.categoriaFalla c
+           join fetch i.reportadoPor
+           where (:texto is null
+                  or lower(e.codigoInterno) like lower(concat('%', :texto, '%'))
+                  or lower(e.marca) like lower(concat('%', :texto, '%'))
+                  or lower(e.modelo) like lower(concat('%', :texto, '%')))
+             and (:estado is null or i.estado = :estado)
+             and (:prioridad is null or i.prioridad = :prioridad)
+             and (:categoriaId is null or c.id = :categoriaId)
+           order by i.fechaReporte desc
+           """)
+    List<Incidencia> filtrar(@Param("texto") String texto,
+                             @Param("estado") String estado,
+                             @Param("prioridad") String prioridad,
+                             @Param("categoriaId") Long categoriaId);
+
 }

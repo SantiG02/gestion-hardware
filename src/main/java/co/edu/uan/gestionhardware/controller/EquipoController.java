@@ -3,6 +3,7 @@ package co.edu.uan.gestionhardware.controller;
 import co.edu.uan.gestionhardware.model.Area;
 import co.edu.uan.gestionhardware.model.Equipo;
 import co.edu.uan.gestionhardware.model.EstadoEquipo;
+import co.edu.uan.gestionhardware.model.Sede;
 import co.edu.uan.gestionhardware.model.TipoEquipo;
 import co.edu.uan.gestionhardware.model.Usuario;
 import co.edu.uan.gestionhardware.service.EquipoService;
@@ -36,6 +37,11 @@ public class EquipoController {
     // Se ejecutan antes de cualquier metodo de este controlador.
     // Dejan las listas disponibles en todas las vistas sin repetir codigo.
 
+    @ModelAttribute("sedes")
+    public List<Sede> cargarSedes() {
+        return equipoService.listarSedes();
+    }
+
     @ModelAttribute("areas")
     public List<Area> cargarAreas() {
         return equipoService.listarAreas();
@@ -57,8 +63,14 @@ public class EquipoController {
     }
 
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("equipos", equipoService.listarActivos());
+    public String listar(@RequestParam(required = false) String texto,
+                         @RequestParam(required = false) Long sedeId,
+                         @RequestParam(required = false) Long areaId,
+                         @RequestParam(required = false) Long estadoId,
+                         @RequestParam(required = false) Long responsableId,
+                         Model model) {
+        model.addAttribute("equipos",
+                equipoService.filtrar(texto, sedeId, areaId, estadoId, responsableId));
         return "equipo/lista";
     }
 

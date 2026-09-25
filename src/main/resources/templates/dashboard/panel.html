@@ -123,12 +123,14 @@
             </div>
 
             <div th:unless="${#lists.isEmpty(resumen.alertas)}" class="panel" style="margin-bottom:24px;">
-                <div class="alerta-item" th:each="alerta : ${resumen.alertas}"
-                     th:classappend="${alerta.severidad == 'ALTA'} ? 'alerta-item--alta' : 'alerta-item--media'">
-                    <span class="alerta-item__tipo" th:text="${alerta.tipo}">-</span>
-                    <span th:if="${alerta.equipoCodigo != null}" class="texto-suave"
-                          th:text="' · ' + ${alerta.equipoCodigo}">-</span>
-                    <p class="alerta-item__mensaje" th:text="${alerta.mensaje}">-</p>
+                <div class="panel-scroll">
+                    <div class="alerta-item" th:each="alerta : ${resumen.alertas}"
+                         th:classappend="${alerta.severidad == 'ALTA'} ? 'alerta-item--alta' : 'alerta-item--media'">
+                        <span class="alerta-item__tipo" th:text="${alerta.tipo}">-</span>
+                        <span th:if="${alerta.equipoCodigo != null}" class="texto-suave"
+                              th:text="' · ' + ${alerta.equipoCodigo}">-</span>
+                        <p class="alerta-item__mensaje" th:text="${alerta.mensaje}">-</p>
+                    </div>
                 </div>
             </div>
 
@@ -201,15 +203,20 @@
                     Ningún equipo registra fallas en los últimos 30 días.
                 </div>
 
-                <div class="fila-top-falla" th:each="ind : ${resumen.topFallas}">
-                    <div>
-                        <strong th:text="${ind.equipo.codigoInterno}">-</strong>
-                        <span class="texto-suave" th:text="' · ' + ${ind.equipo.area.nombre}">-</span>
-                    </div>
-                    <div class="fila-top-falla__cifras">
-                        <span th:text="${ind.fallasMes} + ' fallas'">-</span>
-                        <span class="texto-suave"
-                              th:text="${#numbers.formatDecimal(ind.horasIndisponibilidad, 1, 1)} + ' h inop.'">-</span>
+                <div th:unless="${#lists.isEmpty(resumen.topFallas)}" th:with="maxFallas=${resumen.topFallas[0].fallasMes}">
+                    <div class="barra-falla" th:each="ind : ${resumen.topFallas}">
+                        <div class="barra-falla__cabecera">
+                            <span>
+                                <strong th:text="${ind.equipo.codigoInterno}">-</strong>
+                                <span class="texto-suave" th:text="' · ' + ${ind.equipo.area.nombre}">-</span>
+                            </span>
+                            <span class="texto-suave"
+                                  th:text="${ind.fallasMes} + ' fallas · ' + ${#numbers.formatDecimal(ind.horasIndisponibilidad, 1, 1)} + ' h'">-</span>
+                        </div>
+                        <div class="barra-falla__pista">
+                            <div class="barra-falla__relleno"
+                                 th:style="'width:' + ${(ind.fallasMes * 100) / maxFallas} + '%'"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -296,6 +303,26 @@
 
             </div>
 
+            <div class="panel" style="margin-bottom:24px;" th:if="${resumen.indicadoresUsuarioFinal.total > 0}">
+                <div class="barra-area__cabecera">
+                    <span>Distribución de las incidencias reportadas</span>
+                    <span class="texto-suave" th:text="${resumen.indicadoresUsuarioFinal.total} + ' en total'">-</span>
+                </div>
+                <div class="barra-area__pista">
+                    <div class="barra-area__segmento barra-area__segmento--seguimiento"
+                         th:style="'width:' + ${(resumen.indicadoresUsuarioFinal.abiertas * 100.0) / resumen.indicadoresUsuarioFinal.total} + '%'"></div>
+                    <div class="barra-area__segmento barra-area__segmento--acento"
+                         th:style="'width:' + ${(resumen.indicadoresUsuarioFinal.pendientesConfirmacion * 100.0) / resumen.indicadoresUsuarioFinal.total} + '%'"></div>
+                    <div class="barra-area__segmento barra-area__segmento--estable"
+                         th:style="'width:' + ${(resumen.indicadoresUsuarioFinal.confirmadas * 100.0) / resumen.indicadoresUsuarioFinal.total} + '%'"></div>
+                </div>
+                <div class="barra-area__leyenda">
+                    <span th:text="${resumen.indicadoresUsuarioFinal.abiertas} + ' Abiertas'">-</span>
+                    <span th:text="${resumen.indicadoresUsuarioFinal.pendientesConfirmacion} + ' Pendientes'">-</span>
+                    <span th:text="${resumen.indicadoresUsuarioFinal.confirmadas} + ' Confirmadas'">-</span>
+                </div>
+            </div>
+
             <!-- Detalle de indicadores por equipo -->
             <h2 style="font-size:15px; font-weight:700; margin:0 0 16px;">Indicadores por equipo</h2>
 
@@ -304,6 +331,7 @@
             </div>
 
             <div th:unless="${#lists.isEmpty(resumen.indicadoresPorEquipo)}" class="panel panel--tabla">
+              <div class="tabla-scroll">
                 <table class="tabla">
                     <thead>
                     <tr>
@@ -352,6 +380,7 @@
                     </tr>
                     </tbody>
                 </table>
+              </div>
             </div>
 
         </main>

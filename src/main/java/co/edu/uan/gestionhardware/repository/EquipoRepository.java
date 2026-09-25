@@ -33,4 +33,29 @@ public interface EquipoRepository extends JpaRepository<Equipo, Long> {
     boolean existsByCodigoInterno(String codigoInterno);
 
     boolean existsBySerial(String serial);
+
+        @Query("""
+           select e from Equipo e
+           left join fetch e.area a
+           left join fetch a.sede s
+           left join fetch e.estadoEquipo
+           left join fetch e.tipoEquipo
+           left join fetch e.usuarioAsignado
+           where e.activo = true
+             and (:texto is null
+                  or lower(e.codigoInterno) like lower(concat('%', :texto, '%'))
+                  or lower(e.serial) like lower(concat('%', :texto, '%'))
+                  or lower(e.marca) like lower(concat('%', :texto, '%'))
+                  or lower(e.modelo) like lower(concat('%', :texto, '%')))
+             and (:sedeId is null or s.id = :sedeId)
+             and (:areaId is null or a.id = :areaId)
+             and (:estadoId is null or e.estadoEquipo.id = :estadoId)
+             and (:responsableId is null or e.usuarioAsignado.id = :responsableId)
+           order by e.codigoInterno
+           """)
+    List<Equipo> filtrar(@Param("texto") String texto,
+                         @Param("sedeId") Long sedeId,
+                         @Param("areaId") Long areaId,
+                         @Param("estadoId") Long estadoId,
+                         @Param("responsableId") Long responsableId);
 }

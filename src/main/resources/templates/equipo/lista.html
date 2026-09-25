@@ -26,8 +26,64 @@
             <div th:if="${exito}" class="aviso aviso--exito" th:text="${exito}"></div>
             <div th:if="${error}" class="aviso aviso--error" th:text="${error}"></div>
 
+            <form method="get" th:action="@{/equipos}" class="panel filtros">
+
+                <div class="campo">
+                    <label class="campo__etiqueta">Buscar</label>
+                    <input class="campo__entrada" type="text" name="texto"
+                           th:value="${param.texto != null ? param.texto[0] : ''}"
+                           placeholder="Código, serial, marca, modelo..." />
+                </div>
+
+                <div class="campo">
+                    <label class="campo__etiqueta">Sede</label>
+                    <select class="campo__seleccion" name="sedeId">
+                        <option value="">Todas</option>
+                        <option th:each="s : ${sedes}" th:value="${s.id}"
+                                th:selected="${param.sedeId != null and param.sedeId[0] == ''+s.id}"
+                                th:text="${s.nombre}">-</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label class="campo__etiqueta">Área</label>
+                    <select class="campo__seleccion" name="areaId">
+                        <option value="">Todas</option>
+                        <option th:each="a : ${areas}" th:value="${a.id}"
+                                th:selected="${param.areaId != null and param.areaId[0] == ''+a.id}"
+                                th:text="${a.nombre}">-</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label class="campo__etiqueta">Estado</label>
+                    <select class="campo__seleccion" name="estadoId">
+                        <option value="">Todos</option>
+                        <option th:each="e : ${estados}" th:value="${e.id}"
+                                th:selected="${param.estadoId != null and param.estadoId[0] == ''+e.id}"
+                                th:text="${e.nombre}">-</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label class="campo__etiqueta">Responsable</label>
+                    <select class="campo__seleccion" name="responsableId">
+                        <option value="">Todos</option>
+                        <option th:each="u : ${usuarios}" th:value="${u.id}"
+                                th:selected="${param.responsableId != null and param.responsableId[0] == ''+u.id}"
+                                th:text="${u.nombreCompleto}">-</option>
+                    </select>
+                </div>
+
+                <div class="filtros__acciones">
+                    <button type="submit" class="boton boton--secundario">Filtrar</button>
+                    <a th:href="@{/equipos}" class="boton boton--secundario">Limpiar</a>
+                </div>
+
+            </form>
+
             <div th:if="${#lists.isEmpty(equipos)}" class="aviso aviso--info">
-                No hay equipos registrados todavía.
+                No hay equipos que coincidan con el filtro.
             </div>
 
             <div th:unless="${#lists.isEmpty(equipos)}" class="panel panel--tabla">

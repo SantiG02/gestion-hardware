@@ -31,8 +31,52 @@
                    style="font-weight:600;">Cerrar incidencia ahora</a>
             </div>
 
+            <form method="get" th:action="@{/mantenimientos}" class="panel filtros">
+
+                <div class="campo">
+                    <label class="campo__etiqueta">Buscar equipo</label>
+                    <input class="campo__entrada" type="text" name="texto"
+                           th:value="${param.texto != null ? param.texto[0] : ''}"
+                           placeholder="Código, marca, modelo..." />
+                </div>
+
+                <div class="campo">
+                    <label class="campo__etiqueta">Tipo</label>
+                    <select class="campo__seleccion" name="tipo">
+                        <option value="">Todos</option>
+                        <option value="PREVENTIVO" th:selected="${param.tipo != null and param.tipo[0] == 'PREVENTIVO'}">Preventivo</option>
+                        <option value="CORRECTIVO" th:selected="${param.tipo != null and param.tipo[0] == 'CORRECTIVO'}">Correctivo</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label class="campo__etiqueta">Estado</label>
+                    <select class="campo__seleccion" name="estado">
+                        <option value="">Todos</option>
+                        <option value="PROGRAMADO" th:selected="${param.estado != null and param.estado[0] == 'PROGRAMADO'}">Programado</option>
+                        <option value="FINALIZADO" th:selected="${param.estado != null and param.estado[0] == 'FINALIZADO'}">Finalizado</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label class="campo__etiqueta">Técnico</label>
+                    <select class="campo__seleccion" name="tecnicoId">
+                        <option value="">Todos</option>
+                        <option th:each="t : ${tecnicos}" th:value="${t.id}"
+                                th:selected="${param.tecnicoId != null and param.tecnicoId[0] == ''+t.id}"
+                                th:text="${t.nombreCompleto}">-</option>
+                    </select>
+                </div>
+
+                <div class="filtros__acciones">
+                    <button type="submit" class="boton boton--secundario">Filtrar</button>
+                    <a th:href="@{/mantenimientos}" class="boton boton--secundario">Limpiar</a>
+                </div>
+
+            </form>
+
             <div th:if="${#lists.isEmpty(mantenimientos)}" class="aviso aviso--info">
-                No hay mantenimientos registrados todavía.
+                No hay mantenimientos que coincidan con el filtro.
             </div>
 
             <div th:unless="${#lists.isEmpty(mantenimientos)}" class="panel panel--tabla">

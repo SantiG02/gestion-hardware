@@ -77,5 +77,25 @@ public interface MantenimientoRepository extends JpaRepository<Mantenimiento, Lo
            """)
     List<Mantenimiento> findEjecutadosPorPeriodo(@Param("desde") java.time.LocalDate desde,
                                                  @Param("hasta") java.time.LocalDate hasta);
+       
+           @Query("""
+           select m from Mantenimiento m
+           join fetch m.equipo e
+           join fetch e.area
+           join fetch m.tecnico t
+           left join fetch m.incidencia
+           where (:texto is null
+                  or lower(e.codigoInterno) like lower(concat('%', :texto, '%'))
+                  or lower(e.marca) like lower(concat('%', :texto, '%'))
+                  or lower(e.modelo) like lower(concat('%', :texto, '%')))
+             and (:tipo is null or m.tipo = :tipo)
+             and (:estado is null or m.estado = :estado)
+             and (:tecnicoId is null or t.id = :tecnicoId)
+           order by m.fechaEjecucion desc, m.fechaProgramada desc
+           """)
+    List<Mantenimiento> filtrar(@Param("texto") String texto,
+                                @Param("tipo") String tipo,
+                                @Param("estado") String estado,
+                                @Param("tecnicoId") Long tecnicoId);
 
 }

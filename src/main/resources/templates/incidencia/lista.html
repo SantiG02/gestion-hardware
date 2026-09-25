@@ -24,8 +24,53 @@
             <div th:if="${exito}" class="aviso aviso--exito" th:text="${exito}"></div>
             <div th:if="${error}" class="aviso aviso--error" th:text="${error}"></div>
 
+                        <form method="get" th:action="@{/incidencias}" class="panel filtros">
+
+                <div class="campo">
+                    <label class="campo__etiqueta">Buscar equipo</label>
+                    <input class="campo__entrada" type="text" name="texto"
+                           th:value="${param.texto != null ? param.texto[0] : ''}"
+                           placeholder="Código, marca, modelo..." />
+                </div>
+
+                <div class="campo">
+                    <label class="campo__etiqueta">Estado</label>
+                    <select class="campo__seleccion" name="estado">
+                        <option value="">Todos</option>
+                        <option value="ABIERTA" th:selected="${param.estado != null and param.estado[0] == 'ABIERTA'}">Abierta</option>
+                        <option value="CERRADA" th:selected="${param.estado != null and param.estado[0] == 'CERRADA'}">Cerrada</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label class="campo__etiqueta">Prioridad</label>
+                    <select class="campo__seleccion" name="prioridad">
+                        <option value="">Todas</option>
+                        <option value="ALTA" th:selected="${param.prioridad != null and param.prioridad[0] == 'ALTA'}">Alta</option>
+                        <option value="MEDIA" th:selected="${param.prioridad != null and param.prioridad[0] == 'MEDIA'}">Media</option>
+                        <option value="BAJA" th:selected="${param.prioridad != null and param.prioridad[0] == 'BAJA'}">Baja</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label class="campo__etiqueta">Categoría</label>
+                    <select class="campo__seleccion" name="categoriaId">
+                        <option value="">Todas</option>
+                        <option th:each="c : ${categorias}" th:value="${c.id}"
+                                th:selected="${param.categoriaId != null and param.categoriaId[0] == ''+c.id}"
+                                th:text="${c.nombre}">-</option>
+                    </select>
+                </div>
+
+                <div class="filtros__acciones">
+                    <button type="submit" class="boton boton--secundario">Filtrar</button>
+                    <a th:href="@{/incidencias}" class="boton boton--secundario">Limpiar</a>
+                </div>
+
+            </form>
+
             <div th:if="${#lists.isEmpty(incidencias)}" class="aviso aviso--info">
-                No hay incidencias registradas todavía.
+                No hay incidencias que coincidan con el filtro.
             </div>
 
             <div th:unless="${#lists.isEmpty(incidencias)}" class="panel panel--tabla">

@@ -48,9 +48,14 @@ public class IncidenciaController {
         return usuarioService.listarActivos();
     }
 
-    @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("incidencias", incidenciaService.listarTodas());
+        @GetMapping
+    public String listar(@RequestParam(required = false) String texto,
+                         @RequestParam(required = false) String estado,
+                         @RequestParam(required = false) String prioridad,
+                         @RequestParam(required = false) Long categoriaId,
+                         Model model) {
+        model.addAttribute("incidencias",
+                incidenciaService.filtrar(texto, estado, prioridad, categoriaId));
         return "incidencia/lista";
     }
 

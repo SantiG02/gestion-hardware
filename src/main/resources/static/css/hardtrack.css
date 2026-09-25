@@ -935,3 +935,81 @@ a { color: var(--acento); }
     font-size: 13.5px;
     color: var(--texto-suave);
 }
+
+
+/* ============================================================
+   Barra de filtros (Equipos, Mantenimientos, Incidencias)
+   ============================================================ */
+
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.filtros .campo {
+    margin-bottom: 0;
+    min-width: 170px;
+    flex: 1;
+}
+
+.filtros__acciones {
+    display: flex;
+    gap: 8px;
+}
+
+
+/* ============================================================
+   Scroll interno para listas largas del dashboard
+   ============================================================ */
+
+.panel-scroll {
+    max-height: 360px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.tabla-scroll {
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.tabla-scroll .tabla thead th {
+    position: sticky;
+    top: 0;
+    background: var(--superficie);
+    z-index: 1;
+}
+
+/* ============================================================
+   Barras horizontales — equipos con mas fallas
+   ============================================================ */
+
+.barra-falla { margin-bottom: 14px; }
+.barra-falla:last-child { margin-bottom: 0; }
+
+.barra-falla__cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 13.5px;
+    margin-bottom: 6px;
+}
+
+.barra-falla__pista {
+    width: 100%;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--borde-suave);
+    overflow: hidden;
+}
+
+.barra-falla__relleno {
+    height: 100%;
+    background: var(--renovacion);
+    border-radius: 999px;
+}
+
+.barra-area__segmento--acento { background: var(--acento); }

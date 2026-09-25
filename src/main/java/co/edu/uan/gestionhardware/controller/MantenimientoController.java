@@ -54,8 +54,13 @@ public class MantenimientoController {
     }
 
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("mantenimientos", mantenimientoService.listarTodos());
+    public String listar(@RequestParam(required = false) String texto,
+                         @RequestParam(required = false) String tipo,
+                         @RequestParam(required = false) String estado,
+                         @RequestParam(required = false) Long tecnicoId,
+                         Model model) {
+        model.addAttribute("mantenimientos",
+                mantenimientoService.filtrar(texto, tipo, estado, tecnicoId));
         return "mantenimiento/lista";
     }
 

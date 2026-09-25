@@ -32,6 +32,13 @@ public class IncidenciaService {
         return incidenciaRepository.findTodasConRelaciones();
     }
 
+        public List<Incidencia> filtrar(String texto, String estado, String prioridad, Long categoriaId) {
+        String textoNormalizado = (texto == null || texto.isBlank()) ? null : texto.trim();
+        String estadoNormalizado = (estado == null || estado.isBlank()) ? null : estado;
+        String prioridadNormalizada = (prioridad == null || prioridad.isBlank()) ? null : prioridad;
+        return incidenciaRepository.filtrar(textoNormalizado, estadoNormalizado, prioridadNormalizada, categoriaId);
+    }
+
     public List<Incidencia> listarAbiertas() {
         return incidenciaRepository.findAbiertasConRelaciones();
     }

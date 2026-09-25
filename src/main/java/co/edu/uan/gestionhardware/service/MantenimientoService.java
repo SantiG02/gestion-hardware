@@ -23,6 +23,13 @@ public class MantenimientoService {
         return mantenimientoRepository.findTodosConRelaciones();
     }
 
+        public List<Mantenimiento> filtrar(String texto, String tipo, String estado, Long tecnicoId) {
+        String textoNormalizado = (texto == null || texto.isBlank()) ? null : texto.trim();
+        String tipoNormalizado = (tipo == null || tipo.isBlank()) ? null : tipo;
+        String estadoNormalizado = (estado == null || estado.isBlank()) ? null : estado;
+        return mantenimientoRepository.filtrar(textoNormalizado, tipoNormalizado, estadoNormalizado, tecnicoId);
+    }
+
     public List<Mantenimiento> listarPendientes() {
         return mantenimientoRepository.findPendientesConRelaciones();
     }
