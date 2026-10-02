@@ -47,6 +47,17 @@ public class Usuario {
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
+    /**
+     * Usados solo para la recuperacion de contrasena por correo. El token
+     * se borra apenas se usa o al generar uno nuevo; mientras tanto vence
+     * a la hora de haberse generado.
+     */
+    @Column(name = "reset_token", length = 100)
+    private String resetToken;
+
+    @Column(name = "reset_token_expira")
+    private LocalDateTime resetTokenExpira;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -73,6 +84,12 @@ public class Usuario {
 
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+
+    public String getResetToken() { return resetToken; }
+    public void setResetToken(String resetToken) { this.resetToken = resetToken; }
+
+    public LocalDateTime getResetTokenExpira() { return resetTokenExpira; }
+    public void setResetTokenExpira(LocalDateTime resetTokenExpira) { this.resetTokenExpira = resetTokenExpira; }
 
     @Override
     public boolean equals(Object o) {

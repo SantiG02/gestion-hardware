@@ -23,8 +23,9 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
 
-                // Publico
+                                // Publico
                 .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/configuracion-inicial/**", "/recuperar", "/restablecer").permitAll()
 
                 // Exclusivo del Gestor Tecnologico
                 .requestMatchers("/usuarios/**").hasRole("GESTOR")

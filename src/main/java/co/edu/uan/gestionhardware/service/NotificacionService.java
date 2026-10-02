@@ -2,54 +2,55 @@ package co.edu.uan.gestionhardware.service;
 
 import co.edu.uan.gestionhardware.dto.Alerta;
 import co.edu.uan.gestionhardware.model.Usuario;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.ObjectProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Envia los correos de HardTrack en HTML: la confirmacion de cuenta cuando
- * el Gestor registra un usuario nuevo, y el resumen de alertas activas
- * (RF-17, RF-18).
+ * Envia los correos de HardTrack usando la API HTTP de Brevo (no SMTP).
  *
- * Los destinatarios de las alertas se calculan en cada envio a partir de
- * los usuarios activos con rol GESTOR o TECNICO (tabla usuario).
- *
- * El bean JavaMailSender solo existe si spring.mail.host esta configurado
- * (application-local.properties, que no se comparte por git). Por eso se
- * recibe como ObjectProvider: si el correo no esta configurado en esta
- * maquina, la aplicacion arranca igual y el envio falla con un mensaje
- * claro en vez de tumbar el arranque de toda la app.
+ * Se cambio de SMTP a la API HTTP porque en varias redes (antivirus con
+ * inspeccion de correo, firewalls de universidades y algunos proveedores
+ * de internet) el trafico SMTP por los puertos 465/587 queda interceptado
+ * y el certificado TLS de Brevo no coincide, aunque las credenciales esten
+ * bien. El trafico HTTPS normal (puerto 443), en cambio, practicamente
+ * nunca se bloquea asi -- es el mismo puerto que usa cualquier pagina web.
+ * Esto hace que el envio de correo sea confiable sin importar en que
+ * computador o red se corra la aplicacion (importante para la
+ * sustentacion, donde el jurado la va a correr en sus propios equipos).
  */
 @Service
 public class NotificacionService {
 
+    private static final String BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
     private static final List<String> ROLES_NOTIFICADOS = List.of("GESTOR", "TECNICO");
 
-    private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final UsuarioService usuarioService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final HttpClient httpClient = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
+
+    @Value("${hardtrack.brevo.api-key:}")
+    private String apiKey;
 
     @Value("${hardtrack.mail.remitente}")
     private String remitente;
 
-    public NotificacionService(ObjectProvider<JavaMailSender> mailSenderProvider,
-                               UsuarioService usuarioService) {
-        this.mailSenderProvider = mailSenderProvider;
+    public NotificacionService(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
-    /**
-     * Envia el correo de bienvenida cuando el Gestor Tecnologico crea una
-     * cuenta nueva. No incluye la contrasena: el Gestor se la comunica al
-     * usuario por su cuenta.
-     */
     public void enviarConfirmacionCuenta(Usuario usuario) {
-
-        JavaMailSender mailSender = obtenerMailSenderObligatorio();
 
         String contenido =
                 "<p style=\"margin:0 0 16px; font-size:14px; line-height:1.6; color:#334155;\">"
@@ -62,13 +63,9 @@ public class NotificacionService {
         String cuerpo = plantillaBase("Tu cuenta fue creada",
                 "Hola " + usuario.getNombreCompleto() + ",", contenido);
 
-        enviarHtml(mailSender, new String[]{usuario.getEmail()}, "HardTrack - Tu cuenta fue creada", cuerpo);
+        enviarHtml(new String[]{usuario.getEmail()}, "HardTrack - Tu cuenta fue creada", cuerpo);
     }
 
-    /**
-     * Envia el resumen de alertas activas (RF-17) a todos los Gestores
-     * Tecnologicos y Tecnicos de Soporte activos (RF-18).
-     */
     public void enviarAlertas(List<Alerta> alertas) {
 
         if (alertas.isEmpty()) {
@@ -84,8 +81,6 @@ public class NotificacionService {
             throw new IllegalStateException(
                     "No hay usuarios Gestor o Tecnico activos a quienes notificar");
         }
-
-        JavaMailSender mailSender = obtenerMailSenderObligatorio();
 
         StringBuilder listaAlertas = new StringBuilder();
 
@@ -114,12 +109,35 @@ public class NotificacionService {
         String cuerpo = plantillaBase(alertas.size() + " alerta(s) activa(s)",
                 "Se detectaron " + alertas.size() + " alerta(s) en HardTrack:", listaAlertas.toString());
 
-        enviarHtml(mailSender, destinatarios.toArray(String[]::new),
+        enviarHtml(destinatarios.toArray(String[]::new),
                 "HardTrack - " + alertas.size() + " alerta(s) activa(s)", cuerpo);
     }
 
     /**
-     * Envoltorio HTML compartido por los dos correos: encabezado azul con el
+     * Correo de recuperacion de contrasena (requisito del tutor). El enlace
+     * ya viene armado con el token desde el controlador.
+     */
+    public void enviarRecuperacionContrasena(Usuario usuario, String enlace) {
+
+        String contenido =
+                "<p style=\"margin:0 0 16px; font-size:14px; line-height:1.6; color:#334155;\">"
+                + "Recibimos una solicitud para restablecer tu contraseña en <strong>HardTrack</strong>. "
+                + "Si fuiste tú, haz clic en el siguiente botón:</p>"
+                + "<p style=\"margin:0 0 20px;\">"
+                + "<a href=\"" + enlace + "\" style=\"display:inline-block; padding:12px 20px; "
+                + "background:#1F2937; color:#ffffff; text-decoration:none; border-radius:8px; "
+                + "font-weight:600; font-size:14px;\">Restablecer contraseña</a></p>"
+                + "<p style=\"margin:0; font-size:13px; color:#94a3b8;\">"
+                + "Este enlace vence en 1 hora. Si no lo pediste tú, puedes ignorar este correo.</p>";
+
+        String cuerpo = plantillaBase("Restablecer contraseña",
+                "Hola " + usuario.getNombreCompleto() + ",", contenido);
+
+        enviarHtml(new String[]{usuario.getEmail()}, "HardTrack - Restablecer contraseña", cuerpo);
+    }
+
+    /**
+     * Envoltorio HTML compartido por los tres correos: encabezado azul con el
      * nombre de HardTrack, un titulo, una introduccion, y el contenido propio
      * de cada correo (ya armado en HTML) en medio.
      */
@@ -139,26 +157,50 @@ public class NotificacionService {
                 + "</div>";
     }
 
-    private void enviarHtml(JavaMailSender mailSender, String[] destinatarios, String asunto, String cuerpoHtml) {
-        try {
-            MimeMessage mensaje = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mensaje, "UTF-8");
-            helper.setFrom(remitente);
-            helper.setTo(destinatarios);
-            helper.setSubject(asunto);
-            helper.setText(cuerpoHtml, true);
-            mailSender.send(mensaje);
-        } catch (Exception e) {
-            throw new IllegalStateException("No se pudo armar o enviar el correo: " + e.getMessage(), e);
-        }
-    }
+    private void enviarHtml(String[] destinatarios, String asunto, String cuerpoHtml) {
 
-    private JavaMailSender obtenerMailSenderObligatorio() {
-        JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
-        if (mailSender == null) {
+        if (apiKey == null || apiKey.isBlank()) {
             throw new IllegalStateException(
-                    "El correo no esta configurado en este equipo (falta spring.mail.* en application-local.properties)");
+                    "El correo no esta configurado en este equipo (falta hardtrack.brevo.api-key en application-local.properties)");
         }
-        return mailSender;
+
+        try {
+            Map<String, Object> remitenteJson = new LinkedHashMap<>();
+            remitenteJson.put("email", remitente);
+            remitenteJson.put("name", "HardTrack");
+
+            List<Map<String, String>> destinatariosJson = List.of(destinatarios).stream()
+                    .map(correo -> Map.of("email", correo))
+                    .toList();
+
+            Map<String, Object> cuerpo = new LinkedHashMap<>();
+            cuerpo.put("sender", remitenteJson);
+            cuerpo.put("to", destinatariosJson);
+            cuerpo.put("subject", asunto);
+            cuerpo.put("htmlContent", cuerpoHtml);
+
+            String json = objectMapper.writeValueAsString(cuerpo);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BREVO_API_URL))
+                    .timeout(Duration.ofSeconds(15))
+                    .header("accept", "application/json")
+                    .header("content-type", "application/json")
+                    .header("api-key", apiKey)
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                throw new IllegalStateException(
+                        "Brevo rechazo el envio (codigo " + response.statusCode() + "): " + response.body());
+            }
+
+        } catch (IllegalStateException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IllegalStateException("No se pudo enviar el correo: " + e.getMessage(), e);
+        }
     }
 }

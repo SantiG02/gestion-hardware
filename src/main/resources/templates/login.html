@@ -67,6 +67,12 @@
             color: var(--texto-suave);
         }
 
+        .olvido { margin: -6px 0 24px; text-align: right; }
+
+        .olvido a { font-size: 13px; text-decoration: none; }
+
+        .olvido a:hover,
+        .olvido a:focus-visible { text-decoration: underline; }
 
         .nota {
             margin: 18px 0 0;
@@ -110,6 +116,7 @@
         <h2 class="acceso__titulo">Iniciar sesión</h2>
         <p class="acceso__intro">Accede con tus credenciales corporativas</p>
 
+
         <div th:if="${param.error}" class="aviso aviso--error">
             El correo o la contraseña no coinciden. Verifica los datos e inténtalo de nuevo.
         </div>
@@ -141,7 +148,9 @@
                        required />
             </div>
 
-          
+            <p class="olvido">
+                <a th:href="@{/recuperar}">¿Olvidó su contraseña?</a>
+            </p>
 
             <button class="boton boton--bloque" type="submit">Ingresar</button>
 

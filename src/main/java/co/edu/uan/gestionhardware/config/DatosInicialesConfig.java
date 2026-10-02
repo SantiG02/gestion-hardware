@@ -54,8 +54,8 @@ public class DatosInicialesConfig {
                 return rolRepository.save(r);
             });
 
-            crearSiNoExiste(usuarioRepository, passwordEncoder,
-                    "hardtrack.gestor@gmail.com", "Gestor Tecnologico", gestor, "Admin1234");
+            //crearSiNoExiste(usuarioRepository, passwordEncoder,
+                   // "hardtrack.gestor@gmail.com", "Gestor Tecnologico", gestor, "Admin1234");
 
             crearSiNoExiste(usuarioRepository, passwordEncoder,
                     "hardtrack.tecnico@gmail.com", "Tecnico de Soporte", tecnico, "Tecnico1234");
