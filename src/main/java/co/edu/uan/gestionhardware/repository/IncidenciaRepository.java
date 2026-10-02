@@ -126,5 +126,16 @@ public interface IncidenciaRepository extends JpaRepository<Incidencia, Long> {
                              @Param("estado") String estado,
                              @Param("prioridad") String prioridad,
                              @Param("categoriaId") Long categoriaId);
+       
+                                 long countByReportadoPorId(Long reportadoPorId);
+
+    long countByReportadoPorIdAndEstado(Long reportadoPorId, String estado);
+
+    long countByReportadoPorIdAndEstadoAndConfirmacionUsuario(Long reportadoPorId, String estado, String confirmacionUsuario);
+
+    long countByReportadoPorIdAndConfirmacionUsuario(Long reportadoPorId, String confirmacionUsuario);
+
+    @Query("select coalesce(sum(i.vecesRechazada), 0) from Incidencia i where i.reportadoPor.id = :usuarioId")
+    long sumVecesRechazadaPorUsuario(@Param("usuarioId") Long usuarioId);
 
 }

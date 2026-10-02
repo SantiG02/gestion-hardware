@@ -52,13 +52,14 @@ public class MisIncidenciasController {
         return incidenciaService.listarCategorias();
     }
 
-    @GetMapping
+        @GetMapping
     public String listar(Model model, Authentication authentication) {
         Usuario usuario = usuarioActual(authentication);
         model.addAttribute("incidencias", incidenciaService.listarPorUsuario(usuario.getId()));
+        model.addAttribute("indicadores", incidenciaService.indicadoresPersonales(usuario.getId()));
         return "incidencia/mis-incidencias";
     }
-
+    
     @GetMapping("/nueva")
     public String mostrarFormularioNuevo(Model model) {
         model.addAttribute("incidencia", new Incidencia());

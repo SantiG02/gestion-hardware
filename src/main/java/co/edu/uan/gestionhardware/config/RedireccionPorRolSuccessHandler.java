@@ -30,7 +30,7 @@ public class RedireccionPorRolSuccessHandler extends SimpleUrlAuthenticationSucc
         if (roles.contains("ROLE_GESTOR")) {
             destino = "/dashboard";
         } else if (roles.contains("ROLE_TECNICO")) {
-            destino = "/equipos";
+            destino = "/panel-tecnico";
         } else {
             destino = "/mis-incidencias";
         }

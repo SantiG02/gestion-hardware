@@ -97,5 +97,7 @@ public interface MantenimientoRepository extends JpaRepository<Mantenimiento, Lo
                                 @Param("tipo") String tipo,
                                 @Param("estado") String estado,
                                 @Param("tecnicoId") Long tecnicoId);
+       
+       long countByTecnicoIdAndEstadoNot(Long tecnicoId, String estado);
 
 }

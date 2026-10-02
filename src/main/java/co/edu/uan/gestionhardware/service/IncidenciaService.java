@@ -7,6 +7,7 @@ import co.edu.uan.gestionhardware.repository.CategoriaFallaRepository;
 import co.edu.uan.gestionhardware.repository.IncidenciaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import co.edu.uan.gestionhardware.dto.IndicadoresUsuarioFinal;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -49,6 +50,20 @@ public class IncidenciaService {
 
     public List<Incidencia> listarPorUsuario(Long usuarioId) {
         return incidenciaRepository.findPorUsuarioReportador(usuarioId);
+    }
+
+        /**
+     * Los mismos 5 indicadores que se ven agregados en el dashboard del
+     * Gestor (ver IndicadoresUsuarioFinal), pero aqui filtrados a uno solo
+     * Usuario Final -- para su propio mini panel en /mis-incidencias.
+     */
+    public IndicadoresUsuarioFinal indicadoresPersonales(Long usuarioId) {
+        return new co.edu.uan.gestionhardware.dto.IndicadoresUsuarioFinal(
+                incidenciaRepository.countByReportadoPorId(usuarioId),
+                incidenciaRepository.countByReportadoPorIdAndEstado(usuarioId, "ABIERTA"),
+                incidenciaRepository.countByReportadoPorIdAndEstadoAndConfirmacionUsuario(usuarioId, "CERRADA", "PENDIENTE"),
+                incidenciaRepository.countByReportadoPorIdAndConfirmacionUsuario(usuarioId, "APROBADA"),
+                incidenciaRepository.sumVecesRechazadaPorUsuario(usuarioId));
     }
 
     public Optional<Incidencia> buscarPorId(Long id) {

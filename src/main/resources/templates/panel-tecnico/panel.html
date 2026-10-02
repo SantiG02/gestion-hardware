@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Mi panel')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo">Mi panel</h1>
+                    <p class="encabezado__intro">Resumen rápido de lo que tienes pendiente hoy</p>
+                </div>
+            </div>
+
+            <div class="kpis">
+
+                <div class="kpi kpi--seguimiento">
+                    <div class="kpi__icono">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="kpi__valor" th:text="${misMantenimientosPendientes}">0</div>
+                        <div class="kpi__etiqueta">Mis mantenimientos pendientes</div>
+                    </div>
+                </div>
+
+                <div class="kpi kpi--seguimiento">
+                    <div class="kpi__icono">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="kpi__valor" th:text="${incidenciasAbiertas}">0</div>
+                        <div class="kpi__etiqueta">Incidencias abiertas (empresa)</div>
+                    </div>
+                </div>
+
+                <div class="kpi kpi--renovacion">
+                    <div class="kpi__icono">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="kpi__valor" th:text="${mantenimientosProximos}">0</div>
+                        <div class="kpi__etiqueta">Mantenimientos por vencer (7 días)</div>
+                    </div>
+                </div>
+
+                <div class="kpi kpi--azul">
+                    <div class="kpi__icono">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" />
+                            <line x1="8" y1="21" x2="16" y2="21" />
+                            <line x1="12" y1="17" x2="12" y2="21" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="kpi__valor" th:text="${totalEquipos}">0</div>
+                        <div class="kpi__etiqueta">Equipos activos</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="panel" style="margin-top:24px;">
+                <h2 class="panel__titulo">Accesos rápidos</h2>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <a th:href="@{/mantenimientos}" class="boton boton--secundario">Ver mantenimientos</a>
+                    <a th:href="@{/incidencias}" class="boton boton--secundario">Ver incidencias</a>
+                    <a th:href="@{/equipos}" class="boton boton--secundario">Ver equipos</a>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>
