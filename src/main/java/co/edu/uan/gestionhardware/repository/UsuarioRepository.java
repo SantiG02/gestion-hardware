@@ -43,6 +43,17 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
            
     Optional<Usuario> findConRelaciones(@Param("id") Long id);
 
+        @Query("""
+           select u from Usuario u
+           join fetch u.rol
+           left join fetch u.area
+           where u.pendienteAprobacion = true
+           order by u.fechaCreacion
+           """)
+    List<Usuario> findPendientesConRol();
+
+    long countByPendienteAprobacionTrue();
+
     boolean existsByEmail(String email);
     boolean existsByDocumento(String documento);
     

@@ -66,6 +66,78 @@ public class NotificacionService {
         enviarHtml(new String[]{usuario.getEmail()}, "HardTrack - Tu cuenta fue creada", cuerpo);
     }
 
+        public void enviarSolicitudCuentaAdministradores(Usuario solicitante) {
+
+        String[] destinatarios = usuarioService.listarActivos().stream()
+                .filter(u -> "GESTOR".equals(u.getRol().getNombre()))
+                .map(Usuario::getEmail)
+                .toArray(String[]::new);
+
+        if (destinatarios.length == 0) {
+            return;
+        }
+
+        String contenido =
+                "<p style=\"margin:0 0 16px; font-size:14px; line-height:1.6; color:#334155;\">"
+                + "<strong>" + escapar(solicitante.getNombreCompleto()) + "</strong> "
+                + "(" + escapar(solicitante.getEmail()) + ") solicitó una cuenta en HardTrack.</p>"
+                + "<p style=\"margin:0; font-size:14px; line-height:1.6; color:#334155;\">"
+                + "Ingresa a <strong>Usuarios</strong> para aprobarla o rechazarla.</p>";
+
+        enviarHtml(destinatarios, "HardTrack - Nueva solicitud de cuenta",
+                plantillaBase("Nueva solicitud de cuenta", "Hola,", contenido));
+    }
+
+    public void enviarCuentaAprobada(Usuario usuario) {
+
+        String contenido =
+                "<p style=\"margin:0; font-size:14px; line-height:1.6; color:#334155;\">"
+                + "Tu solicitud fue aprobada. Ya puedes ingresar a HardTrack con tu correo "
+                + "(<strong>" + escapar(usuario.getEmail()) + "</strong>) y la contraseña que registraste. "
+                + "Tu rol es <strong>" + usuario.getRol().getNombre() + "</strong>.</p>";
+
+        enviarHtml(new String[]{usuario.getEmail()}, "HardTrack - Tu cuenta fue aprobada",
+                plantillaBase("Cuenta aprobada",
+                        "Hola " + escapar(usuario.getNombreCompleto()) + ",", contenido));
+    }
+
+    public void enviarCuentaRechazada(Usuario usuario) {
+
+        String contenido =
+                "<p style=\"margin:0; font-size:14px; line-height:1.6; color:#334155;\">"
+                + "Tu solicitud de cuenta en HardTrack no fue aprobada. "
+                + "Si crees que es un error, comunícate con el administrador del sistema.</p>";
+
+        enviarHtml(new String[]{usuario.getEmail()}, "HardTrack - Solicitud de cuenta",
+                plantillaBase("Solicitud no aprobada",
+                        "Hola " + escapar(usuario.getNombreCompleto()) + ",", contenido));
+    }
+
+    private String escapar(String texto) {
+        return texto == null ? "" : texto
+                .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+    }
+
+        public boolean correoConfigurado() {
+        return apiKey != null && !apiKey.isBlank();
+    }
+
+    public void enviarCodigoVerificacion(String nombre, String email, String codigo) {
+
+        String saludo = (nombre == null || nombre.isBlank()) ? "Hola," : "Hola " + escapar(nombre) + ",";
+
+        String contenido =
+                "<p style=\"margin:0 0 16px; font-size:14px; line-height:1.6; color:#334155;\">"
+                + "Usa este código para confirmar tu correo y crear tu cuenta en <strong>HardTrack</strong>:</p>"
+                + "<p style=\"margin:0 0 20px; text-align:center; font-size:32px; font-weight:700; "
+                + "letter-spacing:8px; color:#0f172a;\">" + escapar(codigo) + "</p>"
+                + "<p style=\"margin:0; font-size:13px; color:#94a3b8;\">"
+                + "El código vence en 15 minutos. Si no lo pediste tú, puedes ignorar este correo.</p>";
+
+        enviarHtml(new String[]{email}, "HardTrack - Tu código de verificación",
+                plantillaBase("Confirma tu correo", saludo, contenido));
+    }
+
     public void enviarAlertas(List<Alerta> alertas) {
 
         if (alertas.isEmpty()) {

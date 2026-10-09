@@ -58,6 +58,18 @@ public class Usuario {
     @Column(name = "reset_token_expira")
     private LocalDateTime resetTokenExpira;
 
+    @Column(name = "pendiente_aprobacion")
+    private Boolean pendienteAprobacion = false;
+
+        @Column(name = "terminos_aceptados_en")
+    private LocalDateTime terminosAceptadosEn;
+
+    @Column(name = "terminos_version", length = 10)
+    private String terminosVersion;
+
+    @Column(name = "terminos_ip", length = 45)
+    private String terminosIp;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -84,6 +96,18 @@ public class Usuario {
 
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+
+    public Boolean getPendienteAprobacion() { return Boolean.TRUE.equals(pendienteAprobacion); }
+    public void setPendienteAprobacion(Boolean pendienteAprobacion) { this.pendienteAprobacion = pendienteAprobacion; }
+
+    public LocalDateTime getTerminosAceptadosEn() { return terminosAceptadosEn; }
+    public void setTerminosAceptadosEn(LocalDateTime terminosAceptadosEn) { this.terminosAceptadosEn = terminosAceptadosEn; }
+
+    public String getTerminosVersion() { return terminosVersion; }
+    public void setTerminosVersion(String terminosVersion) { this.terminosVersion = terminosVersion; }
+
+    public String getTerminosIp() { return terminosIp; }
+    public void setTerminosIp(String terminosIp) { this.terminosIp = terminosIp; }
 
     public String getResetToken() { return resetToken; }
     public void setResetToken(String resetToken) { this.resetToken = resetToken; }

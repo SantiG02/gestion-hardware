@@ -26,6 +26,54 @@
             <div th:if="${aviso}" class="aviso aviso--info" th:text="${aviso}"></div>
             <div th:if="${error}" class="aviso aviso--error" th:text="${error}"></div>
 
+            <!-- Solicitudes de cuenta hechas desde el login -->
+            <div th:unless="${#lists.isEmpty(pendientes)}" class="panel panel--tabla" style="margin-bottom:24px;">
+                <h2 class="encabezado__titulo" style="font-size:16px; margin:16px 16px 4px;">
+                    Solicitudes pendientes
+                    <span class="insignia insignia--renovacion" th:text="${#lists.size(pendientes)}">0</span>
+                </h2>
+                <p class="encabezado__intro" style="margin:0 16px 12px;">
+                    Personas que pidieron una cuenta desde la pantalla de acceso. Elige el rol y aprueba, o rechaza.
+                </p>
+                <table class="tabla">
+                    <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Solicitada</th>
+                        <th>Rol a asignar</th>
+                        <th class="tabla__acciones">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="p : ${pendientes}">
+                        <td th:text="${p.nombreCompleto}">-</td>
+                        <td th:text="${p.email}">-</td>
+                        <td th:text="${#temporals.format(p.fechaCreacion, 'dd/MM/yyyy HH:mm')}">-</td>
+                        <td>
+                            <select class="campo__entrada" name="rolId"
+                                    th:attr="form=${'aprobar-' + p.id}">
+                                <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.nombre}"
+                                        th:selected="${r.nombre == 'USUARIO'}">USUARIO</option>
+                            </select>
+                        </td>
+                        <td class="tabla__acciones">
+                            <form th:id="${'aprobar-' + p.id}"
+                                  th:action="@{/usuarios/{id}/aprobar(id=${p.id})}"
+                                  method="post" style="display:inline">
+                                <button type="submit" class="boton boton--exito boton--pequeno">Aprobar</button>
+                            </form>
+                            <form th:action="@{/usuarios/{id}/rechazar(id=${p.id})}"
+                                  method="post" style="display:inline"
+                                  onsubmit="return confirm('¿Rechazar esta solicitud? Se eliminará y se avisará al solicitante.');">
+                                <button type="submit" class="boton boton--peligro boton--pequeno">Rechazar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
             <div th:if="${#lists.isEmpty(usuarios)}" class="aviso aviso--info">
                 No hay usuarios registrados todavía.
             </div>
@@ -44,7 +92,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="usuario : ${usuarios}">
+                    <tr th:each="usuario : ${usuarios}" th:unless="${usuario.pendienteAprobacion}">
 
                         <td th:text="${usuario.nombreCompleto}">-</td>
 

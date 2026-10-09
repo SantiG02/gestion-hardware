@@ -25,7 +25,7 @@ public class SecurityConfig {
 
                                 // Publico
                 .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
-                .requestMatchers("/configuracion-inicial/**", "/recuperar", "/restablecer").permitAll()
+                .requestMatchers("/configuracion-inicial/**", "/solicitar-cuenta", "/verificar-cuenta", "/reenviar-codigo", "/terminos", "/recuperar", "/restablecer").permitAll()
 
                 // Exclusivo del Gestor Tecnologico
                 .requestMatchers("/usuarios/**").hasRole("GESTOR")

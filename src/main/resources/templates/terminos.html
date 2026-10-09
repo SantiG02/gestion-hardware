@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Términos y Condiciones · HardTrack</title>
+
+    <link rel="stylesheet" th:href="@{/css/hardtrack.css}" />
+
+    <style>
+        body {
+            min-height: 100vh;
+            padding: 48px 20px;
+            background: radial-gradient(circle at 50% 0%, var(--fondo-alto) 0%, var(--fondo) 60%);
+        }
+
+        .documento {
+            width: 100%;
+            max-width: 820px;
+            margin: 0 auto;
+            background: var(--superficie);
+            border-radius: var(--radio-grande);
+            padding: 48px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
+            line-height: 1.65;
+        }
+
+        .documento__marca { margin: 0 0 4px; font-size: 13px; font-weight: 700; letter-spacing: .04em; color: var(--texto-suave); }
+        .documento h1 { margin: 0 0 8px; font-size: 26px; }
+        .documento h2 { margin: 28px 0 8px; font-size: 16px; }
+        .documento p, .documento li { margin: 0 0 10px; font-size: 14.5px; }
+        .documento ul { margin: 0 0 10px; padding-left: 22px; }
+
+        .ficha {
+            margin: 16px 0 8px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            background: var(--fondo-alto, #eef0f3);
+            font-size: 13.5px;
+        }
+
+        .ficha p { margin: 0 0 4px; }
+
+        .tabla-retencion { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 13.5px; }
+        .tabla-retencion th, .tabla-retencion td { border: 1px solid rgba(128,128,128,.35); padding: 8px 10px; text-align: left; vertical-align: top; }
+
+        .volver { display: inline-block; margin-bottom: 24px; font-size: 14px; }
+
+        .pie { margin: 32px auto 0; max-width: 820px; font-size: 13px; color: var(--pie); text-align: center; }
+
+        @media (max-width: 600px) { .documento { padding: 28px 20px; } }
+    </style>
+</head>
+
+<body>
+
+<main class="documento">
+
+    <a class="volver" th:href="@{/login}">&larr; Volver al inicio de sesión</a>
+
+    <p class="documento__marca">HARDTRACK</p>
+    <h1>Términos y Condiciones</h1>
+    <p><strong>Sistema de seguimiento del ciclo de vida de hardware</strong></p>
+
+    <div class="ficha">
+        <p><strong>Versión:</strong> 1.0</p>
+        <p><strong>Fecha de entrada en vigencia:</strong> 9 de octubre de 2026</p>
+        <p><strong>Responsable del tratamiento:</strong> Equipo de desarrollo del proyecto de grado HardTrack,
+            Programa de Ingeniería de Sistemas, Universidad Antonio Nariño (UAN), Colombia.</p>
+        <p><strong>Contacto para temas de datos personales:</strong> hardtrack.uan@gmail.com</p>
+    </div>
+
+    <h2>Artículo 1. Objeto</h2>
+    <p>Este documento regula el acceso y el uso del sistema HardTrack y define las reglas con las que se tratan
+        los datos personales de quienes lo usan. HardTrack permite registrar equipos de cómputo, hacer seguimiento
+        a sus mantenimientos e incidencias, y generar alertas y reportes sobre su estado. Su tratamiento de datos
+        se rige por la Ley 1581 de 2012 y sus normas reglamentarias (Decreto 1377 de 2013, compilado en el
+        Decreto 1074 de 2015).</p>
+
+    <h2>Artículo 2. Aceptación</h2>
+    <p>Crear una cuenta implica la aceptación expresa, previa e informada de estos Términos y de la política de
+        tratamiento de datos personales contenida en ellos. La casilla de aceptación nunca viene marcada de forma
+        previa: la persona debe marcarla voluntariamente. Como evidencia, el sistema guarda la fecha y hora, la
+        dirección IP y la versión del documento aceptada. Sin esta aceptación no es posible crear una cuenta.</p>
+
+    <h2>Artículo 3. Cuentas y roles</h2>
+    <p>Cualquier persona puede crear una cuenta desde la pantalla de acceso. Toda cuenta nueva se crea con el rol
+        Usuario Final y queda activa de inmediato; solo el administrador (rol Gestor Tecnológico) puede cambiar el
+        rol de una cuenta o inactivarla. Existen tres roles:</p>
+    <ul>
+        <li><strong>Gestor Tecnológico:</strong> administra usuarios, equipos, mantenimientos, reportes y configuración.</li>
+        <li><strong>Técnico de Soporte:</strong> atiende incidencias y registra mantenimientos.</li>
+        <li><strong>Usuario Final:</strong> reporta incidencias y consulta, edita o aprueba las suyas.</li>
+    </ul>
+    <p>Cada rol solo accede a las funciones que necesita para su labor.</p>
+
+    <h2>Artículo 4. Obligaciones del usuario</h2>
+    <p>El usuario se compromete a entregar información veraz, mantenerla actualizada y proteger sus credenciales
+        (no compartir su contraseña). Queda prohibido usar el sistema para fines ilícitos, intentar acceder a
+        funciones o datos de otros roles, o alterar su funcionamiento. Los reportes de incidencias deben describir
+        hechos reales sobre equipos de la institución.</p>
+
+    <h2>Artículo 5. Datos que se tratan</h2>
+    <ul>
+        <li><strong>Identificación y contacto:</strong> nombre completo, correo electrónico y, si se registra, documento y área.</li>
+        <li><strong>Credenciales:</strong> la contraseña se almacena cifrada (hash), nunca en texto legible.</li>
+        <li><strong>Operación del sistema:</strong> equipos asignados como responsable, incidencias reportadas o atendidas,
+            mantenimientos y el historial de cambios.</li>
+        <li><strong>Código de verificación:</strong> un código temporal de 6 dígitos que se envía al correo para confirmarlo;
+            vence en 15 minutos y no se conserva una vez la cuenta se crea.</li>
+        <li><strong>Datos técnicos:</strong> dirección IP y fecha de la aceptación de estos Términos.</li>
+    </ul>
+    <p>HardTrack no solicita datos sensibles (salud, orientación política o religiosa, biometría, entre otros) ni
+        datos financieros. Si por error se incluyeran en un reporte o descripción, el usuario puede solicitar su
+        eliminación.</p>
+
+    <h2>Artículo 6. Finalidades</h2>
+    <p>Los datos se usan únicamente para: crear y administrar cuentas y accesos; gestionar equipos, incidencias y
+        mantenimientos; enviar correos del sistema (confirmación o aprobación de cuenta, recuperación de contraseña
+        y alertas sobre equipos); garantizar la seguridad y la trazabilidad de las operaciones; y elaborar reportes
+        e indicadores de gestión. No se usan para publicidad ni se venden o ceden a terceros con fines comerciales.</p>
+
+    <h2>Artículo 7. Principios</h2>
+    <p>El tratamiento se rige por los principios de legalidad, finalidad, libertad, veracidad, transparencia,
+        acceso y circulación restringida, seguridad y confidencialidad. Solo se piden los datos necesarios para
+        las finalidades descritas y el acceso a ellos se limita por rol.</p>
+
+    <h2>Artículo 8. Derechos del titular</h2>
+    <p>Como titular de datos personales usted puede conocer, actualizar y rectificar sus datos; solicitar prueba
+        de esta autorización; ser informado del uso que se les da; presentar quejas ante la Superintendencia de
+        Industria y Comercio (SIC); revocar la autorización y solicitar la supresión de sus datos cuando no exista
+        un deber legal o contractual de conservarlos; y acceder gratuitamente a ellos.</p>
+
+    <h2>Artículo 9. Consultas y reclamos</h2>
+    <p>Las solicitudes se envían al correo de contacto indicado arriba, con la identificación de quien las hace y
+        una descripción de lo que solicita.</p>
+    <ul>
+        <li><strong>Consultas:</strong> se responden en máximo diez (10) días hábiles; si no es posible, se informa el
+            motivo y la nueva fecha, que no superará cinco (5) días hábiles adicionales.</li>
+        <li><strong>Reclamos</strong> (corrección, actualización, supresión o presunto incumplimiento): se responden en
+            máximo quince (15) días hábiles; si no es posible, se informa el motivo y la respuesta no superará ocho (8)
+            días hábiles adicionales. Si el reclamo está incompleto, se pedirá completarlo dentro de los cinco (5)
+            días siguientes a su recibo.</li>
+    </ul>
+
+    <h2>Artículo 10. Conservación y eliminación</h2>
+    <table class="tabla-retencion">
+        <thead>
+        <tr><th>Categoría de dato</th><th>Finalidad</th><th>Conservación</th><th>Al terminar el plazo</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Identificación y contacto</td>
+            <td>Crear la cuenta y dar soporte</td>
+            <td>Mientras la cuenta esté vigente, más 2 años</td>
+            <td>Eliminar o anonimizar</td>
+        </tr>
+        <tr>
+            <td>Incidencias, mantenimientos e historial de equipos</td>
+            <td>Operación y trazabilidad del hardware</td>
+            <td>Durante la vida útil del equipo y el plazo institucional de archivo</td>
+            <td>Archivar o eliminar</td>
+        </tr>
+        <tr>
+            <td>Evidencia de aceptación (fecha, IP, versión)</td>
+            <td>Prueba de la autorización</td>
+            <td>Mientras la cuenta esté vigente, más 2 años</td>
+            <td>Eliminar</td>
+        </tr>
+        </tbody>
+    </table>
+    <p>Cuando una cuenta se inactiva, sus datos se conservan solo para la trazabilidad de lo que hizo mientras estuvo
+        activa.</p>
+
+    <h2>Artículo 11. Seguridad</h2>
+    <p>HardTrack aplica medidas técnicas razonables: contraseñas cifradas con hash, control de acceso por roles,
+        sesiones con cierre de sesión, protección contra solicitudes falsificadas (CSRF) y límite de intentos en
+        la creación de cuentas. Se recomienda desplegarlo siempre con conexión cifrada (HTTPS). Ante un incidente
+        de seguridad que afecte datos personales, se informará a los titulares afectados y, cuando corresponda, a la SIC.</p>
+
+    <h2>Artículo 12. Encargados y terceros</h2>
+    <p>Para enviar correos del sistema se usa un proveedor externo de correo transaccional (Brevo), al que se
+        entregan únicamente el correo del destinatario y el contenido del mensaje. Si el sistema se despliega en
+        servicios en la nube, estos actúan como encargados del tratamiento bajo condiciones de confidencialidad y
+        seguridad. Algunos proveedores pueden procesar datos fuera de Colombia; en ese caso se exigen garantías
+        equivalentes a las de la ley colombiana.</p>
+
+    <h2>Artículo 13. Cookies</h2>
+    <p>HardTrack usa únicamente cookies técnicas necesarias: la de sesión (para mantener su ingreso) y la de
+        protección contra falsificación de solicitudes. No usa cookies de analítica, publicidad ni seguimiento.</p>
+
+    <h2>Artículo 14. Menores de edad</h2>
+    <p>El sistema está dirigido a personal y estudiantes mayores de edad de la institución. No se tratan
+        intencionalmente datos de menores de edad.</p>
+
+    <h2>Artículo 15. Propiedad intelectual</h2>
+    <p>El código, el diseño y la documentación de HardTrack son resultado de un trabajo de grado de la Universidad
+        Antonio Nariño. Se concede al usuario una licencia limitada, no exclusiva e intransferible para usar el
+        sistema en su función; no se permite copiarlo, revenderlo ni crear obras derivadas sin autorización.</p>
+
+    <h2>Artículo 16. Alcance del servicio y responsabilidad</h2>
+    <p>HardTrack se ofrece como un sistema académico y funcional, “tal cual”, sin garantía de disponibilidad
+        continua ni de ausencia total de errores. No se asume responsabilidad por daños indirectos, fallas de
+        servicios de terceros (internet, energía, nube, correo), configuraciones inseguras hechas por quien lo
+        administra o decisiones operativas que ignoren las guías del sistema. Nada de lo aquí dispuesto excluye la
+        responsabilidad cuando exista dolo o culpa grave del responsable.</p>
+
+    <h2>Artículo 17. Cambios a estos Términos</h2>
+    <p>Estos Términos pueden modificarse para reflejar cambios legales, técnicos u operativos. Los cambios se
+        comunicarán en la plataforma o por correo con antelación razonable, indicando la versión y la fecha de
+        entrada en vigencia. Cuando el cambio sea sustancial (nuevas finalidades o nuevas categorías de datos), se
+        solicitará una nueva aceptación expresa. Se conservará el historial de versiones.</p>
+
+    <h2>Artículo 18. Ley aplicable y vigencia</h2>
+    <p>Estos Términos se rigen por la ley colombiana, en especial la Ley 1581 de 2012 y el Decreto 1377 de 2013
+        (compilado en el Decreto 1074 de 2015). Estarán vigentes mientras el usuario utilice el sistema o existan
+        obligaciones pendientes. Las diferencias se buscarán resolver primero de forma directa y amistosa; de no
+        lograrse, serán competentes los jueces de la República de Colombia. La nulidad de una cláusula no afecta
+        la validez de las demás.</p>
+
+</main>
+
+<footer class="pie">
+    © 2026 HardTrack · Proyecto de grado — Ingeniería de Sistemas, Universidad Antonio Nariño
+</footer>
+
+</body>
+</html>

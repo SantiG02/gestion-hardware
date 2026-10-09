@@ -16,11 +16,9 @@ public class AuthController {
 
     @GetMapping("/login")
     public String mostrarLogin(Model model) {
-
-        if (!usuarioService.existeAlgunGestor()) {
-            return "redirect:/configuracion-inicial";
-        }
-
+        boolean sinGestor = !usuarioService.existeAlgunGestor();
+        model.addAttribute("sinGestor", sinGestor);
+        model.addAttribute("tabCrear", sinGestor);
         return "login";
     }
 

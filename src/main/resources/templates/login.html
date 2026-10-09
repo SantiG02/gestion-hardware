@@ -74,6 +74,55 @@
         .olvido a:hover,
         .olvido a:focus-visible { text-decoration: underline; }
 
+        .pestanas {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+            margin: 0 0 28px;
+            border-radius: 10px;
+            background: var(--fondo-alto, #eef0f3);
+        }
+
+        .pestanas__boton {
+            flex: 1;
+            padding: 9px 12px;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--texto-suave);
+            cursor: pointer;
+        }
+
+        .pestanas__boton[aria-selected="true"] {
+            background: var(--superficie);
+            color: var(--texto, inherit);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+
+        .pestanas__boton:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+
+        .panel-acceso[hidden] { display: none; }
+
+        /* Campo señuelo contra bots: fuera de pantalla, no display:none */
+        .terminos {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 4px 0 22px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--texto-suave);
+        }
+
+        .terminos input { margin-top: 3px; flex-shrink: 0; }
+
+        .terminos a { text-decoration: underline; }
+
+        .senuelo { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
         .nota {
             margin: 18px 0 0;
             text-align: center;
@@ -113,48 +162,153 @@
 
     <main class="acceso">
 
-        <h2 class="acceso__titulo">Iniciar sesión</h2>
-        <p class="acceso__intro">Accede con tus credenciales corporativas</p>
-
-
-        <div th:if="${param.error}" class="aviso aviso--error">
-            El correo o la contraseña no coinciden. Verifica los datos e inténtalo de nuevo.
+        <div class="pestanas" role="tablist">
+            <button type="button" class="pestanas__boton" role="tab" id="tab-ingresar"
+                    aria-controls="panel-ingresar"
+                    th:attr="aria-selected=(${tabCrear == true} ? 'false' : 'true')">Iniciar sesión</button>
+            <button type="button" class="pestanas__boton" role="tab" id="tab-crear"
+                    aria-controls="panel-crear"
+                    th:attr="aria-selected=(${tabCrear == true} ? 'true' : 'false')">Crear cuenta</button>
         </div>
 
-        <div th:if="${param.logout}" class="aviso aviso--exito">
-            Cerraste sesión correctamente.
-        </div>
+        <div th:if="${exito}" class="aviso aviso--exito" th:text="${exito}"></div>
 
-        <form th:action="@{/login}" method="post">
+        <!-- ================= Iniciar sesión ================= -->
+        <section class="panel-acceso" id="panel-ingresar" role="tabpanel"
+                 aria-labelledby="tab-ingresar" th:hidden="${tabCrear == true}">
 
-            <div class="campo">
-                <label class="campo__etiqueta" for="email">Correo electrónico</label>
-                <input class="campo__entrada"
-                       type="email"
-                       id="email"
-                       name="email"
-                       autocomplete="username"
-                       required
-                       autofocus />
+            <h2 class="acceso__titulo">Iniciar sesión</h2>
+            <p class="acceso__intro">Accede con tus credenciales corporativas</p>
+
+            <div th:if="${param.error}" class="aviso aviso--error">
+                El correo o la contraseña no coinciden, o la cuenta aún no está activa.
+                Verifica los datos e inténtalo de nuevo.
             </div>
 
-            <div class="campo">
-                <label class="campo__etiqueta" for="password">Contraseña</label>
-                <input class="campo__entrada"
-                       type="password"
-                       id="password"
-                       name="password"
-                       autocomplete="current-password"
-                       required />
+            <div th:if="${param.logout}" class="aviso aviso--exito">
+                Cerraste sesión correctamente.
             </div>
 
-            <p class="olvido">
-                <a th:href="@{/recuperar}">¿Olvidó su contraseña?</a>
+            <form th:action="@{/login}" method="post">
+
+                <div class="campo">
+                    <label class="campo__etiqueta" for="email">Correo electrónico</label>
+                    <input class="campo__entrada" type="email" id="email" name="email"
+                           autocomplete="username" required />
+                </div>
+
+                <div class="campo">
+                    <label class="campo__etiqueta" for="password">Contraseña</label>
+                    <input class="campo__entrada" type="password" id="password" name="password"
+                           autocomplete="current-password" required />
+                </div>
+
+                <p class="olvido">
+                    <a th:href="@{/recuperar}">¿Olvidó su contraseña?</a>
+                </p>
+
+                <button class="boton boton--bloque" type="submit">Ingresar</button>
+
+            </form>
+        </section>
+
+        <!-- ================= Crear cuenta ================= -->
+        <section class="panel-acceso" id="panel-crear" role="tabpanel"
+                 aria-labelledby="tab-crear" th:hidden="${tabCrear != true}">
+
+            <!-- Paso 2: código enviado por correo -->
+            <div th:if="${verificar == true}">
+
+                <h2 class="acceso__titulo">Confirma tu correo</h2>
+                <p class="acceso__intro">Escribe el código de 6 dígitos que enviamos a tu correo.</p>
+
+                <div th:if="${errorCrear}" class="aviso aviso--error" th:text="${errorCrear}"></div>
+                <div th:if="${infoCrear}" class="aviso aviso--info" th:text="${infoCrear}"></div>
+
+                <form th:action="@{/verificar-cuenta}" method="post">
+                    <input type="hidden" name="email" th:value="${valorEmail}" />
+
+                    <div class="campo">
+                        <label class="campo__etiqueta" for="codigo">Código de verificación</label>
+                        <input class="campo__entrada" type="text" id="codigo" name="codigo"
+                               inputmode="numeric" pattern="[0-9]{6}" maxlength="6"
+                               autocomplete="one-time-code" required autofocus />
+                    </div>
+
+                    <button class="boton boton--bloque" type="submit">Confirmar y crear cuenta</button>
+                </form>
+
+                <form th:action="@{/reenviar-codigo}" method="post" style="margin-top:14px; text-align:center;">
+                    <input type="hidden" name="email" th:value="${valorEmail}" />
+                    <button class="boton boton--secundario boton--pequeno" type="submit">Reenviar código</button>
+                </form>
+
+                <p class="nota">¿Te equivocaste de correo? Vuelve a la pestaña «Crear cuenta» y empieza de nuevo.</p>
+            </div>
+
+            <!-- Paso 1: datos de la cuenta -->
+            <div th:unless="${verificar == true}">
+
+            <h2 class="acceso__titulo" th:text="${sinGestor == true} ? 'Crear administrador' : 'Crear cuenta'">Crear cuenta</h2>
+
+            <p class="acceso__intro" th:if="${sinGestor == true}">
+                Aún no hay un administrador. Crea la cuenta que gestionará el sistema.
+            </p>
+            <p class="acceso__intro" th:unless="${sinGestor == true}">
+                Crea tu cuenta como Usuario Final para reportar y seguir incidencias.
+                Si necesitas más permisos, el administrador puede cambiarte el rol.
             </p>
 
-            <button class="boton boton--bloque" type="submit">Ingresar</button>
+            <div th:if="${errorCrear}" class="aviso aviso--error" th:text="${errorCrear}"></div>
 
-        </form>
+            <form th:action="${sinGestor == true} ? @{/configuracion-inicial/crear} : @{/solicitar-cuenta}"
+                  method="post">
+
+                <div class="campo">
+                    <label class="campo__etiqueta" for="crear-nombre">Nombre completo</label>
+                    <input class="campo__entrada" type="text" id="crear-nombre" name="nombreCompleto"
+                           maxlength="150" autocomplete="name" required th:value="${valorNombre}" />
+                </div>
+
+                <div class="campo">
+                    <label class="campo__etiqueta" for="crear-email">Correo electrónico</label>
+                    <input class="campo__entrada" type="email" id="crear-email" name="email"
+                           maxlength="120" autocomplete="email" required th:value="${valorEmail}" />
+                </div>
+
+                <div class="campo">
+                    <label class="campo__etiqueta" for="crear-password">Contraseña</label>
+                    <input class="campo__entrada" type="password" id="crear-password" name="password"
+                           minlength="8" autocomplete="new-password" required />
+                </div>
+
+                <div class="campo">
+                    <label class="campo__etiqueta" for="crear-confirmacion">Confirmar contraseña</label>
+                    <input class="campo__entrada" type="password" id="crear-confirmacion"
+                           name="passwordConfirmacion" minlength="8" autocomplete="new-password" required />
+                </div>
+
+                <div class="terminos">
+                    <input type="checkbox" id="aceptaTerminos" name="aceptaTerminos" value="si" required />
+                    <label for="aceptaTerminos">
+                        He leído y acepto los
+                        <a th:href="@{/terminos}" target="_blank" rel="noopener">Términos y Condiciones</a>
+                        y la política de tratamiento de datos personales.
+                    </label>
+                </div>
+
+                <div class="senuelo" aria-hidden="true">
+                    <label for="sitioWeb">No llenar este campo</label>
+                    <input type="text" id="sitioWeb" name="sitioWeb" tabindex="-1" autocomplete="off" />
+                </div>
+
+                <button class="boton boton--bloque" type="submit"
+                        th:text="${sinGestor == true} ? 'Crear administrador' : 'Crear cuenta'">Crear cuenta</button>
+
+            </form>
+
+            </div>
+        </section>
 
         <div class="aviso aviso--info" style="margin-top:20px;">
             <strong>Credenciales de prueba</strong><br />
@@ -176,6 +330,27 @@
     <footer class="pie">
         © 2026 HardTrack · Proyecto de grado — Ingeniería de Sistemas
     </footer>
+
+    <script>
+        (function () {
+            var pestanas = [
+                { boton: document.getElementById('tab-ingresar'), panel: document.getElementById('panel-ingresar') },
+                { boton: document.getElementById('tab-crear'),    panel: document.getElementById('panel-crear') }
+            ];
+            function mostrar(indice) {
+                pestanas.forEach(function (p, i) {
+                    var activa = i === indice;
+                    p.boton.setAttribute('aria-selected', activa ? 'true' : 'false');
+                    p.panel.hidden = !activa;
+                });
+                var campo = pestanas[indice].panel.querySelector('input:not([tabindex="-1"])');
+                if (campo) { campo.focus(); }
+            }
+            pestanas.forEach(function (p, i) {
+                p.boton.addEventListener('click', function () { mostrar(i); });
+            });
+        })();
+    </script>
 
 </body>
 </html>

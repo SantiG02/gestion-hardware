@@ -44,7 +44,46 @@ public class UsuarioController {
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("usuarios", usuarioService.listarTodos());
+        model.addAttribute("pendientes", usuarioService.listarPendientes());
         return "usuario/lista";
+    }
+
+        @PostMapping("/{id}/aprobar")
+    public String aprobar(@PathVariable Long id,
+                          @RequestParam(required = false) Long rolId,
+                          RedirectAttributes flash) {
+
+        return usuarioService.aprobar(id, rolId).map(usuario -> {
+            flash.addFlashAttribute("exito", "Solicitud aprobada: " + usuario.getEmail());
+            try {
+                notificacionService.enviarCuentaAprobada(usuario);
+            } catch (Exception e) {
+                flash.addFlashAttribute("aviso",
+                        "La cuenta se activó, pero no se pudo enviar el correo al usuario: " + e.getMessage());
+            }
+            return "redirect:/usuarios";
+        }).orElseGet(() -> {
+            flash.addFlashAttribute("error", "La solicitud ya no existe o ya fue atendida");
+            return "redirect:/usuarios";
+        });
+    }
+
+    @PostMapping("/{id}/rechazar")
+    public String rechazar(@PathVariable Long id, RedirectAttributes flash) {
+
+        return usuarioService.rechazar(id).map(usuario -> {
+            flash.addFlashAttribute("exito", "Solicitud rechazada: " + usuario.getEmail());
+            try {
+                notificacionService.enviarCuentaRechazada(usuario);
+            } catch (Exception e) {
+                flash.addFlashAttribute("aviso",
+                        "La solicitud se rechazó, pero no se pudo enviar el correo al usuario: " + e.getMessage());
+            }
+            return "redirect:/usuarios";
+        }).orElseGet(() -> {
+            flash.addFlashAttribute("error", "La solicitud ya no existe o ya fue atendida");
+            return "redirect:/usuarios";
+        });
     }
 
     @PostMapping("/{id}/desactivar")
