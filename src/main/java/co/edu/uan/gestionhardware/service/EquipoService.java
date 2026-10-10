@@ -67,6 +67,15 @@ public class EquipoService {
         return estadoEquipoRepository.findAllByOrderByOrdenAsc();
     }
 
+
+    public Optional<Equipo> buscarPorCodigoInterno(String codigoInterno) {
+        return equipoRepository.findByCodigoInterno(codigoInterno);
+    }
+
+    public Optional<Equipo> buscarPorSerial(String serial) {
+        return equipoRepository.findBySerial(serial);
+    }
+    
     @Transactional
     public Equipo guardar(Equipo equipo) {
         if (equipo.getActivo() == null) {

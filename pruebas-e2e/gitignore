@@ -1,0 +1,5 @@
+node_modules/
+reporte/
+test-results/
+resultados.json
+resultados.csv

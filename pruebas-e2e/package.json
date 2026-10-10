@@ -1,0 +1,15 @@
+{
+  "name": "hardtrack-pruebas-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pruebas funcionales automatizadas de HardTrack (Playwright)",
+  "scripts": {
+    "test": "playwright test",
+    "test:ver": "playwright test --headed --workers=1",
+    "reporte": "playwright show-report reporte",
+    "exportar": "node exportar-resultados.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.49.1"
+  }
+}

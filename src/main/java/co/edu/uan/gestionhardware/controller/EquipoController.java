@@ -116,6 +116,20 @@ public class EquipoController {
                           BindingResult result,
                           RedirectAttributes flash) {
 
+        // El código interno y el serial no pueden repetirse en otro equipo.
+        if (equipo.getCodigoInterno() != null) {
+            equipoService.buscarPorCodigoInterno(equipo.getCodigoInterno())
+                    .filter(otro -> !otro.getId().equals(equipo.getId()))
+                    .ifPresent(otro -> result.rejectValue("codigoInterno", "duplicado",
+                            "Ya existe un equipo con este código interno"));
+        }
+        if (equipo.getSerial() != null) {
+            equipoService.buscarPorSerial(equipo.getSerial())
+                    .filter(otro -> !otro.getId().equals(equipo.getId()))
+                    .ifPresent(otro -> result.rejectValue("serial", "duplicado",
+                            "Ya existe un equipo con este serial"));
+        }
+
         if (result.hasErrors()) {
             return "equipo/formulario";
         }
