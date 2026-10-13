@@ -254,9 +254,12 @@
             <p class="acceso__intro" th:if="${sinGestor == true}">
                 Aún no hay un administrador. Crea la cuenta que gestionará el sistema.
             </p>
-            <p class="acceso__intro" th:unless="${sinGestor == true}">
+            <p class="acceso__intro" th:if="${sinGestor != true and @environment.getProperty('hardtrack.demo.seleccion-rol', 'false') != 'true'}">
                 Crea tu cuenta como Usuario Final para reportar y seguir incidencias.
                 Si necesitas más permisos, el administrador puede cambiarte el rol.
+            </p>
+            <p class="acceso__intro" th:if="${sinGestor != true and @environment.getProperty('hardtrack.demo.seleccion-rol', 'false') == 'true'}">
+                Modo evaluación: elige el rol con el que quieres probar el sistema.
             </p>
 
             <div th:if="${errorCrear}" class="aviso aviso--error" th:text="${errorCrear}"></div>
@@ -286,6 +289,15 @@
                     <label class="campo__etiqueta" for="crear-confirmacion">Confirmar contraseña</label>
                     <input class="campo__entrada" type="password" id="crear-confirmacion"
                            name="passwordConfirmacion" minlength="8" autocomplete="new-password" required />
+                </div>
+
+                <div class="campo" th:if="${sinGestor != true and @environment.getProperty('hardtrack.demo.seleccion-rol', 'false') == 'true'}">
+                    <label class="campo__etiqueta" for="crear-rol">Rol (solo modo evaluación)</label>
+                    <select class="campo__entrada" id="crear-rol" name="rol">
+                        <option value="USUARIO" selected>Usuario Final</option>
+                        <option value="TECNICO">Técnico</option>
+                        <option value="GESTOR">Gestor</option>
+                    </select>
                 </div>
 
                 <div class="terminos">

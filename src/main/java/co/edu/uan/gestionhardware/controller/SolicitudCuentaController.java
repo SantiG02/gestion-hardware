@@ -12,14 +12,20 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.beans.factory.annotation.Value;
+import java.util.Set;
 
 import java.util.regex.Pattern;
 
 /**
  * Creacion de cuenta desde la pestaña "Crear cuenta" del login. Cualquier
- * persona puede crearla una vez existe un administrador: se crea siempre con
- * rol USUARIO (Usuario Final) y solo el Gestor puede cambiarle el rol despues
- * desde /usuarios.
+ * persona puede crearla una vez existe un administrador.
+ *
+ * Por defecto la cuenta se crea siempre con rol USUARIO (Usuario Final) y solo
+ * el Gestor puede cambiarle el rol despues desde /usuarios. Existe un MODO
+ * EVALUACION (hardtrack.demo.seleccion-rol=true) pensado solo para la
+ * revision de los jurados: el formulario deja elegir el rol. La version que
+ * se entrega a la empresa lo desactiva (false) y el parametro "rol" se ignora.
  *
  * Si el correo del sistema esta configurado, el correo se confirma primero con
  * un codigo de 6 digitos y la cuenta solo se crea al acertarlo. Si no esta
@@ -30,6 +36,11 @@ import java.util.regex.Pattern;
 public class SolicitudCuentaController {
 
     private static final Pattern CORREO = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
+
+    private static final Set<String> ROLES_PERMITIDOS = Set.of("USUARIO", "TECNICO", "GESTOR");
+
+    @Value("${hardtrack.demo.seleccion-rol:false}")
+    private boolean seleccionRol;
 
     private final UsuarioService usuarioService;
     private final NotificacionService notificacionService;
@@ -56,6 +67,7 @@ public class SolicitudCuentaController {
                             @RequestParam String passwordConfirmacion,
                             @RequestParam(required = false) String aceptaTerminos,
                             @RequestParam(required = false) String sitioWeb,
+                            @RequestParam(required = false) String rol,
                             HttpServletRequest request,
                             Model model,
                             RedirectAttributes flash) {
@@ -74,6 +86,16 @@ public class SolicitudCuentaController {
         String nombre = nombreCompleto == null ? "" : nombreCompleto.trim();
         String correo = email == null ? "" : email.trim().toLowerCase();
         String ip = request.getRemoteAddr();
+
+        // Rol: solo se respeta en modo evaluación; si no, siempre Usuario Final.
+        String rolElegido = "USUARIO";
+        if (seleccionRol && rol != null && !rol.isBlank()) {
+            String pedido = rol.trim().toUpperCase();
+            if (!ROLES_PERMITIDOS.contains(pedido)) {
+                return formularioConError(model, "El rol seleccionado no es válido", nombre, correo);
+            }
+            rolElegido = pedido;
+        }
 
         String error = validar(nombre, correo, password, passwordConfirmacion);
 
@@ -95,14 +117,14 @@ public class SolicitudCuentaController {
 
         // Sin correo configurado no se puede enviar el codigo: se crea directo.
         if (!notificacionService.correoConfigurado()) {
-            usuarioService.registrarSolicitud(nombre, correo, password, ip);
+            usuarioService.registrarSolicitud(nombre, correo, password, ip, rolElegido);
             flash.addFlashAttribute("exito", mensajeCuentaCreada());
             return "redirect:/login";
         }
 
         String codigo;
         try {
-            codigo = registros.iniciar(nombre, correo, usuarioService.codificarPassword(password), ip);
+            codigo = registros.iniciar(nombre, correo, usuarioService.codificarPassword(password), ip, rolElegido);
         } catch (IllegalStateException e) {
             return formularioConError(model, e.getMessage(), nombre, correo);
         }
@@ -140,7 +162,7 @@ public class SolicitudCuentaController {
 
             boolean creada = usuarioService.crearCuentaVerificada(
                     registro.getNombre(), registro.getEmail(), registro.getPasswordHash(),
-                    registro.getIp(), registro.getAceptadoEn()).isPresent();
+                    registro.getIp(), registro.getAceptadoEn(), registro.getRol()).isPresent();
 
             if (!creada) {
                 flash.addFlashAttribute("exito", "Ese correo ya tiene una cuenta. Inicia sesión.");

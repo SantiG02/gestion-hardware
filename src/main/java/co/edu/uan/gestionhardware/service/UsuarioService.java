@@ -160,41 +160,6 @@ public class UsuarioService {
         return passwordEncoder.encode(passwordPlano);
     }
 
-    /** Crea la cuenta (rol USUARIO, activa) cuando no hace falta verificar el correo. */
-    @Transactional
-    public Optional<Usuario> registrarSolicitud(String nombreCompleto, String email, String passwordPlano, String ip) {
-        return crearCuentaVerificada(nombreCompleto, email,
-                passwordEncoder.encode(passwordPlano), ip, LocalDateTime.now());
-    }
-
-    /**
-     * Crea la cuenta con la contrasena ya cifrada. Se usa cuando el correo ya
-     * se confirmo con el codigo. Devuelve vacio si el correo ya existe.
-     */
-    @Transactional
-    public Optional<Usuario> crearCuentaVerificada(String nombreCompleto, String email, String passwordHash,
-                                                   String ip, LocalDateTime aceptadoEn) {
-
-        if (usuarioRepository.existsByEmail(email)) {
-            return Optional.empty();
-        }
-
-        Rol rolUsuario = rolRepository.findByNombre("USUARIO")
-                .orElseThrow(() -> new IllegalStateException("No existe el rol USUARIO"));
-
-        Usuario usuario = new Usuario();
-        usuario.setNombreCompleto(nombreCompleto);
-        usuario.setEmail(email);
-        usuario.setPasswordHash(passwordHash);
-        usuario.setRol(rolUsuario);
-        usuario.setActivo(true);
-        usuario.setPendienteAprobacion(false);
-        usuario.setTerminosAceptadosEn(aceptadoEn);
-        usuario.setTerminosVersion(VERSION_TERMINOS);
-        usuario.setTerminosIp(ip);
-
-        return Optional.of(usuarioRepository.save(usuario));
-    }
 
     @Transactional
     public Optional<Usuario> aprobar(Long id, Long rolId) {
@@ -208,6 +173,55 @@ public class UsuarioService {
                     usuario.setPendienteAprobacion(false);
                     return usuarioRepository.save(usuario);
                 });
+    }
+
+        /** Crea la cuenta (rol USUARIO, activa) cuando no hace falta verificar el correo. */
+    @Transactional
+    public Optional<Usuario> registrarSolicitud(String nombreCompleto, String email, String passwordPlano, String ip) {
+        return registrarSolicitud(nombreCompleto, email, passwordPlano, ip, "USUARIO");
+    }
+
+    /** Igual que el anterior, pero con el rol indicado (solo lo usa el modo evaluación). */
+    @Transactional
+    public Optional<Usuario> registrarSolicitud(String nombreCompleto, String email, String passwordPlano,
+                                                String ip, String nombreRol) {
+        return crearCuentaVerificada(nombreCompleto, email,
+                passwordEncoder.encode(passwordPlano), ip, LocalDateTime.now(), nombreRol);
+    }
+
+    /**
+     * Crea la cuenta con la contrasena ya cifrada. Se usa cuando el correo ya
+     * se confirmo con el codigo. Devuelve vacio si el correo ya existe.
+     */
+    @Transactional
+    public Optional<Usuario> crearCuentaVerificada(String nombreCompleto, String email, String passwordHash,
+                                                   String ip, LocalDateTime aceptadoEn) {
+        return crearCuentaVerificada(nombreCompleto, email, passwordHash, ip, aceptadoEn, "USUARIO");
+    }
+
+    @Transactional
+    public Optional<Usuario> crearCuentaVerificada(String nombreCompleto, String email, String passwordHash,
+                                                   String ip, LocalDateTime aceptadoEn, String nombreRol) {
+
+        if (usuarioRepository.existsByEmail(email)) {
+            return Optional.empty();
+        }
+
+        Rol rol = rolRepository.findByNombre(nombreRol)
+                .orElseThrow(() -> new IllegalStateException("No existe el rol " + nombreRol));
+
+        Usuario usuario = new Usuario();
+        usuario.setNombreCompleto(nombreCompleto);
+        usuario.setEmail(email);
+        usuario.setPasswordHash(passwordHash);
+        usuario.setRol(rol);
+        usuario.setActivo(true);
+        usuario.setPendienteAprobacion(false);
+        usuario.setTerminosAceptadosEn(aceptadoEn);
+        usuario.setTerminosVersion(VERSION_TERMINOS);
+        usuario.setTerminosIp(ip);
+
+        return Optional.of(usuarioRepository.save(usuario));
     }
 
     @Transactional

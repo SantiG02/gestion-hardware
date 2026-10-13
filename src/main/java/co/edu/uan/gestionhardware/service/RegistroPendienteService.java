@@ -35,17 +35,19 @@ public class RegistroPendienteService {
         private final String email;
         private final String passwordHash;
         private final String ip;
+        private final String rol;
         private final LocalDateTime aceptadoEn;
         private String codigo;
         private LocalDateTime expira;
         private LocalDateTime ultimoEnvio;
         private int intentos;
 
-        private Registro(String nombre, String email, String passwordHash, String ip) {
+        private Registro(String nombre, String email, String passwordHash, String ip, String rol) {
             this.nombre = nombre;
             this.email = email;
             this.passwordHash = passwordHash;
             this.ip = ip;
+            this.rol = rol;
             this.aceptadoEn = LocalDateTime.now();
         }
 
@@ -54,6 +56,7 @@ public class RegistroPendienteService {
         public String getPasswordHash() { return passwordHash; }
         public String getIp() { return ip; }
         public LocalDateTime getAceptadoEn() { return aceptadoEn; }
+        public String getRol() { return rol; }
     }
 
     /** Error que se le muestra a la persona; reiniciar = debe volver a llenar el formulario. */
@@ -69,7 +72,7 @@ public class RegistroPendienteService {
     }
 
     /** Crea (o reemplaza) el registro pendiente de ese correo y devuelve el codigo a enviar. */
-    public synchronized String iniciar(String nombre, String email, String passwordHash, String ip) {
+        public synchronized String iniciar(String nombre, String email, String passwordHash, String ip, String rol) {
 
         limpiarVencidos();
 
@@ -77,7 +80,7 @@ public class RegistroPendienteService {
             throw new IllegalStateException("Hay demasiados registros en espera. Inténtalo en unos minutos.");
         }
 
-        Registro registro = new Registro(nombre, email, passwordHash, ip);
+        Registro registro = new Registro(nombre, email, passwordHash, ip, rol);
         String codigo = nuevoCodigo(registro);
         registros.put(email, registro);
         return codigo;
