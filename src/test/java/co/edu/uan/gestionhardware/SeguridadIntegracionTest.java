@@ -22,8 +22,11 @@ import static org.springframework.security.test.web.servlet.response.SecurityMoc
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.springframework.test.context.TestPropertySource;
 
 /** Pruebas de seguridad basadas en OWASP Top 10: control de acceso, inyección, XSS, sesión y abuso. */
+@TestPropertySource(properties = "hardtrack.demo.seleccion-rol=false")
+
 class SeguridadIntegracionTest extends BaseIntegracion {
 
     private static final String SCRIPT = "<script>alert(1)</script>";

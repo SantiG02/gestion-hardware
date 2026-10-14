@@ -109,10 +109,13 @@ export function tecnico() {
 
 function valoresDeSelect(html, nombre) {
   const valores = [];
-  html.find(`select[name=${nombre}] option`).each((_, opcion) => {
-    const v = opcion.attr('value');
+  // Se recorre por posición: con k6 v2 el callback de each() ya no entrega un
+  // objeto con attr(), pero eq(i).attr() sigue disponible.
+  const opciones = html.find(`select[name=${nombre}] option`);
+  for (let i = 0; i < opciones.size(); i++) {
+    const v = opciones.eq(i).attr('value');
     if (v) valores.push(v);
-  });
+  }
   return valores;
 }
 
