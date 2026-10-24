@@ -1,15 +1,18 @@
 package co.edu.uan.gestionhardware.service;
 
-import co.edu.uan.gestionhardware.model.*;
-import co.edu.uan.gestionhardware.repository.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import co.edu.uan.gestionhardware.model.Rol;
+import co.edu.uan.gestionhardware.model.Usuario;
+import co.edu.uan.gestionhardware.repository.RolRepository;
+import co.edu.uan.gestionhardware.repository.UsuarioRepository;
 
 
 @Service
@@ -76,6 +79,12 @@ public class UsuarioService {
     public Usuario guardar(Usuario usuario, String passwordPlano) {
 
         boolean vieneContrasena = passwordPlano != null && !passwordPlano.isBlank();
+
+        // El formulario envía el documento vacío como "": se guarda como NULL
+        // para no chocar con la restricción de unicidad.
+        if (usuario.getDocumento() != null && usuario.getDocumento().isBlank()) {
+            usuario.setDocumento(null);
+        }
 
         if (vieneContrasena) {
             usuario.setPasswordHash(passwordEncoder.encode(passwordPlano));
