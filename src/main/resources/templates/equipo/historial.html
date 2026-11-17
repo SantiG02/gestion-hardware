@@ -48,6 +48,18 @@
                 </div>
             </div>
 
+            <div class="panel" style="margin-bottom:20px;"
+                 th:if="${valoresCampos != null and !#lists.isEmpty(valoresCampos)}">
+                <h2 style="font-size:15px; font-weight:700; margin:0 0 12px;"
+                    th:text="'Especificaciones de ' + ${equipo.tipoEquipo?.nombre}">Especificaciones</h2>
+                <div class="rejilla">
+                    <p style="margin:0 0 10px;" th:each="v : ${valoresCampos}">
+                        <span class="campo__etiqueta" th:text="${v.campo.nombre}">-</span>
+                        <span th:text="${v.valor}">-</span>
+                    </p>
+                </div>
+            </div>
+
             <h2 style="font-size:15px; font-weight:700; margin:0 0 16px;">Línea de tiempo</h2>
 
             <div th:if="${eventos.size() == 0}" class="aviso aviso--info">

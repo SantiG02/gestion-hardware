@@ -65,7 +65,7 @@
                             </form>
                             <form th:action="@{/usuarios/{id}/rechazar(id=${p.id})}"
                                   method="post" style="display:inline"
-                                  onsubmit="return confirm('¿Rechazar esta solicitud? Se eliminará y se avisará al solicitante.');">
+                                  data-confirm="¿Rechazar esta solicitud? Se eliminará y se avisará al solicitante.">
                                 <button type="submit" class="boton boton--peligro boton--pequeno">Rechazar</button>
                             </form>
                         </td>
@@ -120,7 +120,7 @@
                             <form th:if="${usuario.activo}"
                                   th:action="@{/usuarios/{id}/desactivar(id=${usuario.id})}"
                                   method="post" style="display:inline"
-                                  onsubmit="return confirm('¿Inactivar este usuario? No podrá volver a ingresar al sistema.');">
+                                  data-confirm="¿Inactivar este usuario? No podrá volver a ingresar al sistema.">
                                 <button type="submit"
                                         class="boton boton--peligro boton--pequeno">Inactivar</button>
                             </form>
@@ -128,7 +128,7 @@
                             <form th:unless="${usuario.activo}"
                                   th:action="@{/usuarios/{id}/activar(id=${usuario.id})}"
                                   method="post" style="display:inline"
-                                  onsubmit="return confirm('¿Activar este usuario? Podrá volver a ingresar al sistema.');">
+                                  data-confirm="¿Activar este usuario? Podrá volver a ingresar al sistema.">
                                 <button type="submit"
                                         class="boton boton--exito boton--pequeno">Activar</button>
                             </form>

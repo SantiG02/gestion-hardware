@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -17,17 +18,20 @@ public class EquipoService {
     private final TipoEquipoRepository tipoEquipoRepository;
     private final EstadoEquipoRepository estadoEquipoRepository;
     private final SedeRepository sedeRepository;
+    private final ValorCampoEquipoService valorCampoService;
 
     public EquipoService(EquipoRepository equipoRepository,
                          AreaRepository areaRepository,
                          TipoEquipoRepository tipoEquipoRepository,
                          EstadoEquipoRepository estadoEquipoRepository,
-                         SedeRepository sedeRepository) {
+                         SedeRepository sedeRepository,
+                         ValorCampoEquipoService valorCampoService) {
         this.equipoRepository = equipoRepository;
         this.areaRepository = areaRepository;
         this.tipoEquipoRepository = tipoEquipoRepository;
         this.estadoEquipoRepository = estadoEquipoRepository;
         this.sedeRepository = sedeRepository;
+        this.valorCampoService = valorCampoService;
     }
 
     public List<Equipo> listarActivos() {
@@ -82,6 +86,17 @@ public class EquipoService {
             equipo.setActivo(true);
         }
         return equipoRepository.save(equipo);
+    }
+
+    /**
+     * Guarda el equipo y, en la misma transaccion, los valores de los
+     * campos propios de su tipo.
+     */
+    @Transactional
+    public Equipo guardarConValores(Equipo equipo, Map<Long, String> valores) {
+        Equipo guardado = guardar(equipo);
+        valorCampoService.reemplazar(guardado, valores);
+        return guardado;
     }
 
     @Transactional

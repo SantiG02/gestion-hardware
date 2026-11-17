@@ -31,7 +31,7 @@
 
                         <div class="campo">
                             <label class="campo__etiqueta">Tipo de reporte</label>
-                            <select class="campo__entrada" name="tipo" id="tipo" onchange="alternarMes()">
+                            <select class="campo__entrada" name="tipo" id="tipo">
                                 <option value="MENSUAL">Mensual</option>
                                 <option value="ANUAL">Anual</option>
                             </select>
@@ -39,7 +39,7 @@
 
                         <div class="campo" id="campoMes">
                             <label class="campo__etiqueta">Mes</label>
-                            <select class="campo__entrada" name="mes" id="mes">
+                            <select class="campo__entrada" name="mes" id="mes" th:attr="data-mes-actual=${mesActual}">
                                 <option value="1">Enero</option>
                                 <option value="2">Febrero</option>
                                 <option value="3">Marzo</option>
@@ -78,15 +78,7 @@
 
 </div>
 
-<script th:inline="javascript">
-    document.getElementById('mes').value = /*[[${mesActual}]]*/ 1;
-
-    function alternarMes() {
-        var esMensual = document.getElementById('tipo').value === 'MENSUAL';
-        document.getElementById('campoMes').style.display = esMensual ? 'block' : 'none';
-    }
-    alternarMes();
-</script>
+<script th:src="@{/js/reportes.js}"></script>
 
 </body>
 </html>

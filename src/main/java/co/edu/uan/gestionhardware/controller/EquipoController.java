@@ -1,14 +1,17 @@
 package co.edu.uan.gestionhardware.controller;
 
 import co.edu.uan.gestionhardware.model.Area;
+import co.edu.uan.gestionhardware.model.CampoTipoEquipo;
 import co.edu.uan.gestionhardware.model.Equipo;
 import co.edu.uan.gestionhardware.model.EstadoEquipo;
 import co.edu.uan.gestionhardware.model.Sede;
 import co.edu.uan.gestionhardware.model.TipoEquipo;
 import co.edu.uan.gestionhardware.model.Usuario;
+import co.edu.uan.gestionhardware.service.CampoTipoEquipoService;
 import co.edu.uan.gestionhardware.service.EquipoService;
 import co.edu.uan.gestionhardware.service.HistorialService;
 import co.edu.uan.gestionhardware.service.UsuarioService;
+import co.edu.uan.gestionhardware.service.ValorCampoEquipoService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +19,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/equipos")
@@ -25,13 +30,19 @@ public class EquipoController {
     private final EquipoService equipoService;
     private final UsuarioService usuarioService;
     private final HistorialService historialService;
+    private final CampoTipoEquipoService campoService;
+    private final ValorCampoEquipoService valorService;
 
     public EquipoController(EquipoService equipoService,
                             UsuarioService usuarioService,
-                            HistorialService historialService) {
+                            HistorialService historialService,
+                            CampoTipoEquipoService campoService,
+                            ValorCampoEquipoService valorService) {
         this.equipoService = equipoService;
         this.usuarioService = usuarioService;
         this.historialService = historialService;
+        this.campoService = campoService;
+        this.valorService = valorService;
     }
 
     // Se ejecutan antes de cualquier metodo de este controlador.
@@ -50,6 +61,12 @@ public class EquipoController {
     @ModelAttribute("tipos")
     public List<TipoEquipo> cargarTipos() {
         return equipoService.listarTipos();
+    }
+
+    // Campos propios de cada tipo, agrupados por id de tipo (formulario dinamico).
+    @ModelAttribute("camposPorTipo")
+    public Map<Long, List<CampoTipoEquipo>> cargarCamposPorTipo() {
+        return campoService.listarActivosAgrupadosPorTipo();
     }
 
     @ModelAttribute("estados")
@@ -77,6 +94,7 @@ public class EquipoController {
     @GetMapping("/nuevo")
     public String mostrarFormularioNuevo(Model model) {
         model.addAttribute("equipo", new Equipo());
+        model.addAttribute("valores", new HashMap<Long, String>());
         return "equipo/formulario";
     }
 
@@ -87,6 +105,7 @@ public class EquipoController {
         return equipoService.buscarPorId(id)
                 .map(equipo -> {
                     model.addAttribute("equipo", equipo);
+                    model.addAttribute("valores", valorService.valoresPorCampo(id));
                     return "equipo/formulario";
                 })
                 .orElseGet(() -> {
@@ -103,6 +122,7 @@ public class EquipoController {
                 .map(equipo -> {
                     model.addAttribute("equipo", equipo);
                     model.addAttribute("eventos", historialService.obtenerHistorial(id));
+                    model.addAttribute("valoresCampos", valorService.listarPorEquipo(id));
                     return "equipo/historial";
                 })
                 .orElseGet(() -> {
@@ -114,7 +134,12 @@ public class EquipoController {
     @PostMapping("/guardar")
     public String guardar(@Valid @ModelAttribute("equipo") Equipo equipo,
                           BindingResult result,
+                          @RequestParam Map<String, String> params,
+                          Model model,
                           RedirectAttributes flash) {
+
+        // Valores de los campos propios del tipo (parametros campo_<id>).
+        Map<Long, String> valores = extraerValores(params);
 
         // El código interno y el serial no pueden repetirse en otro equipo.
         if (equipo.getCodigoInterno() != null) {
@@ -130,18 +155,37 @@ public class EquipoController {
                             "Ya existe un equipo con este serial"));
         }
 
-        if (result.hasErrors()) {
+        Map<Long, String> erroresCampos =
+                valorService.validar(equipo.getTipoEquipo(), valores);
+
+        if (result.hasErrors() || !erroresCampos.isEmpty()) {
+            model.addAttribute("valores", valores);
+            model.addAttribute("erroresCampos", erroresCampos);
             return "equipo/formulario";
         }
 
         boolean esNuevo = (equipo.getId() == null);
-        equipoService.guardar(equipo);
+        equipoService.guardarConValores(equipo, valores);
 
         flash.addFlashAttribute("exito",
                 esNuevo ? "Equipo registrado correctamente"
                         : "Equipo actualizado correctamente");
 
         return "redirect:/equipos";
+    }
+
+    private Map<Long, String> extraerValores(Map<String, String> params) {
+        Map<Long, String> valores = new HashMap<>();
+        for (Map.Entry<String, String> entrada : params.entrySet()) {
+            if (entrada.getKey().startsWith("campo_")) {
+                try {
+                    valores.put(Long.valueOf(entrada.getKey().substring(6)), entrada.getValue());
+                } catch (NumberFormatException ignorado) {
+                    // Parametro mal formado: se ignora.
+                }
+            }
+        }
+        return valores;
     }
 
     @PostMapping("/{id}/desactivar")

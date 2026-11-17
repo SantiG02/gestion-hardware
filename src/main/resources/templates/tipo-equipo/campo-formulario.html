@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Tipos de equipo')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <p style="margin: 0 0 12px;">
+                <a th:href="@{/tipos-equipo/{id}/campos(id=${tipo.id})}" class="texto-suave"
+                   style="font-size: 13.5px; text-decoration: none;">← Volver a campos</a>
+            </p>
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo"
+                        th:text="${campo.id == null} ? 'Nuevo campo' : 'Editar campo'">Nuevo campo</h1>
+                    <p class="encabezado__intro" th:text="'Tipo de equipo: ' + ${tipo.nombre}">-</p>
+                </div>
+            </div>
+
+            <div class="panel">
+
+                <form th:action="@{/tipos-equipo/{id}/campos/guardar(id=${tipo.id})}"
+                      th:object="${campo}" method="post">
+
+                    <input type="hidden" th:field="*{id}" />
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Nombre del campo *</label>
+                        <input class="campo__entrada" type="text" th:field="*{nombre}"
+                               th:classappend="${#fields.hasErrors('nombre')} ? 'campo__entrada--error'" />
+                        <span class="campo__error" th:errors="*{nombre}"></span>
+                        <span class="campo__ayuda">Ejemplos: Velocidad (ppm), Número de puertos, Capacidad de batería (VA).</span>
+                    </div>
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Tipo de dato *</label>
+                        <select class="campo__seleccion" th:field="*{tipoDato}">
+                            <option th:each="td : ${tiposDato}"
+                                    th:value="${td}"
+                                    th:text="${td.etiqueta}"></option>
+                        </select>
+                    </div>
+
+                    <div id="bloque-opciones" hidden>
+                        <div class="campo">
+                            <label class="campo__etiqueta">Opciones *</label>
+                            <input class="campo__entrada" type="text" th:field="*{opciones}"
+                                   th:classappend="${#fields.hasErrors('opciones')} ? 'campo__entrada--error'" />
+                            <span class="campo__error" th:errors="*{opciones}"></span>
+                            <span class="campo__ayuda">Separadas por coma. Ejemplo: Láser, Inyección de tinta, Matricial.</span>
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label style="display:flex; gap:8px; align-items:center; cursor:pointer;">
+                            <input type="checkbox" th:field="*{obligatorio}" />
+                            <span>Obligatorio al registrar el equipo</span>
+                        </label>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 24px;">
+                        <button type="submit" class="boton">Guardar</button>
+                        <a th:href="@{/tipos-equipo/{id}/campos(id=${tipo.id})}"
+                           class="boton boton--secundario">Cancelar</a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+<script th:src="@{/js/campo-formulario.js}"></script>
+
+</body>
+</html>

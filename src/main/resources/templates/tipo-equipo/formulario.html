@@ -42,6 +42,14 @@
                         <span class="campo__ayuda">Ejemplos: Portátil, Servidor, Impresora, Switch, UPS. Debe ser único.</span>
                     </div>
 
+                    <div class="campo">
+                        <label style="display:flex; gap:8px; align-items:center; cursor:pointer;">
+                            <input type="checkbox" th:field="*{especificacionesBasicas}" />
+                            <span>Incluye especificaciones de cómputo</span>
+                        </label>
+                        <span class="campo__ayuda">Muestra procesador, RAM, almacenamiento y sistema operativo al registrar equipos de este tipo. Desmárquelo para impresoras, equipos de red, etc. y defina sus propios campos desde el listado de tipos.</span>
+                    </div>
+
                     <div style="display: flex; gap: 10px; margin-top: 24px;">
                         <button type="submit" class="boton">Guardar</button>
                         <a th:href="@{/tipos-equipo}" class="boton boton--secundario">Cancelar</a>

@@ -343,26 +343,7 @@
         © 2026 HardTrack · Proyecto de grado — Ingeniería de Sistemas
     </footer>
 
-    <script>
-        (function () {
-            var pestanas = [
-                { boton: document.getElementById('tab-ingresar'), panel: document.getElementById('panel-ingresar') },
-                { boton: document.getElementById('tab-crear'),    panel: document.getElementById('panel-crear') }
-            ];
-            function mostrar(indice) {
-                pestanas.forEach(function (p, i) {
-                    var activa = i === indice;
-                    p.boton.setAttribute('aria-selected', activa ? 'true' : 'false');
-                    p.panel.hidden = !activa;
-                });
-                var campo = pestanas[indice].panel.querySelector('input:not([tabindex="-1"])');
-                if (campo) { campo.focus(); }
-            }
-            pestanas.forEach(function (p, i) {
-                p.boton.addEventListener('click', function () { mostrar(i); });
-            });
-        })();
-    </script>
+    <script th:src="@{/js/login.js}"></script>
 
 </body>
 </html>

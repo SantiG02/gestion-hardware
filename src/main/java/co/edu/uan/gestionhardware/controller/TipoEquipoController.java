@@ -70,6 +70,8 @@ public class TipoEquipoController {
         }
 
         destino.setNombre(tipo.getNombre().trim());
+        destino.setEspecificacionesBasicas(
+                tipo.getEspecificacionesBasicas() == null ? Boolean.TRUE : tipo.getEspecificacionesBasicas());
         tipoService.guardar(destino);
 
         flash.addFlashAttribute("exito",

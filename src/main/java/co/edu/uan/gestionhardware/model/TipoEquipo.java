@@ -22,6 +22,13 @@ public class TipoEquipo {
     @Column(nullable = false)
     private Boolean activo = true;
 
+    // Si es true, el formulario de equipos de este tipo muestra procesador,
+    // RAM, almacenamiento y sistema operativo. Se desmarca para tipos como
+    // impresoras o equipos de red, que usan sus propios campos.
+    @ColumnDefault("true")
+    @Column(name = "especificaciones_basicas", nullable = false)
+    private Boolean especificacionesBasicas = true;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -30,6 +37,11 @@ public class TipoEquipo {
 
     public Boolean getActivo() { return activo; }
     public void setActivo(Boolean activo) { this.activo = activo; }
+
+    public Boolean getEspecificacionesBasicas() { return especificacionesBasicas; }
+    public void setEspecificacionesBasicas(Boolean especificacionesBasicas) {
+        this.especificacionesBasicas = especificacionesBasicas;
+    }
 
     @Override
     public boolean equals(Object o) {

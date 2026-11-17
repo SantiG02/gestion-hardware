@@ -49,13 +49,16 @@
                         </td>
 
                         <td class="tabla__acciones">
+                            <a th:href="@{/tipos-equipo/{id}/campos(id=${tipo.id})}"
+                               class="boton boton--secundario boton--pequeno">Campos</a>
+
                             <a th:href="@{/tipos-equipo/{id}/editar(id=${tipo.id})}"
                                class="boton boton--secundario boton--pequeno">Editar</a>
 
                             <form th:if="${tipo.activo}"
                                   th:action="@{/tipos-equipo/{id}/desactivar(id=${tipo.id})}"
                                   method="post" style="display:inline"
-                                  onsubmit="return confirm('¿Inactivar este tipo?');">
+                                  data-confirm="¿Inactivar este tipo?">
                                 <button type="submit"
                                         class="boton boton--peligro boton--pequeno">Inactivar</button>
                             </form>
@@ -63,7 +66,7 @@
                             <form th:unless="${tipo.activo}"
                                   th:action="@{/tipos-equipo/{id}/activar(id=${tipo.id})}"
                                   method="post" style="display:inline"
-                                  onsubmit="return confirm('¿Activar este tipo?');">
+                                  data-confirm="¿Activar este tipo?">
                                 <button type="submit"
                                         class="boton boton--exito boton--pequeno">Activar</button>
                             </form>

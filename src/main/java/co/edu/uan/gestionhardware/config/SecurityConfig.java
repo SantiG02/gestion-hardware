@@ -7,10 +7,26 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    // Content-Security-Policy: los scripts solo se cargan desde el propio sitio
+    // (no hay scripts ni manejadores en linea). Los estilos en linea se permiten
+    // porque las plantillas usan atributos style.
+    private static final String POLITICA_CSP =
+            "default-src 'self'; "
+            + "script-src 'self'; "
+            + "style-src 'self' 'unsafe-inline'; "
+            + "img-src 'self' data:; "
+            + "font-src 'self'; "
+            + "connect-src 'self'; "
+            + "object-src 'none'; "
+            + "base-uri 'self'; "
+            + "form-action 'self'; "
+            + "frame-ancestors 'none'";
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -67,6 +83,10 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/login?logout")
                 .invalidateHttpSession(true)
                 .permitAll()
+            )
+            .headers(headers -> headers
+                .contentSecurityPolicy(csp -> csp.policyDirectives(POLITICA_CSP))
+                .referrerPolicy(ref -> ref.policy(ReferrerPolicy.SAME_ORIGIN))
             )
             .exceptionHandling(ex -> ex
                 .accessDeniedPage("/acceso-denegado")

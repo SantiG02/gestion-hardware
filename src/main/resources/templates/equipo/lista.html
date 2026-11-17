@@ -132,7 +132,7 @@
 
                             <form th:action="@{/equipos/{id}/desactivar(id=${equipo.id})}"
                                   method="post" style="display:inline"
-                                  onsubmit="return confirm('¿Dar de baja este equipo del inventario?');">
+                                  data-confirm="¿Dar de baja este equipo del inventario?">
                                 <button type="submit"
                                         class="boton boton--peligro boton--pequeno">Dar de baja</button>
                             </form>

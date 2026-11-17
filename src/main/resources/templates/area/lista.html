@@ -62,7 +62,7 @@
                             <form th:if="${area.activo}"
                                   th:action="@{/sedes/{s}/areas/{a}/desactivar(s=${sede.id}, a=${area.id})}"
                                   method="post" style="display:inline"
-                                  onsubmit="return confirm('¿Inactivar esta área?');">
+                                  data-confirm="¿Inactivar esta área?">
                                 <button type="submit"
                                         class="boton boton--peligro boton--pequeno">Inactivar</button>
                             </form>
@@ -70,7 +70,7 @@
                             <form th:unless="${area.activo}"
                                   th:action="@{/sedes/{s}/areas/{a}/activar(s=${sede.id}, a=${area.id})}"
                                   method="post" style="display:inline"
-                                  onsubmit="return confirm('¿Activar esta área?');">
+                                  data-confirm="¿Activar esta área?">
                                 <button type="submit"
                                         class="boton boton--exito boton--pequeno">Activar</button>
                             </form>

@@ -134,7 +134,7 @@
                     <a th:href="@{/mis-incidencias/{id}/editar(id=${inc.id})}"
                        class="boton boton--secundario boton--pequeno">Editar</a>
                     <form th:action="@{/mis-incidencias/{id}/eliminar(id=${inc.id})}" method="post"
-                          onsubmit="return confirm('¿Eliminar este reporte? Esta acción no se puede deshacer.');">
+                          data-confirm="¿Eliminar este reporte? Esta acción no se puede deshacer.">
                         <button type="submit" class="boton boton--peligro boton--pequeno">Eliminar</button>
                     </form>
                 </div>

@@ -60,6 +60,7 @@
                                 <option value="">-- Seleccione --</option>
                                 <option th:each="t : ${tipos}"
                                         th:value="${t.id}"
+                                        th:attr="data-basicas=${t.especificacionesBasicas}"
                                         th:text="${t.nombre}"></option>
                             </select>
                         </div>
@@ -122,6 +123,7 @@
 
                     </div>
 
+                    <div id="bloque-basicas">
                     <h2 style="font-size:14px; text-transform:uppercase; letter-spacing:.05em;
                                color:var(--texto-suave); margin:28px 0 16px;">Especificaciones técnicas</h2>
 
@@ -170,6 +172,55 @@
 
                     </div>
 
+                    </div>
+
+                    <!-- Campos propios del tipo elegido (definidos por el gestor) -->
+                    <div id="bloque-dinamico">
+                        <div th:each="entrada : ${camposPorTipo}"
+                             th:attr="data-grupo-tipo=${entrada.key}" hidden>
+
+                            <h2 style="font-size:14px; text-transform:uppercase; letter-spacing:.05em;
+                                       color:var(--texto-suave); margin:28px 0 16px;">Especificaciones del tipo de equipo</h2>
+
+                            <div class="rejilla">
+
+                                <div class="campo" th:each="campo : ${entrada.value}"
+                                     th:with="valorActual=${valores != null ? valores.get(campo.id) : null}">
+
+                                    <label class="campo__etiqueta"
+                                           th:text="${campo.nombre} + (${campo.obligatorio} ? ' *' : '')">Campo</label>
+
+                                    <div th:switch="${campo.tipoDato.name()}">
+
+                                        <input th:case="'TEXTO'" class="campo__entrada" type="text" maxlength="255"
+                                               th:name="'campo_' + ${campo.id}" th:value="${valorActual}" disabled />
+
+                                        <input th:case="'NUMERO'" class="campo__entrada" type="number" step="any"
+                                               th:name="'campo_' + ${campo.id}" th:value="${valorActual}" disabled />
+
+                                        <input th:case="'FECHA'" class="campo__entrada" type="date"
+                                               th:name="'campo_' + ${campo.id}" th:value="${valorActual}" disabled />
+
+                                        <select th:case="'LISTA'" class="campo__seleccion"
+                                                th:name="'campo_' + ${campo.id}" disabled>
+                                            <option value="">-- Seleccione --</option>
+                                            <option th:each="op : ${#strings.arraySplit(campo.opciones, ',')}"
+                                                    th:value="${#strings.trim(op)}"
+                                                    th:text="${#strings.trim(op)}"
+                                                    th:selected="${valorActual != null and valorActual == #strings.trim(op)}"></option>
+                                        </select>
+
+                                    </div>
+
+                                    <span class="campo__error"
+                                          th:if="${erroresCampos != null and erroresCampos.containsKey(campo.id)}"
+                                          th:text="${erroresCampos.get(campo.id)}"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
                     <h2 style="font-size:14px; text-transform:uppercase; letter-spacing:.05em;
                                color:var(--texto-suave); margin:28px 0 16px;">Ciclo de vida</h2>
 
@@ -210,6 +261,8 @@
     </div>
 
 </div>
+
+<script th:src="@{/js/equipo-formulario.js}"></script>
 
 </body>
 </html>
