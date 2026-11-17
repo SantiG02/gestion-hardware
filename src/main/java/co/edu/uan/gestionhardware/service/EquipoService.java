@@ -60,7 +60,7 @@ public class EquipoService {
     }
 
     public List<TipoEquipo> listarTipos() {
-        return tipoEquipoRepository.findAll();
+        return tipoEquipoRepository.findByActivoTrueOrderByNombreAsc();
     }
 
     public List<EstadoEquipo> listarEstados() {

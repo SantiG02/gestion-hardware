@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Tipos de equipo')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <p style="margin: 0 0 12px;">
+                <a th:href="@{/tipos-equipo}" class="texto-suave"
+                   style="font-size: 13.5px; text-decoration: none;">← Volver a tipos de equipo</a>
+            </p>
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo"
+                        th:text="${tipo.id == null} ? 'Nuevo tipo de equipo' : 'Editar tipo de equipo'">
+                        Nuevo tipo de equipo
+                    </h1>
+                </div>
+            </div>
+
+            <div class="panel">
+
+                <form th:action="@{/tipos-equipo/guardar}" th:object="${tipo}" method="post">
+
+                    <input type="hidden" th:field="*{id}" />
+
+                    <div class="campo">
+                        <label class="campo__etiqueta">Nombre del tipo *</label>
+                        <input class="campo__entrada" type="text"
+                               th:field="*{nombre}"
+                               th:classappend="${#fields.hasErrors('nombre')} ? 'campo__entrada--error'" />
+                        <span class="campo__error" th:errors="*{nombre}"></span>
+                        <span class="campo__ayuda">Ejemplos: Portátil, Servidor, Impresora, Switch, UPS. Debe ser único.</span>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 24px;">
+                        <button type="submit" class="boton">Guardar</button>
+                        <a th:href="@{/tipos-equipo}" class="boton boton--secundario">Cancelar</a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

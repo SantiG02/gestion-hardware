@@ -155,7 +155,7 @@ public class ImportacionService {
         }
 
         Map<String, TipoEquipo> tiposPorNombre = new HashMap<>();
-        for (TipoEquipo t : tipoEquipoRepository.findAll()) {
+        for (TipoEquipo t : tipoEquipoRepository.findByActivoTrueOrderByNombreAsc()) {
             tiposPorNombre.put(t.getNombre().trim().toLowerCase(), t);
         }
 

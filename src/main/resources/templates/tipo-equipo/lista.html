@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos/layout :: cabecera}"></head>
+<body>
+
+<div class="disposicion">
+
+    <div th:replace="~{fragmentos/layout :: sidebar}"></div>
+
+    <div class="contenido">
+
+        <div th:replace="~{fragmentos/layout :: barrasuperior('Tipos de equipo')}"></div>
+
+        <main class="contenido__cuerpo">
+
+            <div class="encabezado">
+                <div>
+                    <h1 class="encabezado__titulo">Tipos de equipo</h1>
+                    <p class="encabezado__intro">Categorías de activos que se pueden registrar en el inventario.</p>
+                </div>
+                <a th:href="@{/tipos-equipo/nuevo}" class="boton">Nuevo tipo</a>
+            </div>
+
+            <div th:if="${exito}" class="aviso aviso--exito" th:text="${exito}"></div>
+            <div th:if="${error}" class="aviso aviso--error" th:text="${error}"></div>
+
+            <div th:if="${#lists.isEmpty(tipos)}" class="aviso aviso--info">
+                No hay tipos de equipo registrados todavía.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(tipos)}" class="panel panel--tabla">
+                <table class="tabla">
+                    <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Estado</th>
+                        <th class="tabla__acciones">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="tipo : ${tipos}">
+
+                        <td th:text="${tipo.nombre}">-</td>
+
+                        <td>
+                            <span class="insignia"
+                                  th:classappend="${tipo.activo} ? 'insignia--estable' : 'insignia--neutra'"
+                                  th:text="${tipo.activo} ? 'Activo' : 'Inactivo'">-</span>
+                        </td>
+
+                        <td class="tabla__acciones">
+                            <a th:href="@{/tipos-equipo/{id}/editar(id=${tipo.id})}"
+                               class="boton boton--secundario boton--pequeno">Editar</a>
+
+                            <form th:if="${tipo.activo}"
+                                  th:action="@{/tipos-equipo/{id}/desactivar(id=${tipo.id})}"
+                                  method="post" style="display:inline"
+                                  onsubmit="return confirm('¿Inactivar este tipo?');">
+                                <button type="submit"
+                                        class="boton boton--peligro boton--pequeno">Inactivar</button>
+                            </form>
+
+                            <form th:unless="${tipo.activo}"
+                                  th:action="@{/tipos-equipo/{id}/activar(id=${tipo.id})}"
+                                  method="post" style="display:inline"
+                                  onsubmit="return confirm('¿Activar este tipo?');">
+                                <button type="submit"
+                                        class="boton boton--exito boton--pequeno">Activar</button>
+                            </form>
+                        </td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

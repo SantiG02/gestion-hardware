@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .requestMatchers("/equipos/**").hasAnyRole("GESTOR", "TECNICO")
 
                 .requestMatchers("/sedes/**").hasRole("GESTOR")
+                .requestMatchers("/tipos-equipo/**").hasRole("GESTOR")
 
                 .requestMatchers("/incidencias/**").hasAnyRole("GESTOR", "TECNICO")
                 .requestMatchers("/mantenimientos/**").hasAnyRole("GESTOR", "TECNICO")
