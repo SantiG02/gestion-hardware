@@ -32,6 +32,7 @@ const RUTAS = [
   ['/dashboard',        true,  false, false],
   ['/usuarios',         true,  false, false],
   ['/sedes',            true,  false, false],
+  ['/tipos-equipo',      true,  false, false],
   ['/configuracion',    true,  false, false],
   ['/reportes',         true,  false, false],
   ['/equipos',          true,  true,  false],

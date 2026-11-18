@@ -20,7 +20,7 @@ module.exports = defineConfig({
     locale: 'es-CO',
     timezoneId: 'America/Bogota',
     acceptDownloads: true,
-    screenshot: 'only-on-failure',  // captura de cada fallo
+    screenshot: 'on',  // captura de cada prueba
     trace: 'retain-on-failure',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
