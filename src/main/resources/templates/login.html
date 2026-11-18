@@ -322,7 +322,8 @@
             </div>
         </section>
 
-        <div class="aviso aviso--info" style="margin-top:20px;">
+        <div class="aviso aviso--info" style="margin-top:20px;"
+             th:if="${@environment.getProperty('hardtrack.demo.seleccion-rol', 'false') == 'true'}">
             <strong>Credenciales de prueba</strong><br />
             <span style="display:block; margin-top:6px;">
                 Gestor Tecnológico: <code>hardtrack.gestor@gmail.com</code> · <code>Admin1234</code>

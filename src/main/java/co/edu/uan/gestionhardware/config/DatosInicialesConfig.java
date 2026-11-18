@@ -12,6 +12,7 @@ import co.edu.uan.gestionhardware.repository.EstadoEquipoRepository;
 import co.edu.uan.gestionhardware.repository.TipoEquipoRepository;
 import co.edu.uan.gestionhardware.repository.RolRepository;
 import co.edu.uan.gestionhardware.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +31,8 @@ public class DatosInicialesConfig {
                                                   ConfiguracionRepository configuracionRepository,
                                                   EstadoEquipoRepository estadoEquipoRepository,
                                                   TipoEquipoRepository tipoEquipoRepository,
-                                                  PasswordEncoder passwordEncoder) {
+                                                  PasswordEncoder passwordEncoder,
+                                                  @Value("${hardtrack.demo.seleccion-rol:false}") boolean modoDemo) {
         return args -> {
 
             Rol gestor = rolRepository.findByNombre("GESTOR").orElseGet(() -> {
@@ -54,14 +56,18 @@ public class DatosInicialesConfig {
                 return rolRepository.save(r);
             });
 
-            crearSiNoExiste(usuarioRepository, passwordEncoder,
-                    "hardtrack.gestor@gmail.com", "Gestor Tecnologico", gestor, "Admin1234");
+            // Cuentas de evaluacion: solo en el perfil demo. En produccion el
+            // primer administrador se crea desde la pantalla de configuracion inicial.
+            if (modoDemo) {
+                crearSiNoExiste(usuarioRepository, passwordEncoder,
+                        "hardtrack.gestor@gmail.com", "Gestor Tecnologico", gestor, "Admin1234");
 
-            crearSiNoExiste(usuarioRepository, passwordEncoder,
-                    "hardtrack.tecnico@gmail.com", "Tecnico de Soporte", tecnico, "Tecnico1234");
+                crearSiNoExiste(usuarioRepository, passwordEncoder,
+                        "hardtrack.tecnico@gmail.com", "Tecnico de Soporte", tecnico, "Tecnico1234");
 
-            crearSiNoExiste(usuarioRepository, passwordEncoder,
-                    "hardtrack.usuario@gmail.com", "Usuario Final", usuarioFinal, "Usuario1234");
+                crearSiNoExiste(usuarioRepository, passwordEncoder,
+                        "hardtrack.usuario@gmail.com", "Usuario Final", usuarioFinal, "Usuario1234");
+            }
 
             List.of("Disco", "Memoria", "Fuente de poder", "Red",
                     "Software", "Perifericos", "Pantalla", "Otros")
