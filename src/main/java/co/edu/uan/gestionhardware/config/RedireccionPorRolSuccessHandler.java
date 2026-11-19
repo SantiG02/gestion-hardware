@@ -22,20 +22,23 @@ public class RedireccionPorRolSuccessHandler extends SimpleUrlAuthenticationSucc
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
+        String destino = destinoPorRol(authentication);
+
+        setDefaultTargetUrl(destino);
+        super.onAuthenticationSuccess(request, response, authentication);
+    }
+
+    /** Pagina de inicio segun el rol; la reutiliza AuthController para sesiones ya abiertas. */
+    public static String destinoPorRol(Authentication authentication) {
         Set<String> roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(java.util.stream.Collectors.toSet());
 
-        String destino;
         if (roles.contains("ROLE_GESTOR")) {
-            destino = "/dashboard";
+            return "/dashboard";
         } else if (roles.contains("ROLE_TECNICO")) {
-            destino = "/panel-tecnico";
-        } else {
-            destino = "/mis-incidencias";
+            return "/panel-tecnico";
         }
-
-        setDefaultTargetUrl(destino);
-        super.onAuthenticationSuccess(request, response, authentication);
+        return "/mis-incidencias";
     }
 }
